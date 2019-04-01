@@ -137,7 +137,9 @@ v20 configuration file is. If a configuration file exists in this location, no
 (env)user@host: ~/v20-python-samples$ export V20_CONF=/home/user/v20.conf
 (env)user@host: ~/v20-python-samples$ v20-account-details
 ```
+## API Documentations
 
+http://developer.oanda.com/rest-live-v20/order-ep/
 
 ## Sample Code
 
