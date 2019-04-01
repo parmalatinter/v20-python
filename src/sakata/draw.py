@@ -26,12 +26,50 @@ def main():
     del df['Unnamed: 0']
     del df['volume']
 
-        # ローソク足表示
-    fig = plt.figure(figsize=(18, 9))
-    ax = plt.subplot(1, 1, 1)
-    candle_temp = df[1000:1250]
-    candlestick2_ohlc(ax, candle_temp["open"], candle_temp["high"], candle_temp["low"], candle_temp["close"], width=0.9, colorup="r", colordown="b")
+    # カラム名を変更
+    df.columns = ['t', 'c', 'o', 'h', 'l']
+    df.head()
+
+    # 終値を10〜30分シフトさせる
+    df['c1'] = df['c'].shift(1)
+    df['c2'] = df['c'].shift(2)
+    df['c3'] = df['c'].shift(3)
+
+    # 始値（open）を10〜30分ずらす
+    df['o1'] = df['o'].shift(1)
+    df['o2'] = df['o'].shift(2)
+    df['o3'] = df['o'].shift(3)
+
+    # カラムの並び替えと削除
+    df = df[[
+        't', 'c', 'c1', 'c2', 'c3', 
+        'o', 'o1', 'o2', 'o3','h', 'l'
+    ]]
      
+    df.head()
+
+    df['mean'] = df['c'].rolling(window=20).mean()
+    df['std'] = df['c'].rolling(window=20).std()
+    df['upper'] = df['mean'] + (df['std'] * 2)
+    df['lower'] = df['mean'] - (df['std'] * 2)
+
+    # 最初の19行を削除してインデックスをリセット
+    df = df[19:]
+    df = df.reset_index(drop=True)
+    df.head()
+
+    # ローソク足表示
+    ax = plt.subplot(1, 1, 1)
+    candle_temp = df[550:750]
+    candle_temp = candle_temp.reset_index()
+    candlestick2_ohlc(
+        ax, candle_temp["o"], candle_temp["h"], candle_temp["l"],
+        candle_temp["c"], width=0.9, colorup="r", colordown="b"
+    )
+     
+    ax.plot(candle_temp['mean'])
+    ax.plot(candle_temp['upper'])
+    ax.plot(candle_temp['lower'])
      
     plt.savefig('my_figure.png')
     plt.show()
