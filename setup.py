@@ -38,6 +38,8 @@ setup(
             'v20-trade-set-client-extensions = trade.set_client_extensions:main',
             'v20-position-close = position.close:main',
             'v20-sakata-draw = sakata.draw:main',
+            'v20-calender-get = calender.get:main',
+            'v20-news-get = news.get:main',
         ]
     }
 )
