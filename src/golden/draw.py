@@ -82,6 +82,13 @@ def main():
     df['dead'] = signchange
     df['dead'][df['dead'] == 1] = -1
 
+    # 10分間でポジションを決済
+    df['returns'] = df['c'] - df['c'].shift(5)
+    df['golden_profit'] = df['returns'] * df['golden'].shift(5)
+    df['dead_profit'] = df['returns'] * df['dead'].shift(5)
+     
+    df[df['golden_profit'] > 0][0:5]
+
     # 最初の19行を削除してインデックスをリセット
     df = df[19:]
     df = df.reset_index(drop=True)
@@ -110,19 +117,30 @@ def main():
     ax.plot(candle_temp['sma_15'])
 
 
-    ax = plt.subplot(2, 2, 2)
+    ax = plt.subplot(2, 3, 2)
     ax.plot(candle_temp['rule_1'])
     ax.plot(candle_temp['rule_2'])
 
-    ax = plt.subplot(2, 2, 3)
+    ax = plt.subplot(2, 3, 3)
     ax.plot(candle_temp['golden'])
     ax.plot(candle_temp['dead'])
 
-
-
+    ax = plt.subplot(2, 3, 4)
+    ax.plot(candle_temp['golden_profit'])
+    ax.plot(candle_temp['dead_profit'])
+    print(candle_temp.head(1)['t'])
+    print(candle_temp['golden_profit'].sum())
+    print(candle_temp['dead_profit'].sum())
+    print(candle_temp.tail(1)['t'])
+    
+    ax = plt.subplot(2, 3, 5)
+    # バックテストの結果
+    df[['golden_profit', 'dead_profit']].cumsum().plot(grid=True, figsize=(15, 10))
+ 
     plt.savefig('my_figure.png')
     plt.show()
-
+    
+ 
 
 
 if __name__ == "__main__":
