@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 from datetime import datetime
+import os 
 
 
 class CandlePrinter(object):
@@ -35,6 +36,21 @@ class CandlePrinter(object):
             "=" * self.width['price'],
             "=" * self.width['volume']
         ))
+
+    def print_csv_header(self, file):
+        # time,close,open,high,low,volume
+        text = "{:<{width[time]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[volume]}}\n".format(
+            "time",
+            "close",
+            "open",
+            "high",
+            "low",
+            "volume",
+            width=self.width
+        )
+
+        with open(file, mode='a') as f:
+            f.writelines(text)
         
     def print_candle(self, candle):
         try:
@@ -68,3 +84,37 @@ class CandlePrinter(object):
 
             volume = ""
             time = ""
+
+    def export_csv(self, candle, file):
+
+            unix = candle.time.split(".")[0]
+            try:
+                time = datetime.fromtimestamp(int(unix)).strftime('%Y-%m-%d %H:%M:%S')
+            except:
+                time = candle.time.split(".")[0]
+
+            volume = candle.volume
+
+            for price in ["mid", "bid", "ask"]:
+                c = getattr(candle, price, None)
+
+                if c is None:
+                    continue
+                # ,time,close,open,high,low,volume
+                text = "{:>{width[time]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[volume]}}\n".format(
+                    time,
+                    c.c,
+                    c.o,
+                    c.h,
+                    c.l,
+                    volume,
+                    width=self.width
+                )
+
+                with open(file, mode='a') as f:
+                    f.writelines(text)
+
+
+                volume = ""
+                time = ""
+

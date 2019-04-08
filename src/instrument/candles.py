@@ -3,8 +3,9 @@
 import argparse
 import common.config
 import common.args
-from .view import CandlePrinter
+from instrument.view import CandlePrinter
 from datetime import datetime
+import os
 
 
 def main():
@@ -146,14 +147,21 @@ def main():
     print("Instrument: {}".format(response.get("instrument", 200)))
     print("Granularity: {}".format(response.get("granularity", 200)))
 
+    file = 'data.csv'
+
+    try:
+        os.remove(file)
+    except OSError:
+        pass
+
     printer = CandlePrinter()
 
-    printer.print_header()
+    printer.print_csv_header(file)
 
     candles = response.get("candles", 200)
 
     for candle in response.get("candles", 200):
-        printer.print_candle(candle)
+        printer.export_csv(candle,file)
 
 
 if __name__ == "__main__":
