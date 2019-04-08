@@ -7,6 +7,7 @@ import os
 class CandlePrinter(object):
     def __init__(self):
         self.width = {
+            'index' : 6,
             'time' : 19,
             'type' : 4,
             'price' : 8,
@@ -39,7 +40,8 @@ class CandlePrinter(object):
 
     def print_csv_header(self, file):
         # time,close,open,high,low,volume
-        text = "{:<{width[time]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[volume]}}\n".format(
+        text = "{:<{width[index]}}, {:<{width[time]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[volume]}}\n".format(
+            "index",
             "time",
             "close",
             "open",
@@ -85,7 +87,7 @@ class CandlePrinter(object):
             volume = ""
             time = ""
 
-    def export_csv(self, candle, file):
+    def export_csv(self, candle, file, index):
 
             unix = candle.time.split(".")[0]
             try:
@@ -101,7 +103,8 @@ class CandlePrinter(object):
                 if c is None:
                     continue
                 # ,time,close,open,high,low,volume
-                text = "{:>{width[time]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[volume]}}\n".format(
+                text = "{:>{width[index]}}, {:>{width[time]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[volume]}}\n".format(
+                    index,
                     time,
                     c.c,
                     c.o,

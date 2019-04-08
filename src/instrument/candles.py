@@ -160,8 +160,10 @@ def main():
 
     candles = response.get("candles", 200)
 
+    count = 0 
     for candle in response.get("candles", 200):
-        printer.export_csv(candle,file)
+        printer.export_csv(candle,file,count)
+        count=count+1
 
 
 if __name__ == "__main__":
