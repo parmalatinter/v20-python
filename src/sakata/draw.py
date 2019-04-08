@@ -23,7 +23,7 @@ def main():
     df = pd.read_csv("usd_10min_api.csv")
 
     # 不要なカラムを削除
-    del df['Unnamed: 0']
+    del df['index']
     del df['volume']
 
     # カラム名を変更 ,time,close,open,high,low,volume
@@ -74,7 +74,7 @@ def main():
 
     # ローソク足表示
     ax = plt.subplot(2, 1, 1)
-    candle_temp = df[16073:16402]
+    candle_temp = df[0:600]
     candle_temp = candle_temp.reset_index()
     candlestick2_ohlc(
         ax, candle_temp["o"], candle_temp["h"], candle_temp["l"],

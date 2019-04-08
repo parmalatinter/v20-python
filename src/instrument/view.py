@@ -12,6 +12,7 @@ class CandlePrinter(object):
             'type' : 4,
             'price' : 8,
             'volume' : 6,
+            'none' : 0,
         }
         # setattr(self.width, "time", 19)
         self.time_width = 19
@@ -40,16 +41,8 @@ class CandlePrinter(object):
 
     def print_csv_header(self, file):
         # time,close,open,high,low,volume
-        text = "{:<{width[index]}}, {:<{width[time]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[price]}}, {:<{width[volume]}}\n".format(
-            "index",
-            "time",
-            "close",
-            "open",
-            "high",
-            "low",
-            "volume",
-            width=self.width
-        )
+
+        text = '{},{},{},{},{},{},{}\n'.format("index", "time", "close", "open", "high", "low", "volume")
 
         with open(file, mode='a') as f:
             f.writelines(text)
@@ -103,16 +96,8 @@ class CandlePrinter(object):
                 if c is None:
                     continue
                 # ,time,close,open,high,low,volume
-                text = "{:>{width[index]}}, {:>{width[time]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[price]}}, {:>{width[volume]}}\n".format(
-                    index,
-                    time,
-                    c.c,
-                    c.o,
-                    c.h,
-                    c.l,
-                    volume,
-                    width=self.width
-                )
+                
+                text = '{},{},{},{},{},{},{}\n'.format(index, time, c.c, c.o, c.h, c.l, volume)
 
                 with open(file, mode='a') as f:
                     f.writelines(text)

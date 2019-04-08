@@ -20,10 +20,10 @@ def main():
     print(dir_path)
     # データの読み込み
     os.chdir(dir_path + "/datas")
-    df = pd.read_csv("usd_10min_api.csv")
+    df = pd.read_csv("usd_10min_api.csv", sep=',', engine='python', skipinitialspace=True)
 
     # 不要なカラムを削除
-    del df['Unnamed: 0']
+    del df['index']
     del df['volume']
 
     # カラム名を変更 ,time,close,open,high,low,volume
@@ -72,22 +72,16 @@ def main():
         asign[sz] = np.roll(asign, 1)[sz]
         sz = asign == 0
      
-    signchange = ((np.roll(asign, 1) - asign) == -2).astype(int)
-    df['golden'] = signchange
+    df['golden'] = ((np.roll(asign, 1) - asign) == -2).astype(int)
 
     # デッドクロスを検出
-    signchange = ((np.roll(asign, 1) - asign) == 2).astype(int)
-
-    # デッドクロスの出現箇所を「-1」としてデータフレームへコピー
-    df['dead'] = signchange
-    df['dead'][df['dead'] == 1] = -1
+    df['dead'] = ((np.roll(asign, 1) - asign) == 2).astype(int)
 
     # 10分間でポジションを決済
-    df['returns'] = df['c'] - df['c'].shift(5)
-    df['golden_profit'] = df['returns'] * df['golden'].shift(5)
-    df['dead_profit'] = df['returns'] * df['dead'].shift(5)
-     
-    df[df['golden_profit'] > 0][0:5]
+    df['g_returns'] = df['c'] - df['c'].shift(5)
+    df['d_returns'] = df['c'].shift(5) - df['c']
+    df['g_profit'] = df['g_returns'] * df['golden']
+    df['d_profit'] = df['d_returns'] * df['dead']
 
     # 最初の19行を削除してインデックスをリセット
     df = df[19:]
@@ -100,8 +94,8 @@ def main():
     # df[(df['rule_1'] == 1.0) & (df['rule_2'] == 1.0)][0:5]
 
     # ローソク足表示
-    ax = plt.subplot(2, 2, 1)
-    candle_temp = df[16073:16402]
+    ax = plt.subplot(2, 1, 1)
+    candle_temp = df[0:100]
     candle_temp = candle_temp.reset_index()
     candlestick2_ohlc(
         ax, candle_temp["o"], candle_temp["h"], candle_temp["l"],
@@ -117,25 +111,30 @@ def main():
     ax.plot(candle_temp['sma_15'])
 
 
-    ax = plt.subplot(2, 3, 2)
-    ax.plot(candle_temp['rule_1'])
-    ax.plot(candle_temp['rule_2'])
-
-    ax = plt.subplot(2, 3, 3)
+    ax = plt.subplot(2, 1, 2)
     ax.plot(candle_temp['golden'])
     ax.plot(candle_temp['dead'])
 
-    ax = plt.subplot(2, 3, 4)
-    ax.plot(candle_temp['golden_profit'])
-    ax.plot(candle_temp['dead_profit'])
+
+    plt.show()
+
+    ax = plt.subplot(2, 1, 1)
+    ax.plot(candle_temp['rule_1'])
+    ax.plot(candle_temp['rule_2'])
+
+    ax = plt.subplot(2, 1, 2)
+    ax.plot(candle_temp['g_profit'])
+    ax.plot(candle_temp['d_profit'])
     print(candle_temp.head(1)['t'])
-    print(candle_temp['golden_profit'].sum())
-    print(candle_temp['dead_profit'].sum())
+    print(candle_temp['g_profit'].sum())
+    print(candle_temp['d_profit'].sum())
     print(candle_temp.tail(1)['t'])
+
+    plt.show()
     
-    ax = plt.subplot(2, 3, 5)
+    ax = plt.subplot(2, 1, 1)
     # バックテストの結果
-    df[['golden_profit', 'dead_profit']].cumsum().plot(grid=True, figsize=(15, 10))
+    df[['g_profit', 'd_profit']].cumsum().plot(grid=True, figsize=(15, 10))
  
     plt.savefig('my_figure.png')
     plt.show()
