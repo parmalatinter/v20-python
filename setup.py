@@ -42,6 +42,7 @@ setup(
             'v20-golden-draw = golden.draw:main',
             'v20-calender-get = calender.get:main',
             'v20-news-get = news.get:main',
+            'v20-market-condition = market.get:condition',
         ]
     }
 )
