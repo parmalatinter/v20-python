@@ -11,12 +11,14 @@ def main():
 		command = 'v20-transaction-get-all'
 		print(command)
 		res = subprocess.Popen(command, shell=True)
+		res.wait()
 		print(res)
 		
 
 		command = 'v20-instrument-data-tables'
 		print(command)
 		res = subprocess.Popen(command, shell=True)
+		res.wait()
 		print(res)
 		
 		# command = 'v20-golden-draw'
