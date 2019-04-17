@@ -44,6 +44,7 @@ setup(
             'v20-calender-get = calender.get:main',
             'v20-news-get = news.get:main',
             'v20-market-condition = market.get:condition',
+            'v20-strategy-1-trade = strategy.1.trade:main',
         ]
     }
 )
