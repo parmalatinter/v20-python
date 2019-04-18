@@ -32,8 +32,9 @@ def close(file_path):
 		delta = now_dt - trade_dt
 		print(delta)
 		
-		past_hours = delta.total_seconds()/60
-		if past_hours >= 50:
+		delta_total_seconds = delta.total_seconds()/60
+		delta_total_minutes = total_seconds/60
+		if delta_total_minutes <= -50:
 			print("close id #" + str(row.id))
 
 			args = dict(tradeid=row.id, units='ALL')
@@ -79,7 +80,7 @@ def main():
 		elif last_df['dead'][last_df.index[0]]:
 			order(-1)
 			print('dead order')
-		draw.plot(df, candle_temp)
+		# draw.plot(df, candle_temp)
 	else:
 		print('false')
 
