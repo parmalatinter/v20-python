@@ -30,11 +30,10 @@ def close(file_path):
 		now_dt = datetime.strptime(now_str, '%Y-%m-%d %H:%M:%S')
 		trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
 		delta = now_dt - trade_dt
-		print(delta)
 		
 		delta_total_seconds = delta.total_seconds()/60
-		delta_total_minutes = total_seconds/60
-		if delta_total_minutes <= -50:
+		delta_total_hours = delta_total_seconds/60
+		if delta_total_hours <= -5:
 			print("close id #" + str(row.id))
 
 			args = dict(tradeid=row.id, units='ALL')
