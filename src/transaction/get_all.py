@@ -29,11 +29,31 @@ def main():
 
     trades = {}
 
+    file = 'data.csv'
+    try:
+        os.remove(file)
+    except OSError:
+        pass
+
+    text = '{},{},{},{},{},{},{}\n'.format(
+        'id',
+        'time',
+        'price',
+        'state',
+        'instrument',
+        'currentUnits',
+        'unrealizedPL'
+    )
+    with open(file, mode='a') as f:
+        f.writelines(text)
+
     for trade in getattr(response1.get("account", 200), "trades", []):
         response2 = api.transaction.get(account_id, trade.id)
         transaction = response2.get("transaction", 200)
         trades[trade.id] = {}
         trades[trade.id]['trade'] = trade
+
+        # print(transaction.price)
         trades[trade.id]['transaction'] = transaction
         # ,time,close,open,high,low,volume
         unix = transaction.time.split(".")[0]
@@ -42,8 +62,16 @@ def main():
         except:
             time = transaction.time.split(".")[0]
 
-        text = '{},{},{}\n'.format(transaction.id, time, trade.state)
-        with open('data.csv', mode='a') as f:
+        text = '{},{},{},{},{},{},{}\n'.format(
+            transaction.id,
+            time,
+            trade.price,
+            trade.state,
+            trade.instrument,
+            trade.currentUnits,
+            trade.unrealizedPL
+        )
+        with open(file, mode='a') as f:
             f.writelines(text)
             print(text)
 
