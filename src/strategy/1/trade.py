@@ -20,7 +20,7 @@ def order(units):
 	res = subprocess.Popen(command, shell=True)
 	print(command)
 
-def close(file_path):
+def close(file_path, hours):
 	dir_path = Path(__file__).parent.parent.parent / "transaction"
 	os.chdir(dir_path)
 	df = pd.read_csv(file_path, sep=',', engine='python', skipinitialspace=True)
@@ -33,7 +33,7 @@ def close(file_path):
 		
 		delta_total_seconds = delta.total_seconds()/60
 		delta_total_hours = delta_total_seconds/60
-		if delta_total_hours <= -5:
+		if delta_total_hours <= (0-hours):
 			print("close id #" + str(row.id))
 
 			args = dict(tradeid=row.id, units='ALL')
@@ -45,43 +45,45 @@ def close(file_path):
 def main():
 	instrument = 'USD_JPY'
 	units = 1
+	hours = 5
 	
 	condition = market.condition.Market()
-	if condition.get_is_opening():
-		file_path = 'data.csv'
+	if condition.get_is_opening() == False:
+		exit()
 
-		print('true')
-		command = 'v20-transaction-get-all'
-		print(command)
-		res = subprocess.Popen(command, shell=True)
-		res.wait()
-		print(res)
+	
+	file_path = 'data.csv'
 
-		close(file_path)
+	print('true')
+	command = 'v20-transaction-get-all'
+	print(command)
+	res = subprocess.Popen(command, shell=True)
+	res.wait()
+	print(res)
 
-		command = 'v20-instrument-data-tables'
-		print(command)
-		res = subprocess.Popen(command, shell=True)
-		res.wait()
-		print(res)
+	close(file_path, hours)
 
-		dir_path = Path(__file__).parent.parent.parent / "instrument"
-		
-		draw = golden.draw.Draw()
-		draw.chdir(dir_path)
-		draw.set_file_name(file_path)
-		df = draw.caculate()
-		candle_temp = draw.caculate_candle(df)
-		last_df = df.tail(1)
-		if last_df['golden'][last_df.index[0]]:
-			order(1)
-			print('golden order')
-		elif last_df['dead'][last_df.index[0]]:
-			order(-1)
-			print('dead order')
+	command = 'v20-instrument-data-tables'
+	print(command)
+	res = subprocess.Popen(command, shell=True)
+	res.wait()
+	print(res)
+
+	dir_path = Path(__file__).parent.parent.parent / "instrument"
+	
+	draw = golden.draw.Draw()
+	draw.chdir(dir_path)
+	draw.set_file_name(file_path)
+	df = draw.caculate()
+	candle_temp = draw.caculate_candle(df)
+	last_df = df.tail(1)
+	if last_df['golden'][last_df.index[0]]:
+		order(1)
+		print('golden order')
+	elif last_df['dead'][last_df.index[0]]:
+		order(-1)
+		print('dead order')
 		# draw.plot(df, candle_temp)
-	else:
-		print('false')
 
 if __name__ == "__main__":
     main()
