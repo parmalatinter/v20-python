@@ -33,7 +33,7 @@ def close(file_path, hours):
 		
 		delta_total_seconds = delta.total_seconds()/60
 		delta_total_hours = delta_total_seconds/60
-		if delta_total_hours <= (0-hours):
+		if delta_total_hours >= hours:
 			print("close id #" + str(row.id))
 
 			args = dict(tradeid=row.id, units='ALL')
@@ -75,7 +75,7 @@ def main():
 	draw.chdir(dir_path)
 	draw.set_file_name(file_path)
 	df = draw.caculate()
-	candle_temp = draw.caculate_candle(df)
+	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
 	if last_df['golden'][last_df.index[0]]:
 		order(1)
@@ -83,7 +83,9 @@ def main():
 	elif last_df['dead'][last_df.index[0]]:
 		order(-1)
 		print('dead order')
-		# draw.plot(df, candle_temp)
+	if last_df['rule_1'][last_df.index[0]] + last_df['rule_2'][last_df.index[0]] == 0:
+		print('chance order')
+		
 
 if __name__ == "__main__":
     main()
