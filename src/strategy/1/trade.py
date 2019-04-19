@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 import market.condition
 import golden.draw
+import line.line
 
 import pandas as pd
 import numpy as np
@@ -13,14 +14,15 @@ import numpy as np
 from datetime import datetime
 from pytz import timezone
 
-def order(units):
+def order(units, _line):
 	args = dict(instrument=instrument, units=units)
 	command = ' v20-trade-close %(instrument)s %(units)s --instrument="%(units)s"' % args
 	print(command)
 	res = subprocess.Popen(command, shell=True)
 	print(command)
+	_line.send('order #', command)
 
-def close(file_path, hours):
+def close(file_path, hours, _line):
 	dir_path = Path(__file__).parent.parent.parent / "transaction"
 	os.chdir(dir_path)
 	df = pd.read_csv(file_path, sep=',', engine='python', skipinitialspace=True)
@@ -35,10 +37,10 @@ def close(file_path, hours):
 		delta_total_hours = delta_total_seconds/60
 		if delta_total_hours >= hours:
 			print("close id #" + str(row.id))
-
 			args = dict(tradeid=row.id, units='ALL')
 			command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
 			print(command)
+			_line.send('order #', command)
 			res = subprocess.Popen(command, shell=True)
 			print(res)
 
@@ -47,6 +49,7 @@ def main():
 	units = 1
 	hours = 5
 	
+	_line = line.line.Line()
 	condition = market.condition.Market()
 	if condition.get_is_opening() == False:
 		exit()
@@ -61,7 +64,7 @@ def main():
 	res.wait()
 	print(res)
 
-	close(file_path, hours)
+	close(file_path, hours, line)
 
 	command = 'v20-instrument-data-tables'
 	print(command)
@@ -77,14 +80,16 @@ def main():
 	df = draw.caculate()
 	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
+	late = str(last_df['c'][last_df.index[0]])
 	if last_df['golden'][last_df.index[0]]:
-		order(1)
+		order(1, _line)
 		print('golden order')
 	elif last_df['dead'][last_df.index[0]]:
-		order(-1)
+		order(-1, _line)
 		print('dead order')
 	if last_df['rule_1'][last_df.index[0]] + last_df['rule_2'][last_df.index[0]] == 0:
 		print('chance order')
+		_line.send("chance order #",str(late))
 		
 
 if __name__ == "__main__":
