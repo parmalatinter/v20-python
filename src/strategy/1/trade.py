@@ -54,7 +54,8 @@ def main():
 	if condition.get_is_opening() == False:
 		exit()
 
-	
+	os.makedirs('/tmp/instrument/', exist_ok=True)
+	os.makedirs('/tmp/transaction/', exist_ok=True)
 	file_path = 'data.csv'
 
 	print('true')
