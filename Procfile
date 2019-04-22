@@ -1,1 +1,1 @@
-web: python setup.py develop
+web: python setup.py install
