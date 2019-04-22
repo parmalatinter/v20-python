@@ -23,7 +23,7 @@ def order(instrument, units, _line):
 	_line.send('order #', command)
 
 def close(file_path, hours, _line):
-	dir_path = '/tmp/instrument/'
+	dir_path = '/tmp/'
 	os.chdir(dir_path)
 	df = pd.read_csv(file_path, sep=',', engine='python', skipinitialspace=True)
 	now_str = datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S')
@@ -56,7 +56,7 @@ def main():
 
 	os.makedirs('/tmp/instrument/', exist_ok=True)
 	os.makedirs('/tmp/transaction/', exist_ok=True)
-	file_path = 'data.csv'
+	file_path = 'candles.csv'
 
 	print('true')
 	command = 'v20-transaction-get-all'
@@ -73,11 +73,12 @@ def main():
 	res.wait()
 	print(res)
 
-	dir_path = '/tmp/instrument/'
+	dir_path = '/tmp/'
+	file_name = 'strategy.csv'
 	
 	draw = golden.draw.Draw()
 	draw.chdir(dir_path)
-	draw.set_file_name(file_path)
+	draw.set_file_name(file_name)
 	df = draw.caculate()
 	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
