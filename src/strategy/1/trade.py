@@ -23,7 +23,7 @@ def order(instrument, units, _line):
 	_line.send('order #', command)
 
 def close(file_path, hours, _line):
-	dir_path = Path(__file__).parent.parent.parent / "transaction"
+	dir_path = '/tmp/instrument/'
 	os.chdir(dir_path)
 	df = pd.read_csv(file_path, sep=',', engine='python', skipinitialspace=True)
 	now_str = datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S')
@@ -72,7 +72,7 @@ def main():
 	res.wait()
 	print(res)
 
-	dir_path = Path(__file__).parent.parent.parent / "instrument"
+	dir_path = '/tmp/instrument/'
 	
 	draw = golden.draw.Draw()
 	draw.chdir(dir_path)
