@@ -29,7 +29,7 @@ def main():
 
     trades = {}
 
-    file = 'data.csv'
+    file = 'transaction.csv'
     try:
         os.remove(file)
     except OSError:
@@ -72,8 +72,8 @@ def main():
             trade.unrealizedPL
         )
 
-        os.makedirs('/tmp/transaction/', exist_ok=True)
-        with open('/tmp/transaction/' + file, mode='a') as f:
+        os.makedirs('/tmp/', exist_ok=True)
+        with open('/tmp/' + file, mode='a') as f:
             f.writelines(text)
             print(text)
 
