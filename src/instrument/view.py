@@ -44,7 +44,7 @@ class CandlePrinter(object):
 
         text = '{},{},{},{},{},{},{}\n'.format("index", "time", "close", "open", "high", "low", "volume")
 
-        with open(file, mode='a') as f:
+        with open('/tmp/' + file, mode='a') as f:
             f.writelines(text)
         
     def print_candle(self, candle):
