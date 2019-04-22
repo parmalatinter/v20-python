@@ -147,10 +147,10 @@ def main():
     print("Instrument: {}".format(response.get("instrument", 200)))
     print("Granularity: {}".format(response.get("granularity", 200)))
 
-    file = 'data.csv'
+    file = 'candles.csv'
 
     try:
-        os.remove(file)
+        os.remove('/tmp/' + file)
     except OSError:
         pass
 
