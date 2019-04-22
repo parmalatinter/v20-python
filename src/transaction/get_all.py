@@ -71,7 +71,9 @@ def main():
             trade.currentUnits,
             trade.unrealizedPL
         )
-        with open(file, mode='a') as f:
+
+        os.makedirs('/tmp/transaction/', exist_ok=True)
+        with open('/tmp/transaction/' + file, mode='a') as f:
             f.writelines(text)
             print(text)
 
