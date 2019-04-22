@@ -149,22 +149,20 @@ def main():
 
     file = 'candles.csv'
 
-    try:
-        os.remove('/tmp/' + file)
-    except OSError:
-        pass
-
     printer = CandlePrinter()
-
-    printer.print_csv_header(file)
 
     candles = response.get("candles", 200)
 
+    # printer.export_csv(candle,file)
+
     count = 0 
+    res = printer.get_header_format_csv()
     for candle in response.get("candles", 200):
-        printer.export_csv(candle,file,count)
+        text = printer.get_format_csv(candle,file,count)
+        res=res+text
         count=count+1
 
+    printer.export_drive(res,file)
 
 if __name__ == "__main__":
     main()

@@ -2,6 +2,8 @@
 
 from datetime import datetime
 import os 
+from io import StringIO
+import drive.drive
 
 
 class CandlePrinter(object):
@@ -39,13 +41,12 @@ class CandlePrinter(object):
             "=" * self.width['volume']
         ))
 
-    def print_csv_header(self, file):
+    def get_header_format_csv(self):
         # time,close,open,high,low,volume
 
         text = '{},{},{},{},{},{},{}\n'.format("index", "time", "close", "open", "high", "low", "volume")
 
-        with open('/tmp/' + file, mode='a') as f:
-            f.writelines(text)
+        return text
         
     def print_candle(self, candle):
         try:
@@ -80,7 +81,7 @@ class CandlePrinter(object):
             volume = ""
             time = ""
 
-    def export_csv(self, candle, file, index):
+    def get_format_csv(self, candle, file, index):
 
             unix = candle.time.split(".")[0]
             try:
@@ -99,10 +100,11 @@ class CandlePrinter(object):
                 
                 text = '{},{},{},{},{},{},{}\n'.format(index, time, c.c, c.o, c.h, c.l, volume)
 
-                with open('/tmp/' + file, mode='a') as f:
-                    f.writelines(text)
+                return text
 
+    def export_drive(self, text, file):
 
-                volume = ""
-                time = ""
+            googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+            googleDrive.delete_all()
+            googleDrive.upload(file, text)
 
