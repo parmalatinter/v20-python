@@ -99,8 +99,7 @@ class CandlePrinter(object):
                 
                 text = '{},{},{},{},{},{},{}\n'.format(index, time, c.c, c.o, c.h, c.l, volume)
 
-                os.makedirs('/tmp/instrument/', exist_ok=True)
-                with open('/tmp/instrument/' + file, mode='a') as f:
+                with open('/tmp/' + file, mode='a') as f:
                     f.writelines(text)
 
 
