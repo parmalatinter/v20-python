@@ -1,1 +1,1 @@
-web: python setup.py install
+web: pip install -r requirements/base.txt
