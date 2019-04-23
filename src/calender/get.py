@@ -29,8 +29,9 @@ def format(dfs):
     dfs1 = dfs1.replace('\(土\)', '', regex=True)
     dfs1 = dfs1.replace('\(日\)', '', regex=True)
     dfs1.columns = ["day", "time", "country", "name","important","predict","result","beforte"] #列名を手動で追加。
-    dfs1 = dfs1[(dfs1['time'] != '--:--') | ~(dfs1['time'] != '')]
     dfs1 = dfs1[(dfs1['country'] == '日本') | (dfs1['country'] == '米国')]
+    dfs1 = dfs1[dfs1['important'].str.contains('★★★')]
+    dfs1 = dfs1[~dfs1["time"].str.contains('--')]
 
     dfs1['us_date'] = str(now.year) +  '/' + dfs1['day'] + ' ' + dfs1['time'] + ':00-0900'
 
