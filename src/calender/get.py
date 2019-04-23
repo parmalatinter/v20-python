@@ -8,6 +8,7 @@ import numpy as np
 import datetime
 import drive.drive
 from io import StringIO
+import line.line
 
 def dataGet():
 
@@ -35,14 +36,19 @@ def set_to_drive(filemame, dfs):
     s = StringIO()
     dfs.to_csv(s)
     googleDrive = drive.drive.Drive('1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe')
-    googleDrive.upload(filemame, s.getvalue())
+    text = s.getvalue()
+    googleDrive.upload(filemame, text)
+    return text
 
 
 def main():
 
     dfs = dataGet()
     df = format(dfs)
-    set_to_drive('calendar.csv', df)
+    drive.delete_all()
+    text = set_to_drive('calendar.csv', df)
+    _line = line.line.Line()
+    _line.send("calendar",text)
 
     print(df)
 
