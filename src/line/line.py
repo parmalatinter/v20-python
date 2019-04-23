@@ -8,17 +8,17 @@ class Line(object):
 	headers = {}
 
 	def __init__(self):
-		line_notify_token = 'zVS6FcT1VZo70gzpbaMVTtZtDlHpGlhcU8cojG8owwp'
+		line_notify_token = 'H2dgkYyK6FYQo4GZo21MLR50ObjZmkv9dkxYEZc78lk'
 		
-		headers = {'Authorization': 'Bearer ' + line_notify_token}  # 発行したトークン
+		self.headers = {'Authorization': 'Bearer ' + line_notify_token}  # 発行したトークン
 
 	def send(self, title, message):
 		args = dict(title=title, message=message)
-		send_str = '%(title)s\n%(message)s' % args
+		message = '%(title)s\n%(message)s' % args
 
-		payload = {'message': send_str}
+		payload = {'message': message}
 		line_notify = requests.post(self.line_notify_api, data=payload, headers=self.headers)
-
+		
 def main():
     line = Line()
     line.send('title', 'message')
