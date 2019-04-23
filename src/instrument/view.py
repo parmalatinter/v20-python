@@ -83,28 +83,27 @@ class CandlePrinter(object):
 
     def get_format_csv(self, candle, file, index):
 
-            unix = candle.time.split(".")[0]
-            try:
-                time = datetime.fromtimestamp(int(unix)).strftime('%Y-%m-%d %H:%M:%S')
-            except:
-                time = candle.time.split(".")[0]
+        unix = candle.time.split(".")[0]
+        try:
+            time = datetime.fromtimestamp(int(unix)).strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            time = candle.time.split(".")[0]
 
-            volume = candle.volume
+        volume = candle.volume
 
-            for price in ["mid", "bid", "ask"]:
-                c = getattr(candle, price, None)
+        for price in ["mid", "bid", "ask"]:
+            c = getattr(candle, price, None)
 
-                if c is None:
-                    continue
-                # ,time,close,open,high,low,volume
-                
-                text = '{},{},{},{},{},{},{}\n'.format(index, time, c.c, c.o, c.h, c.l, volume)
+            if c is None:
+                continue
+            # ,time,close,open,high,low,volume
+            
+            text = '{},{},{},{},{},{},{}\n'.format(index, time, c.c, c.o, c.h, c.l, volume)
 
-                return text
+            return text
 
-    def export_drive(self, text, file):
+    def export_drive(self, filemame, text ):
 
-            googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
-            googleDrive.delete_all()
-            googleDrive.upload(file, text)
+        googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+        googleDrive.upload(filemame, text)
 
