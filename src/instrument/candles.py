@@ -153,8 +153,6 @@ def main():
 
     candles = response.get("candles", 200)
 
-    # printer.export_csv(candle,file)
-
     count = 0 
     res = printer.get_header_format_csv()
     for candle in response.get("candles", 200):
