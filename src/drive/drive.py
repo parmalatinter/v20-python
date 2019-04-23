@@ -7,6 +7,7 @@ class Drive():
 
 	drive_obj = None
 	folder_id = None
+	file_list = None
 
 	def __init__(self, folder_id):
 		self.set_service(folder_id)
@@ -45,8 +46,8 @@ class Drive():
 		file.Upload()
 
 	def file_list(self):
-		file_list = self.drive_obj.ListFile({'q': "'{}' in parents and trashed=false".format(self.folder_id)}).GetList()
-		for file1 in file_list:
+		self.file_list = self.drive_obj.ListFile({'q': "'{}' in parents and trashed=false".format(self.folder_id)}).GetList()
+		for file1 in self.file_list:
 	  		print('title: %s, id: %s' % (file1['title'], file1['id']))
 
 	def delete_all(self):
@@ -55,13 +56,18 @@ class Drive():
 			file1.Delete()
 			print('deleted: %s, id: %s' % (file1['title'], file1['id']))
 
-	def get_file_string(self, file):	
-		got_file = self.drive_obj.CreateFile({'id': file['id']})
-		return got_file.GetContentString()
+	def get_row_by_filename(self, filename):
+		file_list = [d.get('originalFilename') for d in self.file_list]
+		index = file_list.index(filename)
+		return self.file_list[index]
+
+	def filter_dict(f, d):
+		return {k:v for k,v in d.items() if f(k,v)}
+
 
 if __name__ == '__main__':
     drive = Drive("1A3k4a4u4nxskD-hApxQG-kNhlM35clSa")
     file = drive.upload('filename.txt', 'title')
     drive.file_list()
-    print(drive.get_file_string(file))
+    print(drive.get_row_by_filename('filename.txt').GetContentString())
     drive.delete_all()
