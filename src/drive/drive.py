@@ -33,20 +33,25 @@ class Drive():
 		drive = GoogleDrive(gauth)
 		self.drive_obj = GoogleDrive(gauth)
 		self.folder_id = folder_id
+		self.reset_file_list()
+
+	def reset_file_list(self):
 		self.file_list = self.drive_obj.ListFile({'q': "'{}' in parents and trashed=false".format(self.folder_id)}).GetList()
 
 	def upload(self, filename, title):
 		file = self.drive_obj.CreateFile({'title' : filename, "parents": [{"kind": "drive#fileLink", "id": self.folder_id}]})
 		file.SetContentString(title)
 		file.Upload()
+		self.reset_file_list()
 		return file
 
 	def delete_by_filename(self, filename):
 		file = self.get_row_by_filename(filename)
 		file1.Delete()
 		print('deleted: %s, id: %s' % (file1['title'], file1['id']))
+		self.reset_file_list()
 
-	def file_list(self):
+	def get_file_list(self):
 		for file1 in self.file_list:
 	  		print('title: %s, id: %s' % (file1['title'], file1['id']))
 
@@ -54,11 +59,18 @@ class Drive():
 		for file1 in self.file_list:
 			file1.Delete()
 			print('deleted: %s, id: %s' % (file1['title'], file1['id']))
+		self.reset_file_list()
 
 	def get_content_by_filename(self, filename):
+		if not self.file_list: 
+			print('NONEW')
+			return None
 		file_list = [d.get('originalFilename') for d in self.file_list]
 		index = file_list.index(filename)
-		return self.file_list[index]
+		if self.file_list[index]: 
+			return self.file_list[index]
+		else:
+			return []
 
 	def filter_dict(f, d):
 		return {k:v for k,v in d.items() if f(k,v)}
@@ -66,7 +78,9 @@ class Drive():
 
 if __name__ == '__main__':
     drive = Drive("1A3k4a4u4nxskD-hApxQG-kNhlM35clSa")
-    file = drive.upload('filename.txt', 'title')
-    drive.file_list()
-    print(drive.get_content_by_filename('filename.txt').GetContentString())
     drive.delete_all()
+    file = drive.upload('filename.txt', 'title')
+    res = drive.get_content_by_filename('filename.txt')
+    if res: 	
+    	print(res.GetContentString())
+    
