@@ -5,15 +5,18 @@ import common.config
 import common.args
 import time
 from datetime import datetime, timedelta
-import os 
+import os
+import drive.drive
 
+def export_drive(file_name, text ):
+
+    googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+    googleDrive.upload(file_name, text )
 
 def main():
     """
     Poll Transactions for the active Account
     """
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    os.chdir(dir_path)
 
     parser = argparse.ArgumentParser()
 
@@ -29,13 +32,9 @@ def main():
 
     trades = {}
 
-    file = 'transaction.csv'
-    try:
-        os.remove(file)
-    except OSError:
-        pass
+    file_name = 'transaction.csv'
 
-    text = '{},{},{},{},{},{},{}\n'.format(
+    res = '{},{},{},{},{},{},{}\n'.format(
         'id',
         'time',
         'price',
@@ -44,8 +43,6 @@ def main():
         'currentUnits',
         'unrealizedPL'
     )
-    with open(file, mode='a') as f:
-        f.writelines(text)
 
     for trade in getattr(response1.get("account", 200), "trades", []):
         response2 = api.transaction.get(account_id, trade.id)
@@ -72,11 +69,9 @@ def main():
             trade.unrealizedPL
         )
 
-        os.makedirs('/tmp/', exist_ok=True)
-        with open('/tmp/' + file, mode='a') as f:
-            f.writelines(text)
-            print(text)
+        res = res + text
 
+    export_drive(file_name, res)
     
 if __name__ == "__main__":
     main()
