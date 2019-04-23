@@ -93,8 +93,6 @@ class Draw(object):
         df = df.reset_index(drop=True)
         df.head()
 
-        print(df)
-
         # # ルール1とルール2が該当するレコードを探す
         # df[(df['rule_1'] == 1.0) & (df['rule_2'] == 1.0)][0:5]
 
