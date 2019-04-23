@@ -33,7 +33,7 @@ def get_csv(filename):
 
 def order(instrument, units, _line):
 	args = dict(instrument=instrument, units=units)
-	command = ' v20-trade-market %(instrument)s %(units)s --instrument="%(units)s"' % args
+	command = ' v20-trade-market %(instrument)s --units="%(units)s"' % args
 	print(command)
 	res = subprocess.Popen(command, shell=True)
 	print(command)
