@@ -162,7 +162,7 @@ def main():
         res=res+text
         count=count+1
 
-    printer.export_drive(res,file)
+    printer.export_drive(file, res)
 
 if __name__ == "__main__":
     main()
