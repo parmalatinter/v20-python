@@ -14,11 +14,20 @@ import numpy as np
 from datetime import datetime
 from pytz import timezone
 
+from io import StringIO
+
 import drive.drive
 
-def init(instrument, units, _line):
+def init():
 	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
-    googleDrive.delete_all()
+	# googleDrive.delete_all()
+
+def get_csv(filename):
+	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+	res = googleDrive.get_content_by_filename(filename)
+	if res: 	
+		return StringIO(res.GetContentString())
+	return ''
 
 def order(instrument, units, _line):
 	args = dict(instrument=instrument, units=units)
@@ -28,10 +37,10 @@ def order(instrument, units, _line):
 	print(command)
 	_line.send('order #', command)
 
-def close(file_path, hours, _line):
-	dir_path = '/tmp/'
-	os.chdir(dir_path)
-	df = pd.read_csv(file_path, sep=',', engine='python', skipinitialspace=True)
+def close(filename, hours, _line):
+	csv = get_csv(filename)
+	print(csv)
+	df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
 	now_str = datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S')
 
 	for index, row in df.iterrows():
@@ -61,16 +70,11 @@ def main():
 	if condition.get_is_opening() == False:
 		exit()
 
-	file_path = 'candles.csv'
-
-	print('true')
 	command = 'v20-transaction-get-all'
 	print(command)
 	res = subprocess.Popen(command, shell=True)
 	res.wait()
 	print(res)
-
-	close(file_path, hours, line)
 
 	command = 'v20-instrument-data-tables'
 	print(command)
@@ -78,13 +82,13 @@ def main():
 	res.wait()
 	print(res)
 
-	dir_path = '/tmp/'
-	file_name = 'strategy.csv'
-	
+	filename = 'transaction.csv'
+	close(filename, hours, line)
+
+	filename = 'candles.csv'
+	csv = get_csv(filename)
 	draw = golden.draw.Draw()
-	draw.chdir(dir_path)
-	draw.set_file_name(file_name)
-	df = draw.caculate()
+	df = draw.caculate(csv)
 	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
 	late = str(last_df['c'][last_df.index[0]])
