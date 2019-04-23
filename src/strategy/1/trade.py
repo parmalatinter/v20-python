@@ -22,7 +22,7 @@ import time
 def init():
 	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
 	googleDrive.delete_all()
-	time.sleep(30)
+	time.sleep(5)
 
 def get_csv(filename):
 	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
@@ -66,6 +66,8 @@ def main():
 	instrument = 'USD_JPY'
 	units = 1
 	hours = 5
+
+	print(instrument)
 	
 	_line = line.line.Line()
 	condition = market.condition.Market()
@@ -84,6 +86,7 @@ def main():
 	res.wait()
 	print(res)
 
+	time.sleep(5)
 	filename = 'transaction.csv'
 	close(filename, hours, line)
 
