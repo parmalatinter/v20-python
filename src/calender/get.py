@@ -36,6 +36,7 @@ def set_to_drive(filemame, dfs):
     s = StringIO()
     dfs.to_csv(s)
     googleDrive = drive.drive.Drive('1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe')
+    googleDrive.delete_all()
     text = s.getvalue()
     googleDrive.upload(filemame, text)
     return text
@@ -45,7 +46,7 @@ def main():
 
     dfs = dataGet()
     df = format(dfs)
-    drive.delete_all()
+    
     text = set_to_drive('calendar.csv', df)
     _line = line.line.Line()
     _line.send("calendar",text)
