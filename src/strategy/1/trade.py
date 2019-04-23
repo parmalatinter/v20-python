@@ -14,6 +14,12 @@ import numpy as np
 from datetime import datetime
 from pytz import timezone
 
+import drive.drive
+
+def init(instrument, units, _line):
+	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+    googleDrive.delete_all()
+
 def order(instrument, units, _line):
 	args = dict(instrument=instrument, units=units)
 	command = ' v20-trade-close %(instrument)s %(units)s --instrument="%(units)s"' % args
@@ -45,6 +51,7 @@ def close(file_path, hours, _line):
 			print(res)
 
 def main():
+	init()
 	instrument = 'USD_JPY'
 	units = 1
 	hours = 5
