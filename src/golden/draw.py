@@ -23,9 +23,9 @@ class Draw(object):
     def chdir(self, path):
         os.chdir(path)
 
-    def caculate(self, file):
+    def caculate(self, csv):
 
-        df = pd.read_csv(file, sep=',', engine='python', skipinitialspace=True)
+        df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
 
         # 不要なカラムを削除
         del df['index']
