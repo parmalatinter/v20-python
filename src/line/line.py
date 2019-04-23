@@ -8,7 +8,7 @@ class Line(object):
 	headers = {}
 
 	def __init__(self):
-		line_notify_token = '5sVBSc70L2t1QbjOPEgBVCRYCFCiUZhs4zUcJ0YMThM'
+		line_notify_token = 'xLlVj86pNjQAqpMl3QSg6DQMruNZSRNxKlUvMI8zehN'
 		
 		headers = {'Authorization': 'Bearer ' + line_notify_token}  # 発行したトークン
 
