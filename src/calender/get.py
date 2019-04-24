@@ -16,7 +16,7 @@ class Calendar(object):
     folder = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
 
     def __init__(self):
-        os.environ['TZ'] = 'US/Eastern'
+        os.environ['TZ'] = 'America/New_York'
 
     def dataGet(self):
 

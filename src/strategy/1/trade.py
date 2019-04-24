@@ -20,7 +20,7 @@ import drive.drive
 import time
 
 def init():
-	os.environ['TZ'] = 'US/Eastern'
+	os.environ['TZ'] = 'America/New_York'
 	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
 	googleDrive.delete_all()
 	time.sleep(5)
@@ -45,7 +45,7 @@ def close(filename, hours, _line):
 
 	df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
 
-	now_str = datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S')
+	now_str = datetime.now(timezone('America/New_York')).strftime('%Y-%m-%d %H:%M:%S')
 
 	for index, row in df.iterrows():
 		now_dt = datetime.strptime(now_str, '%Y-%m-%d %H:%M:%S')

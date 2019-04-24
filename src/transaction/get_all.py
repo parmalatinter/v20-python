@@ -19,7 +19,7 @@ def main():
     Poll Transactions for the active Account
     """
 
-    os.environ['TZ'] = 'US/Eastern'
+    os.environ['TZ'] = 'America/New_York'
     parser = argparse.ArgumentParser()
 
     common.config.add_argument(parser)
@@ -58,7 +58,7 @@ def main():
         unix = transaction.time.split(".")[0]
         try:
             dt = datetime.fromtimestamp(int(unix)).strftime('%Y-%m-%d %H:%M:%S')
-            pytz.utc.localize(dt).astimezone(pytz.timezone("US/Eastern"))
+            pytz.utc.localize(dt).astimezone(pytz.timezone("America/New_York"))
         except:
             time = transaction.time.split(".")[0]
 

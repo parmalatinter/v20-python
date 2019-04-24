@@ -8,7 +8,7 @@ import drive.drive
 
 class CandlePrinter(object):
     def __init__(self):
-        os.environ['TZ'] = 'US/Eastern'
+        os.environ['TZ'] = 'America/New_York'
         self.width = {
             'index' : 6,
             'time' : 19,
