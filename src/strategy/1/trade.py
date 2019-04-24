@@ -37,8 +37,10 @@ def order(instrument, units, _line):
 	command = ' v20-order-market %(instrument)s %(units)s' % args
 	print(command)
 	res = subprocess.Popen(command, shell=True)
+	res.wait()
+
 	print(command)
-	_line.send('order #', command)
+	_line.send('order #', command + '\n' + res)
 
 def close(filename, hours, now_dt, _line):
 	csv = get_csv(filename)
@@ -54,13 +56,11 @@ def close(filename, hours, now_dt, _line):
 		delta_total_hours = delta_total_minuts/60
 
 		if delta_total_hours >= hours:
-			print("close id #" + str(row.id))
 			args = dict(tradeid=row.id, units='ALL')
 			command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
-			print(command)
-			_line.send('order #', command)
 			res = subprocess.Popen(command, shell=True)
-			print(res)
+			res.wait()
+			_line.send('order #', command + '\n' + res)
 
 def main():
 	init()
