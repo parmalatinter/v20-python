@@ -15,6 +15,9 @@ class Calendar(object):
 
     folder = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
 
+    def __init__(self):
+        os.environ['TZ'] = 'US/Eastern'
+
     def dataGet(self):
 
         url = 'https://www.yjfx.jp/gaikaex/mark/calendar/' #みんかぶFXの経済指標URLを取得
