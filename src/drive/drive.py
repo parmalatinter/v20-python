@@ -63,10 +63,15 @@ class Drive():
 
 	def get_content_by_filename(self, filename):
 		if not self.file_list: 
-			print('NONEW')
 			return None
 		file_list = [d.get('originalFilename') for d in self.file_list]
-		index = file_list.index(filename)
+
+		try:
+			index = file_list.index(filename)
+		except ValueError as e:
+			print(e)
+			return []
+    		
 		if self.file_list[index]: 
 			return self.file_list[index]
 		else:
