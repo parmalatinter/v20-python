@@ -20,6 +20,7 @@ import drive.drive
 import time
 
 def init():
+	os.environ['TZ'] = 'US/Eastern'
 	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
 	googleDrive.delete_all()
 	time.sleep(5)

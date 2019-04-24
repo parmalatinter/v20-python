@@ -19,6 +19,7 @@ def main():
     Poll Transactions for the active Account
     """
 
+    os.environ['TZ'] = 'US/Eastern'
     parser = argparse.ArgumentParser()
 
     common.config.add_argument(parser)
