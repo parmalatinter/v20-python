@@ -48,7 +48,11 @@ class Calendar(object):
         dfs1['us_datetime'] = dfs1.apply(f_brackets4, axis=1)
         f_brackets5 = lambda x: x['base_us_datetime'] + datetime.timedelta(hours=-9)
         dfs1['us_datetime'] = dfs1.apply(f_brackets5, axis=1)
-        
+        f_brackets6 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-1)
+        f_brackets7 = lambda x: x['us_datetime'] + datetime.timedelta(hours=+1)
+        dfs1['from_us_datetime'] = dfs1.apply(f_brackets6, axis=1)
+        dfs1['to_us_datetime'] = dfs1.apply(f_brackets7, axis=1)
+
         dfs1 = dfs1.drop("hour", axis=1)
         dfs1 = dfs1.drop("minutes", axis=1)
         dfs1 = dfs1.drop("base_hour", axis=1)
