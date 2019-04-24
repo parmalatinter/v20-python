@@ -42,12 +42,15 @@ class Calendar(object):
         dfs1['base_hour'] = dfs1['time'].map(f_brackets2)
         f_brackets3 = lambda x:  x[3:5]
         dfs1['minutes'] = dfs1['time'].map(f_brackets3)
-        dfs1['us_date'] = str(now.year) +  '/' + dfs1['day'] + ' ' + dfs1['hour'] + ':' + dfs1['minutes'] + ':00-0900'
-        dfs1['base_us_datetime'] = pd.to_datetime(dfs1['us_date'], utc=True)
-        f_brackets4 = lambda x: x['base_us_datetime'] + datetime.timedelta(days=1) if x['hour'] != x['base_hour'] else x['base_us_datetime']
+        dfs1['us_date'] = str(now.year) +  '/' + dfs1['day'] + ' ' + dfs1['hour'] + ':' + dfs1['minutes']
+        dfs1['base_us_datetime'] = pd.to_datetime(dfs1['us_date'])
+        f_brackets4 = lambda x: x['base_us_datetime'] + datetime.timedelta(days=-1) if x['hour'] != x['base_hour'] else x['base_us_datetime']
         dfs1['us_datetime'] = dfs1.apply(f_brackets4, axis=1)
+        f_brackets5 = lambda x: x['base_us_datetime'] + datetime.timedelta(hours=-9)
+        dfs1['us_datetime'] = dfs1.apply(f_brackets5, axis=1)
         
         dfs1 = dfs1.drop("hour", axis=1)
+        dfs1 = dfs1.drop("minutes", axis=1)
         dfs1 = dfs1.drop("base_hour", axis=1)
         dfs1 = dfs1.drop("us_date", axis=1)
         dfs1 = dfs1.drop("base_us_datetime", axis=1)
