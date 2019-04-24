@@ -43,7 +43,7 @@ class Calendar(object):
         f_brackets3 = lambda x:  x[3:5]
         dfs1['minutes'] = dfs1['time'].map(f_brackets3)
         dfs1['us_date'] = str(now.year) +  '/' + dfs1['day'] + ' ' + dfs1['hour'] + ':' + dfs1['minutes'] + ':00-0900'
-        dfs1['base_us_datetime'] = pd.to_datetime(dfs1['us_date'])
+        dfs1['base_us_datetime'] = pd.to_datetime(dfs1['us_date'], utc=True)
         f_brackets4 = lambda x: x['base_us_datetime'] + datetime.timedelta(days=1) if x['hour'] != x['base_hour'] else x['base_us_datetime']
         dfs1['us_datetime'] = dfs1.apply(f_brackets4, axis=1)
         
@@ -70,6 +70,7 @@ def main():
     dfs = calendar.dataGet()
     df = calendar.format(dfs)
     text = calendar.set_to_drive('calendar.csv', df)
+    print(text)
     _line = line.line.Line()
     _line.send("calendar",text)
 
