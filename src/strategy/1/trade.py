@@ -40,7 +40,7 @@ def order(instrument, units, _line):
 	res.wait()
 
 	print(command)
-	_line.send('order #', command + '\n' + res)
+	_line.send('order #', command )
 
 def close(filename, hours, now_dt, _line):
 	csv = get_csv(filename)
@@ -60,7 +60,7 @@ def close(filename, hours, now_dt, _line):
 			command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
 			res = subprocess.Popen(command, shell=True)
 			res.wait()
-			_line.send('order #', command + '\n' + res)
+			_line.send('order #', command )
 
 def main():
 	init()
