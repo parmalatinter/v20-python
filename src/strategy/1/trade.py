@@ -42,20 +42,19 @@ def order(instrument, units, _line):
 def close(filename, hours, _line):
 	csv = get_csv(filename)
 
-	df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True, parse_dates=[2])
+	df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
 
 	now_str = datetime.now(timezone('US/Eastern')).strftime('%Y-%m-%d %H:%M:%S')
 
 	for index, row in df.iterrows():
 		now_dt = datetime.strptime(now_str, '%Y-%m-%d %H:%M:%S')
-		print(row.time)
 		trade_dt = datetime.strptime(row.time, '%Y-%m-%d %H:%M:%S')
 		delta = now_dt - trade_dt
 		
 		delta_total_minuts = delta.total_seconds()/60
 		delta_total_hours = delta_total_minuts/60
 		print(delta_total_hours)
-		if delta_total_hours <= 0 - hours:
+		if delta_total_hours >= hours:
 			print("close id #" + str(row.id))
 			args = dict(tradeid=row.id, units='ALL')
 			command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
