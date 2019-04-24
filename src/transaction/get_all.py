@@ -7,6 +7,7 @@ import time
 from datetime import datetime, timedelta
 import os
 import drive.drive
+import pytz
 
 def export_drive(file_name, text ):
 
@@ -55,7 +56,8 @@ def main():
         # ,time,close,open,high,low,volume
         unix = transaction.time.split(".")[0]
         try:
-            time = datetime.fromtimestamp(int(unix)).strftime('%Y-%m-%d %H:%M:%S')
+            dt = datetime.fromtimestamp(int(unix)).strftime('%Y-%m-%d %H:%M:%S')
+            pytz.utc.localize(dt).astimezone(pytz.timezone("US/Eastern"))
         except:
             time = transaction.time.split(".")[0]
 
