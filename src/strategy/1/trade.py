@@ -40,16 +40,14 @@ def order(instrument, units, _line):
 	print(command)
 	_line.send('order #', command)
 
-def close(filename, hours, _line):
+def close(filename, hours, now_dt, _line):
 	csv = get_csv(filename)
 
 	df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
 
-	now_str = datetime.now(timezone('America/New_York')).strftime('%Y-%m-%d %H:%M:%S')
-
 	for index, row in df.iterrows():
-		now_dt = datetime.strptime(now_str, '%Y-%m-%d %H:%M:%S')
-		trade_dt = datetime.strptime(row.time, '%Y-%m-%d %H:%M:%S')
+		now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
+		trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
 		delta = now_dt - trade_dt
 		
 		delta_total_minuts = delta.total_seconds()/60
@@ -90,8 +88,7 @@ def main():
 	print(res)
 
 	time.sleep(5)
-	filename = 'transaction.csv'
-	close(filename, hours, _line)
+
 
 	filename = 'candles.csv'
 	csv = get_csv(filename)
@@ -110,6 +107,9 @@ def main():
 		print('chance order')
 		_line.send("chance order #",str(late))
 		
+	filename = 'transaction.csv'
+	now_dt = last_df['time'][last_df.index[0]]
+	close(filename, hours, now_dt, _line)
 
 if __name__ == "__main__":
     main()
