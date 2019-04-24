@@ -57,8 +57,7 @@ def main():
         # ,time,close,open,high,low,volume
         unix = transaction.time.split(".")[0]
         try:
-            dt = datetime.fromtimestamp(int(unix)).strftime('%Y-%m-%d %H:%M:%S')
-            pytz.utc.localize(dt).astimezone(pytz.timezone("America/New_York"))
+            time = datetime.fromtimestamp(int(unix), pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
         except:
             time = transaction.time.split(".")[0]
 
