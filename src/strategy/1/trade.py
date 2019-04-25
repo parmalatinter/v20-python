@@ -83,7 +83,7 @@ def main():
 	trade = Trade()
 	trade.init()
 	instrument = 'USD_JPY'
-	units = 1
+	units = 10000
 	hours = 5
 	
 	_line = line.line.Line()
