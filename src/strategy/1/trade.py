@@ -73,7 +73,7 @@ def close(filename, hours, now_dt, _line):
 def main():
 	init()
 	instrument = 'USD_JPY'
-	units = 1
+	units = 10000
 	hours = 5
 	is_ordered = False
 
@@ -122,7 +122,7 @@ def main():
 
 	if is_ordered:
 		command = 'v20-strategy-account'
-		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+		subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 
 if __name__ == "__main__":
     main()
