@@ -113,10 +113,10 @@ def main():
 	last_df = df.tail(1)
 	late = str(last_df['c'][last_df.index[0]])
 	if last_df['golden'][last_df.index[0]]:
-		trade.order(instrument, 1, _line)
+		trade.order(instrument, units, _line)
 		print('golden order')
 	elif last_df['dead'][last_df.index[0]]:
-		trade.order(instrument, -1, _line)
+		trade.order(instrument, 0-units, _line)
 		print('dead order')
 	if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 		print('chance order')
