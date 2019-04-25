@@ -19,65 +19,72 @@ from io import StringIO
 import drive.drive
 import time
 
-is_ordered = False
+class Trade():
 
-def init():
-	os.environ['TZ'] = 'America/New_York'
-	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
-	googleDrive.delete_all()
-	time.sleep(5)
-
-def get_csv(filename):
-	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
-	res = googleDrive.get_content_by_filename(filename)
-	if res: 	
-		return StringIO(res.GetContentString())
-	return ''
-
-def order(instrument, units, _line):
-	args = dict(instrument=instrument, units=units)
-	command = ' v20-order-market %(instrument)s %(units)s' % args
-	print(command)
-	res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-	res.wait()
-
-	print(command)
-	out, err = res.communicate()
-	_line.send('order #', command + ' ' + out.decode('utf-8') )
-	is_ordered = True
-
-def close(filename, hours, now_dt, _line):
-	csv = get_csv(filename)
-
-	df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
-
-	now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
-
-	for index, row in df.iterrows():
-		
-		trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
-		delta = now_dt - trade_dt
-		
-		delta_total_minuts = delta.total_seconds()/60
-		delta_total_hours = delta_total_minuts/60
-
-		if delta_total_hours >= hours:
-			args = dict(tradeid=row.id, units='ALL')
-			command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
-			res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-			res.wait()
-			out, err = res.communicate()
-			_line.send('order #', command + ' ' + out.decode('utf-8') )
-			is_ordered = True
-
-def main():
-	init()
-	instrument = 'USD_JPY'
-	units = 10000
-	hours = 5
 	is_ordered = False
 
-	print(instrument)
+	def init(self):
+		self.is_ordered = False
+		os.environ['TZ'] = 'America/New_York'
+		googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+		googleDrive.delete_all()
+		time.sleep(5)
+
+	def get_csv(self, filename):
+		googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+		res = googleDrive.get_content_by_filename(filename)
+		if res: 	
+			return StringIO(res.GetContentString())
+		return ''
+
+	def order(self, instrument, units, _line):
+		args = dict(instrument=instrument, units=units)
+		command = ' v20-order-market %(instrument)s %(units)s' % args
+		print(command)
+		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+		res.wait()
+
+		print(command)
+		out, err = res.communicate()
+		_line.send('order #', command + ' ' + out.decode('utf-8') )
+		self.is_ordered = True
+
+	def close(self, filename, hours, now_dt, _line):
+		csv = self.get_csv(filename)
+
+		df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
+
+		now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
+
+		for index, row in df.iterrows():
+			
+			trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
+			delta = now_dt - trade_dt
+			
+			delta_total_minuts = delta.total_seconds()/60
+			delta_total_hours = delta_total_minuts/60
+
+			if delta_total_hours >= hours:
+				args = dict(tradeid=row.id, units='ALL')
+				command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
+				res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+				res.wait()
+				out, err = res.communicate()
+				_line.send('order #', command + ' ' + out.decode('utf-8') )
+				self.is_ordered = True
+
+	def send_account_details(self):
+		if self.is_ordered:
+			command = 'v20-strategy-account'
+			res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+
+def main():
+
+	trade = Trade()
+	trade.init()
+	instrument = 'USD_JPY'
+	units = 1
+	hours = 5
 	
 	_line = line.line.Line()
 	condition = market.condition.Market()
@@ -98,19 +105,18 @@ def main():
 
 	time.sleep(5)
 
-
 	filename = 'candles.csv'
-	csv = get_csv(filename)
+	csv = trade.get_csv(filename)
 	draw = golden.draw.Draw()
 	df = draw.caculate(csv)
 	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
 	late = str(last_df['c'][last_df.index[0]])
 	if last_df['golden'][last_df.index[0]]:
-		order(instrument, 1, _line)
+		trade.order(instrument, 1, _line)
 		print('golden order')
 	elif last_df['dead'][last_df.index[0]]:
-		order(instrument, -1, _line)
+		trade.order(instrument, -1, _line)
 		print('dead order')
 	if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 		print('chance order')
@@ -118,11 +124,9 @@ def main():
 		
 	filename = 'transaction.csv'
 	now_dt = last_df['t'][last_df.index[0]]
-	close(filename, hours, now_dt, _line)
+	trade.close(filename, hours, now_dt, _line)
 
-	if is_ordered:
-		command = 'v20-strategy-account'
-		subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+	trade.send_account_details()
 
 if __name__ == "__main__":
     main()
