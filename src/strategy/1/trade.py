@@ -36,19 +36,22 @@ def order(instrument, units, _line):
 	args = dict(instrument=instrument, units=units)
 	command = ' v20-order-market %(instrument)s %(units)s' % args
 	print(command)
-	res = subprocess.Popen(command, shell=True)
+	res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 	res.wait()
 
 	print(command)
-	_line.send('order #', command )
+	out, err = res.communicate()
+	_line.send('order #', command + ' ' + out.decode('utf-8') )
 
 def close(filename, hours, now_dt, _line):
 	csv = get_csv(filename)
 
 	df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
 
+	now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
+
 	for index, row in df.iterrows():
-		now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
+		
 		trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
 		delta = now_dt - trade_dt
 		
@@ -58,9 +61,10 @@ def close(filename, hours, now_dt, _line):
 		if delta_total_hours >= hours:
 			args = dict(tradeid=row.id, units='ALL')
 			command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
-			res = subprocess.Popen(command, shell=True)
+			res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 			res.wait()
-			_line.send('order #', command )
+			out, err = res.communicate()
+			_line.send('order #', command + ' ' + out.decode('utf-8') )
 
 def main():
 	init()
@@ -110,6 +114,7 @@ def main():
 	filename = 'transaction.csv'
 	now_dt = last_df['t'][last_df.index[0]]
 	close(filename, hours, now_dt, _line)
+	order(instrument, 1, _line)
 
 if __name__ == "__main__":
     main()
