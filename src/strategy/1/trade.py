@@ -19,6 +19,8 @@ from io import StringIO
 import drive.drive
 import time
 
+is_ordered = False
+
 def init():
 	os.environ['TZ'] = 'America/New_York'
 	googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
@@ -42,6 +44,7 @@ def order(instrument, units, _line):
 	print(command)
 	out, err = res.communicate()
 	_line.send('order #', command + ' ' + out.decode('utf-8') )
+	is_ordered = True
 
 def close(filename, hours, now_dt, _line):
 	csv = get_csv(filename)
@@ -65,12 +68,14 @@ def close(filename, hours, now_dt, _line):
 			res.wait()
 			out, err = res.communicate()
 			_line.send('order #', command + ' ' + out.decode('utf-8') )
+			is_ordered = True
 
 def main():
 	init()
 	instrument = 'USD_JPY'
 	units = 1
 	hours = 5
+	is_ordered = False
 
 	print(instrument)
 	
@@ -114,6 +119,10 @@ def main():
 	filename = 'transaction.csv'
 	now_dt = last_df['t'][last_df.index[0]]
 	close(filename, hours, now_dt, _line)
+
+	if is_ordered:
+		command = 'v20-strategy-account'
+		subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 
 if __name__ == "__main__":
     main()
