@@ -48,8 +48,8 @@ def close(filename, hours, now_dt, _line):
 	df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
 
 	for index, row in df.iterrows():
-		now_dt = datetime.strptime(now_dt, '%Y-%m-%d %H:%M:%S')
-		trade_dt = datetime.strptime(row.time, '%Y-%m-%d %H:%M:%S')
+		now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
+		trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
 		delta = now_dt - trade_dt
 		
 		delta_total_minuts = delta.total_seconds()/60
