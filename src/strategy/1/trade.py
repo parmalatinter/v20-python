@@ -73,7 +73,7 @@ def close(filename, hours, now_dt, _line):
 def main():
 	init()
 	instrument = 'USD_JPY'
-	units = 1
+	units = 10000
 	hours = 5
 	is_ordered = False
 
