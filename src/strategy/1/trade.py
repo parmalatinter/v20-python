@@ -114,7 +114,6 @@ def main():
 	filename = 'transaction.csv'
 	now_dt = last_df['t'][last_df.index[0]]
 	close(filename, hours, now_dt, _line)
-	order(instrument, 1, _line)
 
 if __name__ == "__main__":
     main()
