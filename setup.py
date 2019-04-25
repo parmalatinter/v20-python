@@ -45,6 +45,7 @@ setup(
             'v20-news-get = news.get:main',
             'v20-market-condition = market.condition:main',
             'v20-strategy-1-trade = strategy.1.trade:main',
+            'v20-strategy-account = strategy.account:main',
             'v20-line-send = line.line:main',
         ]
     }
