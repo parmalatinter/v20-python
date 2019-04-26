@@ -76,7 +76,7 @@ class Trade():
 	def send_account_details(self):
 		if self.is_ordered:
 			command = 'v20-strategy-account'
-			res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+			subprocess.Popen(command, stderr=None, shell=True)
 
 def main():
 
