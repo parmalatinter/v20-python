@@ -38,6 +38,7 @@ class Trade():
 		return ''
 
 	def order(self, instrument, units, price, _line):
+		price = round(price, 2)
 		args = dict(instrument=instrument, units=units, price=price)
 		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price=%(price)s' % args
 		print(command)
