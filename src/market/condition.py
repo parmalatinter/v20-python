@@ -76,6 +76,13 @@ class Market(object):
 		close = self.get_close(is_summer)
 		is_opening = self.judge_is_opening(jstTime, close) 
 		return is_opening
+	
+	def get_is_eneble_new_order(self):
+		jstTime = self.get_utc_time()
+		is_summer = self.get_is_summer(jstTime)
+		close = self.get_close(is_summer)
+		is_eneble = self.judge_is_opening(jstTime, close - 5) 
+		return is_eneble
 
 def main():
 	#日本時間での現在の日付データ取得
