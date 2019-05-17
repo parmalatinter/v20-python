@@ -112,7 +112,7 @@ def main():
 	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
 	late = str(last_df['c'][last_df.index[0]])
-	if condition.get_is_eneble_new_order():
+	if condition.get_is_eneble_new_order(hours):
 		if last_df['golden'][last_df.index[0]]:
 			trade.order(instrument, 1, last_df['o'] + 0.1, _line)
 			print('golden order')
