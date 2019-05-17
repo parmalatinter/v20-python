@@ -39,7 +39,7 @@ class Trade():
 
 	def order(self, instrument, units, price, _line):
 		args = dict(instrument=instrument, units=units, price=price)
-		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price %(price)s' % args
+		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price=%(price)s' % args
 		print(command)
 		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 		res.wait()
