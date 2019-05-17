@@ -37,9 +37,9 @@ class Trade():
 			return StringIO(res.GetContentString())
 		return ''
 
-	def order(self, instrument, units, _line):
-		args = dict(instrument=instrument, units=units)
-		command = ' v20-order-market %(instrument)s %(units)s' % args
+	def order(self, instrument, units, price, _line):
+		args = dict(instrument=instrument, units=units, price=price)
+		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price %(price)s' % args
 		print(command)
 		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 		res.wait()
@@ -112,15 +112,16 @@ def main():
 	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
 	late = str(last_df['c'][last_df.index[0]])
-	if last_df['golden'][last_df.index[0]]:
-		trade.order(instrument, units, _line)
-		print('golden order')
-	elif last_df['dead'][last_df.index[0]]:
-		trade.order(instrument, 0-units, _line)
-		print('dead order')
-	if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
-		print('chance order')
-		_line.send("chance order #",str(late))
+	if condition.get_is_eneble_new_order():
+		if last_df['golden'][last_df.index[0]]:
+			trade.order(instrument, 1, last_df['o'] + 0.1, _line)
+			print('golden order')
+		elif last_df['dead'][last_df.index[0]]:
+			trade.order(instrument, -1, last_df['o'] - 0.1, _line)
+			print('dead order')
+		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
+			print('chance order')
+			_line.send("chance order #",str(late))
 		
 	filename = 'transaction.csv'
 	now_dt = last_df['t'][last_df.index[0]]
