@@ -121,6 +121,7 @@ def main():
 			print('dead order')
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			print('chance order')
+			trade.order(instrument, 2, late + 0.1, _line)
 			_line.send("chance order #",str(late))
 		
 	filename = 'transaction.csv'
