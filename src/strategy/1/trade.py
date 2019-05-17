@@ -114,10 +114,10 @@ def main():
 	late = str(last_df['c'][last_df.index[0]])
 	if condition.get_is_eneble_new_order(hours):
 		if last_df['golden'][last_df.index[0]]:
-			trade.order(instrument, 1, last_df['o'] + 0.1, _line)
+			trade.order(instrument, 1, (last_df['o'] + 0.1), _line)
 			print('golden order')
 		elif last_df['dead'][last_df.index[0]]:
-			trade.order(instrument, -1, last_df['o'] - 0.1, _line)
+			trade.order(instrument, -1, (last_df['o'] - 0.1), _line)
 			print('dead order')
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			print('chance order')
