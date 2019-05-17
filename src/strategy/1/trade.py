@@ -111,14 +111,13 @@ def main():
 	df = draw.caculate(csv)
 	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
-	late = str(last_df['c'][last_df.index[0]])
-	late_open = last_df['o'][last_df.index[0]]
+	late = last_df['c'][last_df.index[0]]
 	if condition.get_is_eneble_new_order(hours):
 		if last_df['golden'][last_df.index[0]]:
-			trade.order(instrument, 1, late_open + 0.1, _line)
+			trade.order(instrument, 1, late + 0.1, _line)
 			print('golden order')
 		elif last_df['dead'][last_df.index[0]]:
-			trade.order(instrument, -1, late_open - 0.1, _line)
+			trade.order(instrument, -1, late - 0.1, _line)
 			print('dead order')
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			print('chance order')
