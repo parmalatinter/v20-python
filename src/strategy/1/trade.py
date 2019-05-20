@@ -22,16 +22,18 @@ import time
 class Trade():
 
 	is_ordered = False
+	drive_id = ''
 
-	def init(self):
+	def init(self, drive_id):
 		self.is_ordered = False
+		self.drive_id = drive_id
 		os.environ['TZ'] = 'America/New_York'
-		googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+		googleDrive = drive.drive.Drive(self.drive_id)
 		googleDrive.delete_all()
 		time.sleep(5)
 
 	def get_csv(self, filename):
-		googleDrive = drive.drive.Drive('1A3k4a4u4nxskD-hApxQG-kNhlM35clSa')
+		googleDrive = drive.drive.Drive(self.drive_id)
 		res = googleDrive.get_content_by_filename(filename)
 		if res: 	
 			return StringIO(res.GetContentString())
@@ -81,12 +83,15 @@ class Trade():
 
 def main():
 
-	trade = Trade()
-	trade.init()
+	
 	instrument = 'USD_JPY'
 	units = 10000
 	hours = 3
 	reduce_time = 5
+	drive_id = '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
+
+	trade = Trade()
+	trade.init(drive_id)
 	
 	_line = line.line.Line()
 	condition = market.condition.Market()
@@ -108,7 +113,7 @@ def main():
 	time.sleep(5)
 
 	filename = 'candles.csv'
-	csv = trade.get_csv(filename)
+	csv = trade.get_csv(filename, drive_id)
 	draw = golden.draw.Draw()
 	df = draw.caculate(csv)
 	# candle_temp = draw.caculate_candle(df)
