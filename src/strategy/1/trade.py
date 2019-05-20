@@ -113,7 +113,7 @@ def main():
 	time.sleep(5)
 
 	filename = 'candles.csv'
-	csv = trade.get_csv(filename, drive_id)
+	csv = trade.get_csv(filename)
 	draw = golden.draw.Draw()
 	df = draw.caculate(csv)
 	# candle_temp = draw.caculate_candle(df)
