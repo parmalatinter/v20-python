@@ -85,7 +85,8 @@ def main():
 	trade.init()
 	instrument = 'USD_JPY'
 	units = 10000
-	hours = 5
+	hours = 3
+	reduce_time = 5
 	
 	_line = line.line.Line()
 	condition = market.condition.Market()
@@ -113,7 +114,7 @@ def main():
 	# candle_temp = draw.caculate_candle(df)
 	last_df = df.tail(1)
 	late = last_df['c'][last_df.index[0]]
-	if condition.get_is_eneble_new_order(hours):
+	if condition.get_is_eneble_new_order(reduce_time):
 		if last_df['golden'][last_df.index[0]]:
 			trade.order(instrument, 1, late + 0.1, _line)
 			print('golden order')
