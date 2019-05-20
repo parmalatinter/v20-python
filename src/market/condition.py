@@ -81,7 +81,7 @@ class Market(object):
 		jstTime = self.get_utc_time()
 		is_summer = self.get_is_summer(jstTime)
 		close = self.get_close(is_summer)
-		is_eneble = self.judge_is_opening(jstTime, close - reduce_time) 
+		is_eneble = self.judge_is_opening(jstTime, (close - reduce_time - 1)) 
 		return is_eneble
 	
 def main():
