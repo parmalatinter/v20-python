@@ -78,7 +78,9 @@ class Trade():
 
 	def send_account_details(self):
 		if self.is_ordered:
-			command = 'v20-strategy-account'
+			self.exec_command('v20-strategy-account')
+
+	def exec_command(self, command):
 			res = subprocess.Popen(command, shell=True)
 			res.wait()
 			print(res)
@@ -101,17 +103,8 @@ def main():
 	if condition.get_is_opening() == False:
 		exit()
 
-	command = 'v20-transaction-get-all'
-	print(command)
-	res = subprocess.Popen(command, shell=True)
-	res.wait()
-	print(res)
-
-	command = 'v20-instrument-data-tables'
-	print(command)
-	res = subprocess.Popen(command, shell=True)
-	res.wait()
-	print(res)
+	trade.exec_command('v20-transaction-get-all')
+	trade.exec_command('v20-instrument-data-tables')
 
 	time.sleep(5)
 
