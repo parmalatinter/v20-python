@@ -43,6 +43,7 @@ class Drive():
 		file.SetContentString(title)
 		file.Upload()
 		self.reset_file_list()
+		print('uploaded: %s, id: %s' % (file['title'], file['id']))
 		return file
 
 	def delete_by_filename(self, filename):
