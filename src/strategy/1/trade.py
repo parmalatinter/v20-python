@@ -17,7 +17,11 @@ from pytz import timezone
 from io import StringIO
 
 import drive.drive
+import file.file_utility
 import strategy.environ
+import strategy.account
+
+
 import time
 
 class Trade():
@@ -33,13 +37,6 @@ class Trade():
 		googleDrive.delete_all()
 		time.sleep(5)
 
-	def get_csv(self, filename):
-		googleDrive = drive.drive.Drive(self.drive_id)
-		res = googleDrive.get_content_by_filename(filename)
-		if res: 	
-			return StringIO(res.GetContentString())
-		return ''
-
 	def order(self, instrument, units, price, _line):
 		price = round(price, 2)
 		args = dict(instrument=instrument, units=units, price=price)
@@ -53,10 +50,9 @@ class Trade():
 		_line.send('order #', command + ' ' + out.decode('utf-8') )
 		self.is_ordered = True
 
-	def close(self, filename, hours, now_dt, _line):
-		csv = self.get_csv(filename)
+	def close(self, transaction_csv_string, hours, now_dt, _line):
 
-		df = pd.read_csv(csv, sep=',', engine='python', skipinitialspace=True)
+		df = pd.read_csv(transaction_csv_string, sep=',', engine='python', skipinitialspace=True)
 
 		now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
 
@@ -77,9 +73,10 @@ class Trade():
 				_line.send('order #', command + ' ' + out.decode('utf-8') )
 				self.is_ordered = True
 
-	def send_account_details(self):
-		if self.is_ordered:
-			self.exec_command('v20-strategy-account')
+	def get_account_details(self):
+		account = strategy.account.Account()
+		details = account.get_account_detail()
+		return details
 
 	def exec_command(self, command):
 		res = subprocess.Popen(command, shell=True)
@@ -111,29 +108,40 @@ def main():
 	time.sleep(5)
 
 	filename = 'candles.csv'
-	csv = trade.get_csv(filename)
-	draw = golden.draw.Draw()
-	df = draw.caculate(csv)
-	# candle_temp = draw.caculate_candle(df)
-	last_df = df.tail(1)
-	late = last_df['c'][last_df.index[0]]
-	if condition.get_is_eneble_new_order(reduce_time):
-		if last_df['golden'][last_df.index[0]]:
-			trade.order(instrument, 1, late + 0.1, _line)
-			print('golden order')
-		elif last_df['dead'][last_df.index[0]]:
-			trade.order(instrument, -1, late - 0.1, _line)
-			print('dead order')
-		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
-			print('chance order')
-			trade.order(instrument, 2, late + 0.1, _line)
-			_line.send("chance order #",str(late))
-		
-	filename = 'transaction.csv'
-	now_dt = last_df['t'][last_df.index[0]]
-	trade.close(filename, hours, now_dt, _line)
+	candles_csv = file.file_utility.File_utility(filename, drive_id)
+	candles_csv_string = candles_csv.get_string()
 
-	trade.send_account_details()
+	if candles_csv_string:
+		draw = golden.draw.Draw()
+		df = draw.caculate(candles_csv_string)
+		last_df = df.tail(1)
+		late = last_df['c'][last_df.index[0]]
+		if condition.get_is_eneble_new_order(reduce_time):
+			if last_df['golden'][last_df.index[0]]:
+				trade.order(instrument, 1, late + 0.1, _line)
+				print('golden order')
+			elif last_df['dead'][last_df.index[0]]:
+				trade.order(instrument, -1, late - 0.1, _line)
+				print('dead order')
+			if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
+				print('chance order')
+				trade.order(instrument, 2, late + 0.1, _line)
+				_line.send("chance order #",str(late))
+		
+		now_dt = last_df['t'][last_df.index[0]]
+
+	filename = 'transaction.csv'
+	transaction_csv = file.file_utility.File_utility(filename, drive_id)
+	transaction_csv_string = transaction_csv.get_string()
+	
+	if transaction_csv_string:
+		trade.close(transaction_csv_string, hours, now_dt, _line)
+
+	filename = 'details.csv'
+	details = trade.get_account_details()
+	details_csv = file.file_utility.File_utility(filename, drive_id)
+	details_csv.set_contents(details)
+	details_csv.export_drive()
 
 if __name__ == "__main__":
-    main()
+	main()
