@@ -17,6 +17,7 @@ from pytz import timezone
 from io import StringIO
 
 import drive.drive
+import strategy.environ
 import time
 
 class Trade():
@@ -88,12 +89,13 @@ class Trade():
 
 def main():
 
-	
-	instrument = 'USD_JPY'
-	units = 10000
-	hours = 3
-	reduce_time = 5
-	drive_id = '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
+	_environ = strategy.environ.Environ()
+
+	instrument = _environ.get('instrument') if _environ.get('instrument') else "USD_JPY"
+	units = _environ.get('units') if _environ.get('units') else 10000
+	hours = _environ.get('hours') if _environ.get('hours') else 3
+	reduce_time = _environ.get('reduce_time') if _environ.get('reduce_time') else 5
+	drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
 
 	trade = Trade()
 	trade.init(drive_id)
