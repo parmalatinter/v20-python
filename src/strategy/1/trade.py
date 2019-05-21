@@ -81,10 +81,10 @@ class Trade():
 			self.exec_command('v20-strategy-account')
 
 	def exec_command(self, command):
-			res = subprocess.Popen(command, shell=True)
-			res.wait()
-			print(res)
-			time.sleep(5)
+		res = subprocess.Popen(command, shell=True)
+		res.wait()
+		print(res)
+		time.sleep(5)
 
 def main():
 
