@@ -86,7 +86,7 @@ class Market(object):
 		if not is_eneble:
 			return False
 
-		_calender = calendar.get.Calender()
+		_calender = calender.get.Calender()
 		df = _calender.get_df()
 		if not _calender.in_danger_time(df):
 			return False
