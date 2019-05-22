@@ -77,7 +77,7 @@ class Market(object):
 		close = self.get_close(is_summer)
 		is_opening = self.judge_is_opening(jstTime, close) 
 		return is_opening
-	
+
 	def get_is_eneble_new_order(self, reduce_time = 0):
 		jstTime = self.get_utc_time()
 		is_summer = self.get_is_summer(jstTime)
@@ -86,13 +86,13 @@ class Market(object):
 		if not is_eneble:
 			return False
 
-		_calender = calender.get.Calender()
+		_calender = calender.get.Calendar
 		df = _calender.get_df()
 		if not _calender.in_danger_time(df):
 			return False
 
 		return True
-	
+
 def main():
 	#日本時間での現在の日付データ取得
 	#念のためUTCの時間を取得してから時差分を足してる
