@@ -89,7 +89,8 @@ class Calendar(object):
 
         for index, row in df.iterrows():
             if( row['from_us_datetime'] > now < row['to_us_datetime']):
-                print('xxx')
+                return True
+        return False
             
 
 def main():
