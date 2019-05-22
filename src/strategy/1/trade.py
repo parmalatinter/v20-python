@@ -1,149 +1,106 @@
 #!/usr/bin/env python
 
-import subprocess
-import os 
-import sys
-from pathlib import Path
-import market.condition
-import golden.draw
-import line.line
-
-import pandas as pd
-import numpy as np
-
-from datetime import datetime
-from pytz import timezone
-
-from io import StringIO
-
-import drive.drive
-import file.file_utility
-import strategy.environ
-import strategy.account
+import datetime
+import calender.get
 
 
-import time
+class Market(object):
 
-class Trade():
+	def get_utc_time(self):
+		return datetime.datetime.utcnow() + datetime.timedelta(hours=9)
 
-	is_ordered = False
-	drive_id = ''
+	# 【米国サマータイム（夏時間）】2007年より3月第2日曜日～11月第1日曜日
+	# 取引時間：（日本時間）月曜午前7時～土曜午前6時
+	# 【米国標準時間（冬時間）】2007年より11月第1日曜日～3月第2日曜日
+	# 取引時間：（日本時間）月曜午前7時～土曜午前7時
+	def get_is_summer(self, jstTime):
+		day = jstTime.day
+		res = False
 
-	def init(self, drive_id):
-		self.is_ordered = False
-		self.drive_id = drive_id
-		os.environ['TZ'] = 'America/New_York'
-		googleDrive = drive.drive.Drive(self.drive_id)
-		googleDrive.delete_all()
-		time.sleep(5)
+		#1週間前の日付が同月かどうか調べる -> 1日より前か後かで判別
+		#dayが1日以降(同月)なら出現回数+1してdayに1週間前の日付を代入(-7する)、1日より前(前の月の日付)なら処理終了
+		weeks = 0
+		while day > 0:
+			weeks += 1
+			day -= 7
 
-	def order(self, instrument, units, price, _line):
-		price = round(price, 2)
-		args = dict(instrument=instrument, units=units, price=price)
-		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price=%(price)s' % args
-		print(command)
-		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-		res.wait()
+		if jstTime.month > 3 and jstTime.month < 11:
+			is_summer = True
+		elif jstTime.month < 3:
+			is_summer = False
+		elif jstTime.month > 11:
+			is_summer = False
+		elif jstTime.month == 11 and weeks > 1:
+			is_summer = True
+		elif jstTime.month == 3 and weeks < 2:
+			is_summer = False
+		return is_summer
 
-		print(command)
-		out, err = res.communicate()
-		_line.send('order #', command + ' ' + out.decode('utf-8') )
-		self.is_ordered = True
 
-	def close(self, transaction_csv_string, hours, now_dt, _line):
+	# CLOSE 米国東部標準時間時(冬時間時 NYクローズは朝7時00分）
+	# 		米国東部夏時間時(NYクローズは朝6時00分）
+	def get_close(self, is_summer):
+		if is_summer:
+			return 6
+		else:
+			return 7
 
-		df = pd.read_csv(transaction_csv_string, sep=',', engine='python', skipinitialspace=True)
+	def judge_is_opening(self, jstTime, close):
+			# 元旦
+		if jstTime.month == 1 and jstTime.day == 1:
+			res = False
+		# クリスマス
+		elif jstTime.month == 12 and jstTime.day == 25:
+			res = False
+		# 火曜日～金曜日
+		elif jstTime.weekday() >= 1 and jstTime.weekday() <= 4 :
+			res = True
+		# 月曜日
+		# OPEN 朝7時00分
+		elif jstTime.weekday() == 0 and jstTime.hour <= 7 :
+			res = False
+		# 土曜日
+		# CLOSE 米国東部標準時間時(冬時間時 NYクローズは朝7時00分）
+		# 		米国東部夏時間時(NYクローズは朝6時00分）
+		elif jstTime.weekday() >= 5 and jstTime.hour > close :
+			res = False
+		# 日曜日
+		elif jstTime.weekday() >= 6:
+			res = False
+		else:
+			res = True
+		return res
 
-		now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
+	def get_is_opening(self):
+		jstTime = self.get_utc_time()
+		is_summer = self.get_is_summer(jstTime)
+		close = self.get_close(is_summer)
+		is_opening = self.judge_is_opening(jstTime, close) 
+		return is_opening
 
-		for index, row in df.iterrows():
+	def get_is_eneble_new_order(self, reduce_time = 0):
+		jstTime = self.get_utc_time()
+		is_summer = self.get_is_summer(jstTime)
+		close = self.get_close(is_summer)
+		is_eneble = self.judge_is_opening(jstTime, close - reduce_time) 
+		if not is_eneble:
+			return False
 
-			trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
-			delta = now_dt - trade_dt
+		_calender = calender.get.Calendar
+		df = _calender.get_df()
+		if not _calender.in_danger_time(df):
+			return False
 
-			delta_total_minuts = delta.total_seconds()/60
-			delta_total_hours = delta_total_minuts/60
+		return True
 
-			if delta_total_hours >= hours:
-				args = dict(tradeid=row.id, units='ALL')
-				command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
-				res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-				res.wait()
-				out, err = res.communicate()
-				_line.send('order #', command + ' ' + out.decode('utf-8') )
-				self.is_ordered = True
-
-	def get_account_details(self):
-		account = strategy.account.Account()
-		details = account.get_account_detail()
-		return details
-
-	def exec_command(self, command):
-		res = subprocess.Popen(command, shell=True)
-		res.wait()
-		print(res)
-		time.sleep(5)
-
-	def golden_tragde(self, instrument, units, candles_csv_string, _line):
-		draw = golden.draw.Draw()
-		df = draw.caculate(candles_csv_string)
-		last_df = df.tail(1)
-		late = last_df['c'][last_df.index[0]]
-		if last_df['golden'][last_df.index[0]]:
-			self.order(instrument, units, late + 0.1, _line)
-			print('golden order')
-		elif last_df['dead'][last_df.index[0]]:
-			self.order(instrument, (0 - units), late - 0.1, _line)
-			print('dead order')
-		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
-			print('chance order')
-			self.order(instrument, (units * 2), late + 0.1, _line)
-			_line.send("chance order #",str(late))
-
-		return last_df['t'][last_df.index[0]]
 def main():
-
-	_environ = strategy.environ.Environ()
-
-	instrument = _environ.get('instrument') if _environ.get('instrument') else "USD_JPY"
-	units = _environ.get('units') if _environ.get('units') else 10
-	hours = _environ.get('hours') if _environ.get('hours') else 3
-	reduce_time = _environ.get('reduce_time') if _environ.get('reduce_time') else 5
-	drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
-	now_dt = None
-
-	trade = Trade()
-	trade.init(drive_id)
-
-	_line = line.line.Line()
-	condition = market.condition.Market()
-	if condition.get_is_opening() == False:
-		exit()
-
-	trade.exec_command('v20-transaction-get-all')
-	trade.exec_command('v20-instrument-data-tables')
-
-	time.sleep(5)
-	
-	if condition.get_is_eneble_new_order(reduce_time):
-		filename = 'candles.csv'
-		candles_csv = file.file_utility.File_utility(filename, drive_id)
-		candles_csv_string = candles_csv.get_string()
-		if candles_csv_string:
-			now_dt = trade.golden_tragde(instrument, units, candles_csv_string, _line)
-
-	filename = 'transaction.csv'
-	transaction_csv = file.file_utility.File_utility(filename, drive_id)
-	transaction_csv_string = transaction_csv.get_string()
-
-	if transaction_csv_string and now_dt:
-		trade.close(transaction_csv_string, hours, now_dt, _line)
-
-	filename = 'details.csv'
-	details = trade.get_account_details()
-	details_csv = file.file_utility.File_utility(filename, drive_id)
-	details_csv.set_contents(details)
-	details_csv.export_drive()
+	#日本時間での現在の日付データ取得
+	#念のためUTCの時間を取得してから時差分を足してる
+	market = Market()
+	if market.get_is_opening():
+		print('true')
+	else:
+		print('false')
 
 if __name__ == "__main__":
-	main()
+	 main()
