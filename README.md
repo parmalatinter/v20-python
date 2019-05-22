@@ -113,7 +113,8 @@ There are several ways to load a v20 configuration file in each of v20 sample sc
 The `--config` options allows you to specify the location of a valid v20 configuration file v20. Example: 
 
 ```bash
-(env)user@host: ~/v20-python-samples$ v20-account-details --config /home/user/v20.conf
+(env)user@host: ~/v20-python-samples$ v20-account-details --config 
+
 ```
 
 #### 2. Use the default v20 configuration file location
@@ -134,7 +135,7 @@ v20 configuration file is. If a configuration file exists in this location, no
 `--config` option needs to be used. Example:
 
 ```bash
-(env)user@host: ~/v20-python-samples$ export V20_CONF=/home/user/v20.conf
+(env)user@host: ~/v20-python-samples$ export V20_CONF=/home/user/v20.conf  #for heroku /app/.v20-pro.conf
 (env)user@host: ~/v20-python-samples$ v20-account-details
 ```
 ## API Documentations
