@@ -1,18 +1,12 @@
 #!/usr/bin/env python
 
-import urllib.request as request
-import json
-import sys
 import pandas as pd
 import numpy as np
 import datetime
-import drive.drive
 from io import StringIO
 import line.line
-import re
 import os
 import file.file_utility
-import time
 
 class Calendar(object):
 
