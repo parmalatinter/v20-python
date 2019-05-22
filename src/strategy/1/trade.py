@@ -90,14 +90,14 @@ class Trade():
 		last_df = df.tail(1)
 		late = last_df['c'][last_df.index[0]]
 		if last_df['golden'][last_df.index[0]]:
-			self.trade.order(instrument, units, late + 0.1, _line)
+			self.order(instrument, units, late + 0.1, _line)
 			print('golden order')
 		elif last_df['dead'][last_df.index[0]]:
-			self.trade.order(instrument, (0 - units), late - 0.1, _line)
+			self.order(instrument, (0 - units), late - 0.1, _line)
 			print('dead order')
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			print('chance order')
-			self.trade.order(instrument, (units * 2), late + 0.1, _line)
+			self.order(instrument, (units * 2), late + 0.1, _line)
 			_line.send("chance order #",str(late))
 
 		return last_df['t'][last_df.index[0]]
