@@ -104,7 +104,7 @@ class Trade():
 	
 	def get_now_dt(self, candles_csv_string):
 		df = pd.read_csv(candles_csv_string, sep=',', engine='python', skipinitialspace=True)
-		return last_df['t'][last_df.index[0]]
+		return df['t'][df.index[0]]
 	
 def main():
 
