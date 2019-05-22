@@ -12,6 +12,7 @@ import line.line
 import re
 import os
 import file.file_utility
+import time
 
 class Calendar(object):
 
@@ -83,9 +84,13 @@ class Calendar(object):
         return df
 
     def in_danger_time(self, df):
-        df = df[df['important'].str.contains('★★★★')| df['important'].str.contains('★★★★★')]
+        df = df[df['important'].str.contains('★★★')| df['important'].str.contains('★★★★★')]
+        now = pd.Timestamp.now()
+
         for index, row in df.iterrows():
-            print(row['from_us_datetime'], row['to_us_datetime'], row['important'])
+            if( row['from_us_datetime'] > now < row['to_us_datetime']):
+                print('xxx')
+            
 
 def main():
 
@@ -95,6 +100,7 @@ def main():
     text = calendar.set_to_drive(df)
     _line = line.line.Line()
     _line.send("calendar",text)
+    # calendar.in_danger_time(df)
 
 if __name__ == "__main__":
     main()
