@@ -84,7 +84,7 @@ class Calendar(object):
         return df
 
     def in_danger_time(self, df):
-        df = df[df['important'].str.contains('★★★')| df['important'].str.contains('★★★★★')]
+        df = df[df['important'].str.contains('★★★★')]
         now = pd.Timestamp.now()
 
         for index, row in df.iterrows():
