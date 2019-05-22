@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import datetime
+import calendar.get
 
 
 class Market(object):
@@ -81,8 +82,16 @@ class Market(object):
 		jstTime = self.get_utc_time()
 		is_summer = self.get_is_summer(jstTime)
 		close = self.get_close(is_summer)
-		is_eneble = self.judge_is_opening(jstTime, (close - reduce_time - 1)) 
-		return is_eneble
+		is_eneble = self.judge_is_opening(jstTime, close - reduce_time) 
+		if not is_eneble:
+			return False
+
+		_calender = calendar.get.Calendar()
+		df = _calender.get_df()
+		if not _calender.in_danger_time(df):
+			return False
+
+		return True
 	
 def main():
 	#日本時間での現在の日付データ取得
