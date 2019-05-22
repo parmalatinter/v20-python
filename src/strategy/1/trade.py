@@ -57,10 +57,10 @@ class Trade():
 		now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
 
 		for index, row in df.iterrows():
-			
+
 			trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
 			delta = now_dt - trade_dt
-			
+
 			delta_total_minuts = delta.total_seconds()/60
 			delta_total_hours = delta_total_minuts/60
 
@@ -85,24 +85,22 @@ class Trade():
 		time.sleep(5)
 
 	def golden_tragde(self, candles_csv_string):
-		if candles_csv_string:
-				draw = golden.draw.Draw()
-				df = draw.caculate(candles_csv_string)
-				last_df = df.tail(1)
-				late = last_df['c'][last_df.index[0]]
-				if condition.get_is_eneble_new_order(reduce_time):
-					if last_df['golden'][last_df.index[0]]:
-						trade.order(instrument, 1, late + 0.1, _line)
-						print('golden order')
-					elif last_df['dead'][last_df.index[0]]:
-						trade.order(instrument, -1, late - 0.1, _line)
-						print('dead order')
-					if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
-						print('chance order')
-						trade.order(instrument, 2, late + 0.1, _line)
-						_line.send("chance order #",str(late))
-				
-				return last_df['t'][last_df.index[0]]
+		draw = golden.draw.Draw()
+		df = draw.caculate(candles_csv_string)
+		last_df = df.tail(1)
+		late = last_df['c'][last_df.index[0]]
+		if last_df['golden'][last_df.index[0]]:
+			trade.order(instrument, 1, late + 0.1, _line)
+			print('golden order')
+		elif last_df['dead'][last_df.index[0]]:
+			trade.order(instrument, -1, late - 0.1, _line)
+			print('dead order')
+		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
+			print('chance order')
+			trade.order(instrument, 2, late + 0.1, _line)
+			_line.send("chance order #",str(late))
+
+		return last_df['t'][last_df.index[0]]
 def main():
 
 	_environ = strategy.environ.Environ()
@@ -112,10 +110,11 @@ def main():
 	hours = _environ.get('hours') if _environ.get('hours') else 3
 	reduce_time = _environ.get('reduce_time') if _environ.get('reduce_time') else 5
 	drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
+	now_dt = None
 
 	trade = Trade()
 	trade.init(drive_id)
-	
+
 	_line = line.line.Line()
 	condition = market.condition.Market()
 	if condition.get_is_opening() == False:
@@ -125,17 +124,19 @@ def main():
 	trade.exec_command('v20-instrument-data-tables')
 
 	time.sleep(5)
-
-	filename = 'candles.csv'
-	candles_csv = file.file_utility.File_utility(filename, drive_id)
-	candles_csv_string = candles_csv.get_string()
-	now_dt = trade.golden_tragde(candles_csv_string)
+	
+	if condition.get_is_eneble_new_order(reduce_time):
+		filename = 'candles.csv'
+		candles_csv = file.file_utility.File_utility(filename, drive_id)
+		candles_csv_string = candles_csv.get_string()
+		if candles_csv_string:
+			now_dt = trade.golden_tragde(candles_csv_string)
 
 	filename = 'transaction.csv'
 	transaction_csv = file.file_utility.File_utility(filename, drive_id)
 	transaction_csv_string = transaction_csv.get_string()
-	
-	if transaction_csv_string:
+
+	if transaction_csv_string and now_dt:
 		trade.close(transaction_csv_string, hours, now_dt, _line)
 
 	filename = 'details.csv'
