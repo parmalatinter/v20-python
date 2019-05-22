@@ -11,13 +11,17 @@ from io import StringIO
 import line.line
 import re
 import os
+import file.file_utility
 
 class Calendar(object):
 
     folder = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
+    calendar_csv = None
+    filename = 'calendar.csv'
 
     def __init__(self):
         os.environ['TZ'] = 'America/New_York'
+        self.calendar_csv = file.file_utility.File_utility(self.filename, self.folder)
 
     def dataGet(self):
 
@@ -52,8 +56,8 @@ class Calendar(object):
         dfs1['us_datetime'] = dfs1.apply(f_brackets4, axis=1)
         f_brackets5 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-13)
         dfs1['us_datetime'] = dfs1.apply(f_brackets5, axis=1)
-        f_brackets6 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-1)
-        f_brackets7 = lambda x: x['us_datetime'] + datetime.timedelta(hours=+1)
+        f_brackets6 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-2)
+        f_brackets7 = lambda x: x['us_datetime'] + datetime.timedelta(hours=+2)
         dfs1['from_us_datetime'] = dfs1.apply(f_brackets6, axis=1)
         dfs1['to_us_datetime'] = dfs1.apply(f_brackets7, axis=1)
 
@@ -65,23 +69,30 @@ class Calendar(object):
 
         return dfs1
 
-    def set_to_drive(self, filemame, dfs):
+    def set_to_drive(self, dfs):
         s = StringIO()
         dfs.to_csv(s)
-        googleDrive = drive.drive.Drive(self.folder)
-        googleDrive.delete_all()
         text = s.getvalue()
-        googleDrive.upload(filemame, text)
+        self.calendar_csv.set_contents(text)
+        self.calendar_csv.export_drive()
         return text
 
+    def get_df(self):
+        calendar_csv_string = self.calendar_csv.get_string()
+        df = pd.read_csv(calendar_csv_string, sep=',', engine='python', skipinitialspace=True)
+        return df
+
+    def in_danger_time(self, df):
+        df = df[df['important'].str.contains('★★★★')| df['important'].str.contains('★★★★★')]
+        for index, row in df.iterrows():
+            print(row['from_us_datetime'], row['to_us_datetime'], row['important'])
 
 def main():
 
     calendar = Calendar()
     dfs = calendar.dataGet()
     df = calendar.format(dfs)
-    text = calendar.set_to_drive('calendar.csv', df)
-    print(text)
+    text = calendar.set_to_drive(df)
     _line = line.line.Line()
     _line.send("calendar",text)
 
