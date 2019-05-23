@@ -53,11 +53,11 @@ class Trade():
 
 		df = pd.read_csv(transaction_csv_string, sep=',', engine='python', skipinitialspace=True)
 
-		now_dt = datetime.strptime(now_dt, '%Y-%m-%d %H:%M:%S')
+		now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
 		for index, row in df.iterrows():
 
-			trade_dt = datetime.strptime(row.time, '%Y-%m-%dT%H:%M:%S')
+			trade_dt = datetime.strptime(row.time.replace('T', ' '), '%Y-%m-%dT%H:%M:%S')
 			delta = now_dt - trade_dt
 
 			delta_total_minuts = delta.total_seconds()/60
