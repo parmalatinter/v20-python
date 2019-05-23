@@ -90,7 +90,6 @@ class Market(object):
 		df = _calender.get_df()
 		if _calender.in_danger_time(df):
 			return False
-
 		return True
 
 def main():
