@@ -97,7 +97,7 @@ def main():
     text = calendar.set_to_drive(df)
     _line = line.line.Line()
     _line.send("calendar",text)
-    calendar.in_danger_time(df)
+    print(calendar.in_danger_time(df))
 
 if __name__ == "__main__":
     main()
