@@ -51,8 +51,8 @@ class Calendar(object):
         dfs1['us_datetime'] = dfs1.apply(f_brackets4, axis=1)
         f_brackets5 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-13)
         dfs1['us_datetime'] = dfs1.apply(f_brackets5, axis=1)
-        f_brackets6 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-2)
-        f_brackets7 = lambda x: x['us_datetime'] + datetime.timedelta(hours=+2)
+        f_brackets6 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-1)
+        f_brackets7 = lambda x: x['us_datetime'] + datetime.timedelta(hours=+1)
         dfs1['from_us_datetime'] = dfs1.apply(f_brackets6, axis=1)
         dfs1['to_us_datetime'] = dfs1.apply(f_brackets7, axis=1)
 
@@ -78,7 +78,7 @@ class Calendar(object):
         return df
 
     def in_danger_time(self, df):
-        df = df[df['important'].str.contains('★★★★')]
+        df = df[df['important'].str.contains('★★★')]
         now = pd.Timestamp.now()
 
         for index, row in df.iterrows():
