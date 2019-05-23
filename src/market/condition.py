@@ -100,6 +100,10 @@ def main():
 		print('true')
 	else:
 		print('false')
-
+	if market.get_is_eneble_new_order():
+		print('true')
+	else:
+		print('false')
+		
 if __name__ == "__main__":
 	 main()
