@@ -82,7 +82,9 @@ class Calendar(object):
         now = pd.Timestamp.now()
 
         for index, row in df.iterrows():
-            if( row['from_us_datetime'] > now < row['to_us_datetime']):
+            from_us_datetime = pd.to_datetime(row['from_us_datetime'], format='%Y-%m-%d %H:%M:%S')
+            to_us_datetime = pd.to_datetime(row['to_us_datetime'], format='%Y-%m-%d %H:%M:%S')
+            if( from_us_datetime > now < to_us_datetime):
                 return True
         return False
             
