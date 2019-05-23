@@ -32,5 +32,5 @@ class File_utility():
 		self.googleDrive.reset_file_list()
 		res = self.googleDrive.get_content_by_filename(self.filemame)
 		if res: 	
-			return StringIO(res.GetContentString())
+			return StringIO(res.GetContentString()).getvalue()
 		return ''
