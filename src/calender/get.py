@@ -7,16 +7,20 @@ from io import StringIO
 import line.line
 import os
 import file.file_utility
+import strategy.environ
 
 class Calendar(object):
 
     folder = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
     calendar_csv = None
     filename = 'calendar.csv'
+    hours = 0
 
     def __init__(self):
+        _environ = strategy.environ.Environ()
         os.environ['TZ'] = 'America/New_York'
         self.calendar_csv = file.file_utility.File_utility(self.filename, self.folder)
+        self.hours = (_environ.get('hours') if _environ.get('hours') else 3) / 2
 
     def dataGet(self):
 
@@ -51,8 +55,8 @@ class Calendar(object):
         dfs1['us_datetime'] = dfs1.apply(f_brackets4, axis=1)
         f_brackets5 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-13)
         dfs1['us_datetime'] = dfs1.apply(f_brackets5, axis=1)
-        f_brackets6 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-1)
-        f_brackets7 = lambda x: x['us_datetime'] + datetime.timedelta(hours=+1)
+        f_brackets6 = lambda x: x['us_datetime'] + datetime.timedelta(hours=-self.hours)
+        f_brackets7 = lambda x: x['us_datetime'] + datetime.timedelta(hours=+self.hours)
         dfs1['from_us_datetime'] = dfs1.apply(f_brackets6, axis=1)
         dfs1['to_us_datetime'] = dfs1.apply(f_brackets7, axis=1)
 
