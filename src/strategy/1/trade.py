@@ -136,7 +136,9 @@ def main():
 		
 	if condition.get_is_eneble_new_order(reduce_time):
 		trade.golden_tragde(instrument, units, candles_csv_string, _line)
-	
+		
+	candles_csv = file.file_utility.File_utility(filename, drive_id)
+	candles_csv_string = candles_csv.get_string()
 	now_dt = trade.get_now_dt(candles_csv_string)
 	
 	filename = 'transaction.csv'
