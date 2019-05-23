@@ -53,7 +53,7 @@ class Trade():
 
 		df = pd.read_csv(transaction_csv_string, sep=',', engine='python', skipinitialspace=True)
 
-		now_dt = datetime.strptime(now_dt, '%Y-%m-%dT%H:%M:%S')
+		now_dt = datetime.strptime(now_dt, '%Y-%m-%d %H:%M:%S')
 
 		for index, row in df.iterrows():
 
