@@ -29,8 +29,7 @@ class File_utility():
 		self.googleDrive.upload(self.filemame, self.header +self.content)
 
 	def get_string(self):
-		googleDrive = drive.drive.Drive(self.drive_id)
-		res = googleDrive.get_content_by_filename(self.filemame)
+		res = self.googleDrive.get_content_by_filename(self.filemame)
 		if res: 	
 			return StringIO(res.GetContentString())
 		return ''
