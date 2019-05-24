@@ -88,7 +88,11 @@ class Calendar(object):
         for index, row in df.iterrows():
             from_us_datetime = pd.to_datetime(row['from_us_datetime'], format='%Y-%m-%d %H:%M:%S')
             to_us_datetime = pd.to_datetime(row['to_us_datetime'], format='%Y-%m-%d %H:%M:%S')
-            if( from_us_datetime > now < to_us_datetime):
+            from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
+            to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
+            if from_us_datetime_hours < self.hours and  from_us_datetime_hours > 0:
+                return True
+            if to_us_datetime_hours < self.hours and  to_us_datetime_hours > 0:
                 return True
         return False
             
