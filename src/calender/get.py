@@ -90,10 +90,13 @@ class Calendar(object):
             to_us_datetime = pd.to_datetime(row['to_us_datetime'], format='%Y-%m-%d %H:%M:%S')
             from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
             to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
+            print(now)
             if from_us_datetime_hours < self.hours and  from_us_datetime_hours > 0:
+                print(from_us_datetime)
                 print(from_us_datetime_hours)
                 return True
             if to_us_datetime_hours < self.hours and  to_us_datetime_hours > 0:
+                print(to_us_datetime)
                 print(to_us_datetime_hours)
                 return True
         return False
