@@ -57,7 +57,7 @@ class Trade():
 
 		for index, row in df.iterrows():
 
-			trade_dt = datetime.strptime(row.time.replace('T', ' '), '%Y-%m-%dT%H:%M:%S')
+			trade_dt = datetime.strptime(row.time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 			delta = now_dt - trade_dt
 
 			delta_total_minuts = delta.total_seconds()/60
