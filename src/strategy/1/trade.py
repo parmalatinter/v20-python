@@ -83,23 +83,21 @@ class Trade():
 		print(res)
 		time.sleep(5)
 
-	def golden_tragde(self, instrument, units, candles_csv_string, _line):
+	def golden_trade(self, instrument, units, candles_csv_string, _line):
 		draw = golden.draw.Draw()
 		df = draw.caculate(candles_csv_string)
 		last_df = df.tail(1)
 		late = last_df['c'][last_df.index[0]]
 		if last_df['golden'][last_df.index[0]]:
 			self.order(instrument, units, late + 0.1, _line)
-			print('golden order')
 		elif last_df['dead'][last_df.index[0]]:
 			self.order(instrument, (0 - units), late - 0.1, _line)
-			print('dead order')
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
-			print('chance order')
 			self.order(instrument, (units * 2), late + 0.1, _line)
 			_line.send("chance order #",str(late))
-
-		return last_df['t'][last_df.index[0]]
+		elif last_df['rule_3'][last_df.index[0]] == 0 and last_df['rule_4'][last_df.index[0]] == 0:
+			self.order(instrument, (0 - (units * 2)), late - 0.1, _line)
+			_line.send("dead chance order #",str(late))
 	
 	def get_now_dt(self, candles_csv_string):
 		df = pd.read_csv(candles_csv_string, sep=',', engine='python', skipinitialspace=True)
@@ -135,7 +133,7 @@ def main():
 	candles_csv_string = candles_csv.get_string()
 		
 	if condition.get_is_eneble_new_order(reduce_time):
-		trade.golden_tragde(instrument, units, candles_csv_string, _line)
+		trade.golden_trade(instrument, units, candles_csv_string, _line)
 		
 	candles_csv = file.file_utility.File_utility(filename, drive_id)
 	candles_csv_string = candles_csv.get_string()

@@ -69,6 +69,15 @@ class Draw(object):
         df['rule_2'] = -1
         df.loc[(df['o'] - df['c'] < 0) & (df['o1'] - df['c1'] < 0) & (df['o2'] - df['c2'] < 0),'rule_2']=0
 
+
+        # ルールその3 C3 > upper
+        df['rule_3'] = 1
+        df.loc[(df['c3'] > df['upper']),'rule_3']=0
+
+        # ルールその4
+        df['rule_2'] = -1
+        df.loc[(df['o'] - df['c'] > 0) & (df['o1'] - df['c1'] > 0) & (df['o2'] - df['c2'] > 0),'rule_4']=0
+
         # ゴールデンクロスを検出
         asign = np.sign(df['diff'])
          
