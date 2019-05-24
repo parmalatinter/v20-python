@@ -95,7 +95,7 @@ class Calendar(object):
                 print(from_us_datetime)
                 print(from_us_datetime_hours)
                 return True
-            if to_us_datetime_hours < self.hours and  to_us_datetime_hours > 0:
+            if to_us_datetime_hours > -self.hours and  to_us_datetime_hours < 0:
                 print(to_us_datetime)
                 print(to_us_datetime_hours)
                 return True
