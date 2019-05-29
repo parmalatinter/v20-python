@@ -11,21 +11,14 @@ class Trend():
 
 		j = res.json()
 
-		# print(j)
 		df = pd.DataFrame(j[0]).tail(1)
 		usd = df['values'][df.index[0]][1]
 
 		df = pd.DataFrame(j[2]).tail(1)
 		jpy = df['values'][df.index[0]][1] 
-
-		print(usd)
-		print(jpy)
-
+		
 		print(usd - jpy)
-
 		return (usd - jpy)
-
-
 
 def main():
 	trend = Trend()
