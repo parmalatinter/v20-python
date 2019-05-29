@@ -92,13 +92,13 @@ class Trade():
 		is_golden = last_df['golden'][last_df.index[0]]
 		is_dead = last_df['dead'][last_df.index[0]]
 
-		if is_golden and trend_usd > 10:
+		if is_golden and trend_usd > 5:
 			self.order(instrument, units, late + 0.1, _line)
-		if is_dead and trend_usd < -10:
+		if is_dead and trend_usd < -5:
 			self.order(instrument, (0 - units), late - 0.1, _line)
-		if is_golden and trend_usd < -10:
+		if is_golden and trend_usd < -5:
 			self.order(instrument, (0 - units) + 0.1, _line)
-		if is_dead and trend_usd > 10:
+		if is_dead and trend_usd > 5:
 			self.order(instrument, units, late, late - 0.1, _line)
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			self.order(instrument, (units * 2), late + 0.1, _line)
