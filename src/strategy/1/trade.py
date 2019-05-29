@@ -117,7 +117,7 @@ def main():
 	_environ = strategy.environ.Environ()
 
 	instrument = _environ.get('instrument') if _environ.get('instrument') else "USD_JPY"
-	units = _environ.get('units') if float(_environ.get('units')) else 10
+	units = _environ.get('units') if int(_environ.get('units')) else 10
 	hours = _environ.get('hours') if float(_environ.get('hours')) else 3
 	reduce_time = _environ.get('reduce_time') if float(_environ.get('reduce_time')) else 5
 	drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
