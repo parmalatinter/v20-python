@@ -88,8 +88,7 @@ class Trade():
 		df = draw.caculate(candles_csv_string)
 		last_df = df.tail(1)
 		late = last_df['c'][last_df.index[0]]
-		trend = trend.get.Trend()
-		trend_usd = trend.get()
+		trend_usd = trend.get.Trend().get()
 		is_golden = last_df['golden'][last_df.index[0]]
 		is_dead = last_df['dead'][last_df.index[0]]
 
