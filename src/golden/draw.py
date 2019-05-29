@@ -111,7 +111,7 @@ class Draw(object):
 
     def caculate_candle(self, df):
         ax = plt.subplot(2, 1, 1)
-        candle_temp = df[0:100]
+        candle_temp = df.tail(100)
         candle_temp = candle_temp.reset_index()
         candlestick2_ohlc(
             ax, candle_temp["o"], candle_temp["h"], candle_temp["l"],
