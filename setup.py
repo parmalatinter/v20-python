@@ -47,6 +47,7 @@ setup(
             'v20-strategy-1-trade = strategy.1.trade:main',
             'v20-strategy-account = strategy.account:main',
             'v20-line-send = line.line:main',
+            'v20-trend-get = trend.get:main',
         ]
     }
 )
