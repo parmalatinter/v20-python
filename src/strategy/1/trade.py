@@ -93,19 +93,23 @@ class Trade():
 		is_dead = last_df['dead'][last_df.index[0]]
 
 		if is_golden and trend_usd > 5:
+			_line.send("buy order 1 #",str(late))
 			self.order(instrument, units, late + 0.1, _line)
 		if is_dead and trend_usd < -5:
+			_line.send("sell order 1 #",str(late))
 			self.order(instrument, (0 - units), late - 0.1, _line)
-		if is_golden and trend_usd < -5:
-			self.order(instrument, (0 - units) + 0.1, _line)
 		if is_dead and trend_usd > 5:
+			_line.send("buy order 2 #",str(late))
 			self.order(instrument, units, late - 0.1, _line)
+		if is_golden and trend_usd < -5:
+			_line.send("sell order 2 #",str(late))
+			self.order(instrument, (0 - units) + 0.1, _line)
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			self.order(instrument, (units * 2), late + 0.1, _line)
-			_line.send("chance order #",str(late))
+			_line.send("buy chance order #",str(late))
 		if last_df['rule_3'][last_df.index[0]] == 0 and last_df['rule_4'][last_df.index[0]] == 0:
 			self.order(instrument, (0 - (units * 2)), late - 0.1, _line)
-			_line.send("dead chance order #",str(late))
+			_line.send("sell chance order #",str(late))
 	
 	def get_now_dt(self, candles_csv_string):
 		df = pd.read_csv(candles_csv_string, sep=',', engine='python', skipinitialspace=True)
