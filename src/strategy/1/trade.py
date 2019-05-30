@@ -100,10 +100,10 @@ class Trade():
 			self.order(instrument, (0 - units), late - 0.1, _line)
 		if is_dead and trend_usd > 5:
 			_line.send("buy order 2 #",str(late))
-			self.order(instrument, units, late - 0.1, _line)
+			self.order(instrument, units, late + 0.1, _line)
 		if is_golden and trend_usd < -5:
 			_line.send("sell order 2 #",str(late))
-			self.order(instrument, (0 - units) + 0.1, _line)
+			self.order(instrument, (0 - units), late - 0.1, _line)
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			self.order(instrument, (units * 2), late + 0.1, _line)
 			_line.send("buy chance order #",str(late))
