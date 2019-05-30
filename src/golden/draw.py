@@ -92,10 +92,10 @@ class Draw(object):
         df['dead'] = ((np.roll(asign, 1) - asign) == 2).astype(int)
 
         # 10分間でポジションを決済
-        df['g_returns'] = df['c'] - df['c'].shift(5)
-        df['d_returns'] = df['c'].shift(5) - df['c']
-        df['g_profit'] = df['g_returns'] * df['golden']
-        df['d_profit'] = df['d_returns'] * df['dead']
+        # df['g_returns'] = df['c'] - df['c'].shift(5)
+        # df['d_returns'] = df['c'].shift(5) - df['c']
+        # df['g_profit'] = df['g_returns'] * df['golden']
+        # df['d_profit'] = df['d_returns'] * df['dead']
 
         # 最初の19行を削除してインデックスをリセット
         df = df[19:]
