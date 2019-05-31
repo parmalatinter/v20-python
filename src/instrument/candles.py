@@ -90,6 +90,12 @@ def main():
         help="The timezone to used for aligning daily candles"
     )
 
+    parser.add_argument(
+        "--file_name",
+        default=None,
+        help="file_name'"
+    )
+
     args = parser.parse_args()
 
     account_id = args.config.active_account
@@ -147,20 +153,22 @@ def main():
     print("Instrument: {}".format(response.get("instrument", 200)))
     print("Granularity: {}".format(response.get("granularity", 200)))
 
-    file = 'candles.csv'
-
     printer = CandlePrinter()
 
     candles = response.get("candles", 200)
 
+    file_name = 'candles.csv'
+    if args.file_name is not None:
+       file_name = args.file_name
+
     count = 0 
     res = printer.get_header_format_csv()
     for candle in response.get("candles", 200):
-        text = printer.get_format_csv(candle,file,count)
+        text = printer.get_format_csv(candle,file_name,count)
         res=res+text
         count=count+1
 
-    printer.export_drive(file, res)
+    printer.export_drive(file_name, res)
 
 if __name__ == "__main__":
     main()
