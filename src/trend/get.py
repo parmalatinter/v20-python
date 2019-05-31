@@ -2,9 +2,25 @@ import requests
 import pandas as pd
 import json
 import math
+import instrument.data_tables
 
 class Trend():
 
+	# def __init__(self):
+	# 	instrument.data_tables.Data_tables('EURUSD_H1.csv', 'EUR_USD', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('USDJPY_H1.csv', 'USD_JPY', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('USDCHF_H1.csv', 'USD_CHF', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('GBPUSD_H1.csv', 'GBP_USD', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('AUDUSD_H1.csv', 'AUD_USD', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('USDCAD_H1.csv', 'USD_CAD', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('NZDUSD_H1.csv', 'NZD_USD', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('EURJPY_H1.csv', 'EUR_JPY', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('CHFJPY_H1.csv', 'CHF_JPY', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('GBPJPY_H1.csv', 'GBP_JPY', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('AUDJPY_H1.csv', 'AUD_JPY', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('CADJPY_H1.csv', 'CAD_JPY', 24, "H1").set()
+	# 	instrument.data_tables.Data_tables('NZDJPY_H1.csv', 'NZD_JPY', 24, "H1").set()
+	
 	def get(self):
 		# https://currency-strength.com/
 		res = requests.get("https://currency-strength.com/php/chart1d.json")
