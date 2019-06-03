@@ -32,7 +32,7 @@ class Trend():
 		]
 
 		df = pd.read_csv(pd.compat.StringIO(csv), sep=',', engine='python', skipinitialspace=True)
-		
+
 		for response in response_list:
 
 			for property in list(response.keys()):
@@ -40,34 +40,37 @@ class Trend():
 				index = dfs1.shape[0] -1
 
 				# v1は起点の価格、v2は現在時刻の価格
-				response[property]['val'] = {'v1': dfs1['close'].values[0], 'v2': dfs1['close'].values[index]}
+				response[property]['val'] = {'v1': dfs1['close'].values[0], 'v2': dfs1['close'].values[index-1], 'vl': dfs1['close'].values[index]}
 
-		# v1は起点の価格、v2は現在時刻の価格
-		EURUSD = self.getVal(response_list[0]['EUR_USD']['val']['v1'],response_list[0]['EUR_USD']['val']['v2']);
-		USDJPY = self.getVal(response_list[1]['USD_JPY']['val']['v1'],response_list[1]['USD_JPY']['val']['v2']);
-		USDCHF = self.getVal(response_list[2]['USD_CHF']['val']['v1'],response_list[2]['USD_CHF']['val']['v2']);
-		GBPUSD = self.getVal(response_list[3]['GBP_USD']['val']['v1'],response_list[3]['GBP_USD']['val']['v2']);
-		AUDUSD = self.getVal(response_list[4]['AUD_USD']['val']['v1'],response_list[4]['AUD_USD']['val']['v2']);
-		USDCAD = self.getVal(response_list[5]['USD_CAD']['val']['v1'],response_list[5]['USD_CAD']['val']['v2']);
-		NZDUSD = self.getVal(response_list[6]['NZD_USD']['val']['v1'],response_list[6]['NZD_USD']['val']['v2']);
-		EURJPY = self.getValM(response_list[0]['EUR_USD']['val']['v1'],response_list[0]['EUR_USD']['val']['v2'],response_list[1]['USD_JPY']['val']['v1'],response_list[1]['USD_JPY']['val']['v2']);
-		EURCHF = self.getValM(response_list[0]['EUR_USD']['val']['v1'],response_list[0]['EUR_USD']['val']['v2'],response_list[2]['USD_CHF']['val']['v1'],response_list[2]['USD_CHF']['val']['v2']);
-		EURGBP = self.getValD(response_list[0]['EUR_USD']['val']['v1'],response_list[0]['EUR_USD']['val']['v2'],response_list[3]['GBP_USD']['val']['v1'],response_list[3]['GBP_USD']['val']['v2']);
-		CHFJPY = self.getValD(response_list[1]['USD_JPY']['val']['v1'],response_list[1]['USD_JPY']['val']['v2'],response_list[2]['USD_CHF']['val']['v1'],response_list[2]['USD_CHF']['val']['v2']);
-		GBPCHF = self.getValM(response_list[3]['GBP_USD']['val']['v1'],response_list[3]['GBP_USD']['val']['v2'],response_list[2]['USD_CHF']['val']['v1'],response_list[2]['USD_CHF']['val']['v2']);
-		GBPJPY = self.getValM(response_list[3]['GBP_USD']['val']['v1'],response_list[3]['GBP_USD']['val']['v2'],response_list[1]['USD_JPY']['val']['v1'],response_list[1]['USD_JPY']['val']['v2']);
-		AUDCHF = self.getValM(response_list[4]['AUD_USD']['val']['v1'],response_list[4]['AUD_USD']['val']['v2'],response_list[2]['USD_CHF']['val']['v1'],response_list[2]['USD_CHF']['val']['v2']);
-		AUDJPY = self.getValM(response_list[4]['AUD_USD']['val']['v1'],response_list[4]['AUD_USD']['val']['v2'],response_list[1]['USD_JPY']['val']['v1'],response_list[1]['USD_JPY']['val']['v2']);
-		CADJPY = self.getValD(response_list[1]['USD_JPY']['val']['v1'],response_list[1]['USD_JPY']['val']['v2'],response_list[5]['USD_CAD']['val']['v1'],response_list[5]['USD_CAD']['val']['v2']);
-		NZDJPY = self.getValM(response_list[6]['NZD_USD']['val']['v1'],response_list[6]['NZD_USD']['val']['v2'],response_list[1]['USD_JPY']['val']['v1'],response_list[1]['USD_JPY']['val']['v2']);
-
+		# v1は起点の価格、vlは現在時刻の価格
 		# # 各通貨の値の計算
 		Pairs = 7;
-		USD = (-EURUSD+USDJPY+USDCHF-GBPUSD-AUDUSD+USDCAD-NZDUSD)/Pairs;
-		JPY = (-EURJPY-USDJPY-CHFJPY-GBPJPY-AUDJPY-CADJPY-NZDJPY)/Pairs;
+		val_list = ['v1', 'v2']
+		res = {'v1' : None, 'v2' : None}
+		for val in val_list:
+			EURUSD = self.getVal(response_list[0]['EUR_USD']['val'][val],response_list[0]['EUR_USD']['val']['vl']);
+			USDJPY = self.getVal(response_list[1]['USD_JPY']['val'][val],response_list[1]['USD_JPY']['val']['vl']);
+			USDCHF = self.getVal(response_list[2]['USD_CHF']['val'][val],response_list[2]['USD_CHF']['val']['vl']);
+			GBPUSD = self.getVal(response_list[3]['GBP_USD']['val'][val],response_list[3]['GBP_USD']['val']['vl']);
+			AUDUSD = self.getVal(response_list[4]['AUD_USD']['val'][val],response_list[4]['AUD_USD']['val']['vl']);
+			USDCAD = self.getVal(response_list[5]['USD_CAD']['val'][val],response_list[5]['USD_CAD']['val']['vl']);
+			NZDUSD = self.getVal(response_list[6]['NZD_USD']['val'][val],response_list[6]['NZD_USD']['val']['vl']);
+			EURJPY = self.getValM(response_list[0]['EUR_USD']['val'][val],response_list[0]['EUR_USD']['val']['vl'],response_list[1]['USD_JPY']['val'][val],response_list[1]['USD_JPY']['val']['vl']);
+			EURCHF = self.getValM(response_list[0]['EUR_USD']['val'][val],response_list[0]['EUR_USD']['val']['vl'],response_list[2]['USD_CHF']['val'][val],response_list[2]['USD_CHF']['val']['vl']);
+			EURGBP = self.getValD(response_list[0]['EUR_USD']['val'][val],response_list[0]['EUR_USD']['val']['vl'],response_list[3]['GBP_USD']['val'][val],response_list[3]['GBP_USD']['val']['vl']);
+			CHFJPY = self.getValD(response_list[1]['USD_JPY']['val'][val],response_list[1]['USD_JPY']['val']['vl'],response_list[2]['USD_CHF']['val'][val],response_list[2]['USD_CHF']['val']['vl']);
+			GBPCHF = self.getValM(response_list[3]['GBP_USD']['val'][val],response_list[3]['GBP_USD']['val']['vl'],response_list[2]['USD_CHF']['val'][val],response_list[2]['USD_CHF']['val']['vl']);
+			GBPJPY = self.getValM(response_list[3]['GBP_USD']['val'][val],response_list[3]['GBP_USD']['val']['vl'],response_list[1]['USD_JPY']['val'][val],response_list[1]['USD_JPY']['val']['vl']);
+			AUDCHF = self.getValM(response_list[4]['AUD_USD']['val'][val],response_list[4]['AUD_USD']['val']['vl'],response_list[2]['USD_CHF']['val'][val],response_list[2]['USD_CHF']['val']['vl']);
+			AUDJPY = self.getValM(response_list[4]['AUD_USD']['val'][val],response_list[4]['AUD_USD']['val']['vl'],response_list[1]['USD_JPY']['val'][val],response_list[1]['USD_JPY']['val']['vl']);
+			CADJPY = self.getValD(response_list[1]['USD_JPY']['val'][val],response_list[1]['USD_JPY']['val']['vl'],response_list[5]['USD_CAD']['val'][val],response_list[5]['USD_CAD']['val']['vl']);
+			NZDJPY = self.getValM(response_list[6]['NZD_USD']['val'][val],response_list[6]['NZD_USD']['val']['vl'],response_list[1]['USD_JPY']['val'][val],response_list[1]['USD_JPY']['val']['vl']);
 
-		print(USD - JPY)
-		return (USD - JPY)
+			USD = (-EURUSD+USDJPY+USDCHF-GBPUSD-AUDUSD+USDCAD-NZDUSD)/Pairs;
+			JPY = (-EURJPY-USDJPY-CHFJPY-GBPJPY-AUDJPY-CADJPY-NZDJPY)/Pairs;
+			res[val] = USD - JPY
+
+		return (res['v1'] + res['v2']) /2
 
 	# 変化率
 	def getVal(self, v1, v2):
@@ -104,6 +107,7 @@ class Trend():
 def main():
 	trend = Trend()
 	trend.get()
+	print(trend.get())
 
 
 	# # 各通貨の値の計算
