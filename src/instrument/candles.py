@@ -150,12 +150,7 @@ def main():
         print(response.body)
         return
 
-    print("Instrument: {}".format(response.get("instrument", 200)))
-    print("Granularity: {}".format(response.get("granularity", 200)))
-
     printer = CandlePrinter()
-
-    candles = response.get("candles", 200)
 
     file_name = 'candles.csv'
     if args.file_name is not None:
