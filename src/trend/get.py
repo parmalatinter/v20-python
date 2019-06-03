@@ -31,11 +31,11 @@ class Trend():
 			{'NZD_JPY' : {'val' : None, 'res' : None}}
 		]
 
+		df = pd.read_csv(pd.compat.StringIO(csv), sep=',', engine='python', skipinitialspace=True)
+		
 		for response in response_list:
 
 			for property in list(response.keys()):
-
-				df = pd.read_csv(pd.compat.StringIO(csv), sep=',', engine='python', skipinitialspace=True)
 				dfs1 = df[(df['instrument'] == property)]
 				index = dfs1.shape[0] -1
 
