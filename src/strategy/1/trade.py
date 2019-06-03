@@ -144,6 +144,7 @@ def main():
 
 	trade.exec_command('v20-transaction-get-all')
 	trade.exec_command('v20-instrument-data-tables')
+	trade.exec_command('v20-instrument-candles-trend')
 
 	time.sleep(5)
 	
