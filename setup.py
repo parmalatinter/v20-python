@@ -15,6 +15,7 @@ setup(
             'v20-account-changes = account.changes:main',
             'v20-account-configure = account.configure:main',
             'v20-instrument-candles = instrument.candles:main',
+            'v20-instrument-candles-trend = instrument.candles_trend:main',
             'v20-instrument-candles-poll = instrument.candles_poll:main',
             'v20-instrument-data-tables = instrument.data_tables:main',
             'v20-order-get = order.get:main',
