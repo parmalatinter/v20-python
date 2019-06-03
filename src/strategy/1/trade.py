@@ -43,8 +43,6 @@ class Trade():
 		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price=%(price)s' % args
 		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 		res.wait()
-		print(command)
-		
 		out, err = res.communicate()
 		_line.send('order #', command + ' ' + out.decode('utf-8') )
 		self.is_ordered = True
@@ -80,7 +78,6 @@ class Trade():
 	def exec_command(self, command):
 		res = subprocess.Popen(command, shell=True)
 		res.wait()
-		print(res)
 		time.sleep(5)
 
 	def golden_trade(self, instrument, units, candles_csv_string, _line):
