@@ -22,7 +22,7 @@ class DB():
 		else:
 			conn = psycopg2.connect("dbname=test user=postgres password=postgres")
 
-		con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
+		conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 		cur = conn.cursor()
 
