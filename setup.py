@@ -49,6 +49,7 @@ setup(
             'v20-strategy-account = strategy.account:main',
             'v20-line-send = line.line:main',
             'v20-trend-get = trend.get:main',
+            'v20-db-get = db.get:main',
         ]
     }
 )
