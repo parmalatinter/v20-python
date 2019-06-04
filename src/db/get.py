@@ -39,7 +39,7 @@ class DB():
 	
 def main():
 	db = DB()
-	print(db.get())
+	db.get()
 
 if __name__ == "__main__":
 	main()
