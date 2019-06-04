@@ -31,7 +31,6 @@ class DB():
 		print(cur.execute("SELECT * FROM test;"))
 		cur.execute("DROP TABLE test")
 
-		cur.fetchone()
 		conn.commit()
 		cur.close()
 		conn.close()
