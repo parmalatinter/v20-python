@@ -1,4 +1,5 @@
 import psycopg2
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import strategy.environ
 
 class DB():
@@ -20,6 +21,8 @@ class DB():
 			conn = psycopg2.connect(self.url, sslmode='require')
 		else:
 			conn = psycopg2.connect("dbname=test user=postgres password=postgres")
+
+		con.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 		cur = conn.cursor()
 
