@@ -20,7 +20,6 @@ class DB():
 
 
 	def get(self):
-		conn = psycopg2.connect("dbname=test user=postgres password=postgres")
 		conn = psycopg2.connect("host=" + self.host + " port=" + self.port + " dbname=" + self.dbname + " user=" + self.user + " password=" + self.password)
 
 		conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
