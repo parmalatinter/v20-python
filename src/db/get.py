@@ -21,15 +21,18 @@ class DB():
 
 	def get(self):
 		_environ = strategy.environ.Environ()
-		conn = psycopg2.connect(_environ.get("DATABASE_URL"))
+		conn = psycopg2.connect("host=" + self.host + " port=" + self.port + " dbname=" + self.dbname + " user=" + self.user + " password=" + self.password)
 		conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 		cur = conn.cursor()
 
 		cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
 		cur.execute("INSERT INTO test (num, data) VALUES (%s, %s)",(100, "abc'def"))
-		print(cur.execute("SELECT * FROM test;"))
+		cur.execute("SELECT * FROM test;")
+
+		rows = cur.fetchall()
 		cur.execute("DROP TABLE test")
+		print(rows)
 
 		conn.commit()
 		cur.close()
