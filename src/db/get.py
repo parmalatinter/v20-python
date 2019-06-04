@@ -20,7 +20,14 @@ class DB():
 			conn = psycopg2.connect(self.url, sslmode='require')
 		else:
 			conn = psycopg2.connect("dbname=test user=postgres password=postgres")
+
 		cur = conn.cursor()
+
+		cur.execute("SELECT 1 FROM pg_catalog.pg_database WHERE datname = 'test'")
+		exists = cur.fetchone()
+		if not exists:
+		    cur.execute('CREATE DATABASE test')
+
 		cur.execute("CREATE TABLE test (id serial PRIMARY KEY, num integer, data varchar);")
 		cur.execute("INSERT INTO test (num, data) VALUES (%s, %s)",(100, "abc'def"))
 		cur.execute("SELECT * FROM test;")
