@@ -20,8 +20,7 @@ class DB():
 
 
 	def get(self):
-		conn = psycopg2.connect("host=" + self.host + " port=" + self.port + " dbname=" + self.dbname + " user=" + self.user + " password=" + self.password)
-
+		conn = psycopg2.connect(_environ.get("DATABASE_URL"))
 		conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
 		cur = conn.cursor()
