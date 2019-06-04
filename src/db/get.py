@@ -11,9 +11,9 @@ class DB():
 	def __init__(self):
 		_environ = strategy.environ.Environ()
 		self.dbname = _environ.get('dbname') if _environ.get('dbname') else "test"
-		self.user = int(_environ.get('user')) if _environ.get('user') else "postgres"
-		self.password = int(_environ.get('password')) if _environ.get('password') else "postgres"
-		self.url = int(_environ.get('DATABASE_URL')) if _environ.get('DATABASE_URL') else ""
+		self.user = _environ.get('user') if _environ.get('user') else "postgres"
+		self.password = _environ.get('password') if _environ.get('password') else "postgres"
+		self.url = _environ.get('DATABASE_URL') if _environ.get('DATABASE_URL') else ""
 
 	def get(self):
 		if self.url:
