@@ -20,6 +20,7 @@ class DB():
 
 
 	def get(self):
+		_environ = strategy.environ.Environ()
 		conn = psycopg2.connect(_environ.get("DATABASE_URL"))
 		conn.set_isolation_level(ISOLATION_LEVEL_AUTOCOMMIT)
 
