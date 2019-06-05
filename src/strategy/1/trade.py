@@ -21,6 +21,7 @@ import file.file_utility
 import strategy.environ
 import strategy.account
 import trend.get
+import db.history
 
 import time
 
@@ -28,6 +29,7 @@ class Trade():
 
 	is_ordered = False
 	drive_id = ''
+	history = db.history.History()
 
 	def init(self, drive_id):
 		self.is_ordered = False
@@ -47,7 +49,7 @@ class Trade():
 		_line.send('order #', command + ' ' + out.decode('utf-8') )
 		self.is_ordered = True
 
-	def close(self, transaction_csv_string, hours, now_dt, _line):
+	def close(self, instrument, transaction_csv_string, hours, now_dt, last_rate, _line):
 
 		df = pd.read_csv(transaction_csv_string, sep=',', engine='python', skipinitialspace=True)
 
@@ -67,8 +69,9 @@ class Trade():
 				res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 				res.wait()
 				out, err = res.communicate()
-				_line.send('order #', command + ' ' + out.decode('utf-8') )
 				self.is_ordered = True
+				self.history.insert(int(row.id), last_rate,  'close:' + str(last_rate), instrument, 0, 0, 99, 0, False, False)
+				_line.send('order #', command + ' ' + out.decode('utf-8') )
 
 	def get_account_details(self):
 		account = strategy.account.Account()
@@ -88,37 +91,76 @@ class Trade():
 		trend_usd = trend.get.Trend().get()
 		is_golden = last_df['golden'][last_df.index[0]]
 		is_dead = last_df['dead'][last_df.index[0]]
+		_units = 0
+		_event_open_id = 0
+		_message = ''
+		_target_price = 0
 		if is_golden:
 			if trend_usd > 5:
-				_line.send("buy order 1 #",str(late))
+				_message = ("buy order 1 #",str(late))
+				_units = units
+				_event_open_id = 1
+				_target_price = late + 0.1
 				self.order(instrument, units, late + 0.1, _line)
 			elif trend_usd < -5:
-				_line.send("sell order 2 #",str(late))
+				_message = ("sell order 2 #",str(late))
+				_units = 0 - units
+				_event_open_id = 2
+				_target_price = late - 0.1
 				self.order(instrument, (0 - units), late - 0.1, _line)
 			else:
-				_line.send("buy order 3 #",str(late))
+				_message = ("buy order 3 #",str(late))
+				_event_open_id = 3
+				_target_price = late + 0.05
 				self.order(instrument, units, late + 0.05, _line)
 		elif is_dead:
 			if trend_usd < -5:
-				_line.send("sell order 1 #",str(late))
+				_message = ("sell order 1 #",str(late))
+				_units = 0 - units
+				_event_open_id = 4
+				_target_price = late - 0.1
 				self.order(instrument, (0 - units), late - 0.1, _line)
 			elif trend_usd > 5:
-				_line.send("buy order 2 #",str(late))
+				_message = ("buy order 2 #",str(late))
+				_units = units
+				_event_open_id = 5
+				_target_price = late + 0.1
 				self.order(instrument, units, late + 0.1, _line)
 			else:
-				_line.send("sell order 3 #",str(late))
+				_message = ("sell order 3 #",str(late))
+				_units = 0 - units
+				_event_open_id = 6
+				_target_price = late - 0.05
 				self.order(instrument, (0 - units), late - 0.05, _line)
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
+			_message = ("buy chance order #",str(late))
+			_units = units * 2
+			_event_open_id = 7
+			_target_price = late + 0.1
 			self.order(instrument, (units * 2), late + 0.1, _line)
-			_line.send("buy chance order #",str(late))
-		if last_df['rule_3'][last_df.index[0]] == 0 and last_df['rule_4'][last_df.index[0]] == 0:
-			self.order(instrument, (0 - (units * 2)), late - 0.1, _line)
-			_line.send("sell chance order #",str(late))
+		elif last_df['rule_3'][last_df.index[0]] == 0 and last_df['rule_4'][last_df.index[0]] == 0:
+			_message = ("sell chance order #",str(late))
+			_units = 0 - (units * 2)
+			_event_open_id = 8
+			_target_price = late - 0.1
+		
+		if _event_open_id:
+			self.order(instrument, _units,_target_price, _line)
+			self.history.insert(0, late,  'order:' + str(_target_price), instrument, _units, 0, _event_open_id, trend_usd, is_golden, is_dead)
+			_line.send(_message)
+
+		return late
+
 	
 	def get_now_dt(self, candles_csv_string):
 		df = pd.read_csv(candles_csv_string, sep=',', engine='python', skipinitialspace=True)
 		last_df = df.tail(1)
 		return last_df['time'][last_df.index[0]]
+
+	def get_last_rate(self, candles_csv_string):
+		df = pd.read_csv(candles_csv_string, sep=',', engine='python', skipinitialspace=True)
+		last_df = df.tail(1)
+		return last_df['c'][last_df.index[0]]
 	
 def main():
 
@@ -154,13 +196,17 @@ def main():
 	candles_csv = file.file_utility.File_utility(filename, drive_id)
 	candles_csv_string = candles_csv.get_string()
 	now_dt = trade.get_now_dt(candles_csv_string)
-	
+
+	candles_csv = file.file_utility.File_utility(filename, drive_id)
+	candles_csv_string = candles_csv.get_string()
+	last_rate = trade.get_last_rate(candles_csv_string)
+
 	filename = 'transaction.csv'
 	transaction_csv = file.file_utility.File_utility(filename, drive_id)
 	transaction_csv_string = transaction_csv.get_string()
 
 	if transaction_csv_string and now_dt:
-		trade.close(transaction_csv_string, hours, now_dt, _line)
+		trade.close(instrument, transaction_csv_string, hours, now_dt, last_rate, _line)
 
 	filename = 'details.csv'
 	details = trade.get_account_details()
