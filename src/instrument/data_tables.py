@@ -26,9 +26,7 @@ class Data_tables():
 		os.chdir(dir_path)
 		args = dict(instrument=self.instrument, before=before, file_name=self.file_name, granularity =self.granularity)
 		command = ' v20-instrument-candles %(instrument)s --from-time="%(before)s" --granularity="%(granularity)s" --file_name="%(file_name)s"' % args
-		print(command)
 		res = subprocess.Popen(command, shell=True)
-		print(res)
 
 def main():
 	data_tables = Data_tables('candles.csv', 'USD_JPY', 24, "M10")
