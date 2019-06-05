@@ -3,6 +3,7 @@ from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
 import strategy.environ
 import os 
 import datetime
+import pandas as pd
 
 class History():
 
@@ -27,29 +28,52 @@ class History():
 
 		return conn
 
-	def get(self):
-		conn = self.get_conn()
-
-		cur = conn.cursor()
-		cur.execute("SELECT * FROM history;")
-
-		rows = cur.fetchall()
-		print(rows)
-
-		conn.commit()
-		cur.close()
-		conn.close()
-
-	def exec_query(self, query, args = None):
+	def exec_query(self, query, args = None, is_get_res = False):
 		conn = self.get_conn()
 
 		cur = conn.cursor()
 		
 		cur.execute(query, args)
 
+		res = None
+
+		if is_get_res:
+			res = cur.fetchall()
+		
 		conn.commit()
 		cur.close()
 		conn.close()
+
+		return res
+
+	def exec_query_by_panda(self, query, index_col):
+		conn = self.get_conn()
+
+		cur = conn.cursor()
+
+		res = pd.read_sql(sql=query, con=conn, index_col=index_col )
+
+		conn.commit()
+		cur.close()
+		conn.close()
+
+		return res
+
+	def get(self):
+
+		return self.exec_query("SELECT * FROM history;", None, True)
+
+	def get_all_by_panda(self):
+		conn = self.get_conn()
+
+		cur = conn.cursor()
+
+		rows = self.exec_query_by_panda("SELECT * FROM history;", 'id')
+
+		cur.close()
+		conn.close()
+
+		return rows
 
 	def insert(self, trade_id, price, state, instrument, units, unrealized_pl, event_open_id, trend, judge_1, judge_2):
 		create_time = datetime.datetime.now() 
@@ -87,27 +111,30 @@ def main():
 	history = History()
 	# history.drop()
 	history.create()
-	trade_id = 1
-	price = 100.20
-	price_close = 110.56
-	state = 'state 1'
-	instrument = 'USD_JPY'
-	units = 10000
-	unrealized_pl = 10000 
+	# trade_id = 1
+	# price = 100.20
+	# price_close = 110.56
+	# state = 'state 1'
+	# instrument = 'USD_JPY'
+	# units = 10000
+	# unrealized_pl = 10000 
 	
-	event_open_id = 1
-	trend = 10 
-	judge_1 = True 
-	judge_2 = False
-	history.insert(trade_id, price, state, instrument, units, unrealized_pl, event_open_id, trend, judge_1, judge_2)
+	# event_open_id = 1
+	# trend = 10 
+	# judge_1 = True 
+	# judge_2 = False
+	# history.insert(trade_id, price, state, instrument, units, unrealized_pl, event_open_id, trend, judge_1, judge_2)
 
-	id = 1
-	update_time = datetime.datetime.now()
-	pl = 20000
-	event_close_id = 1
-	history.update(id, price_close, pl, event_close_id)
-	history.get()
-	history.delete(id)
+	# id = 1
+	# update_time = datetime.datetime.now()
+	# pl = 20000
+	# event_close_id = 1
+	# history.update(id, price_close, pl, event_close_id)
+
+	# history.delete(id)
+
+	# print(history.get())
+	print(history.get_all_by_panda())
 
 if __name__ == "__main__":
 	main()
