@@ -72,7 +72,7 @@ class Trade():
 				res.wait()
 				out, err = res.communicate()
 				self.is_ordered = True
-				self.history.update(int(row.id), last_rate,  0, 99)
+				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), 99)
 				_line.send('order #', command + ' ' + out.decode('utf-8') )
 
 	def get_account_details(self):
@@ -171,7 +171,7 @@ class Trade():
 	def insert_histoy(self, trade_history, trade_id):
 		self.history.insert(
 			int(trade_id),
-			trade_history.late,
+			float(trade_history.late),
 			'target:' + str(trade_history.target_price),
 			trade_history.instrument,
 			trade_history.units,
