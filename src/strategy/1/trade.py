@@ -40,7 +40,6 @@ class Trade():
 		time.sleep(5)
 
 	def order(self, instrument, units, price, _line):
-		price = round(price, 2)
 		args = dict(instrument=instrument, units=units, price=price)
 		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price=%(price)s' % args
 		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
@@ -101,43 +100,43 @@ class Trade():
 				_units = units
 				_event_open_id = 1
 				_target_price = late + 0.1
-				self.order(instrument, units, late + 0.1, _line)
+				
 			elif trend_usd < -5:
 				_message = ("sell order 2 #",str(late))
 				_units = 0 - units
 				_event_open_id = 2
 				_target_price = late - 0.1
-				self.order(instrument, (0 - units), late - 0.1, _line)
+
 			else:
 				_message = ("buy order 3 #",str(late))
 				_event_open_id = 3
 				_target_price = late + 0.05
-				self.order(instrument, units, late + 0.05, _line)
+
 		elif is_dead:
 			if trend_usd < -5:
 				_message = ("sell order 1 #",str(late))
 				_units = 0 - units
 				_event_open_id = 4
 				_target_price = late - 0.1
-				self.order(instrument, (0 - units), late - 0.1, _line)
+
 			elif trend_usd > 5:
 				_message = ("buy order 2 #",str(late))
 				_units = units
 				_event_open_id = 5
 				_target_price = late + 0.1
-				self.order(instrument, units, late + 0.1, _line)
+				
 			else:
 				_message = ("sell order 3 #",str(late))
 				_units = 0 - units
 				_event_open_id = 6
 				_target_price = late - 0.05
-				self.order(instrument, (0 - units), late - 0.05, _line)
+
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			_message = ("buy chance order #",str(late))
 			_units = units * 2
 			_event_open_id = 7
 			_target_price = late + 0.1
-			self.order(instrument, (units * 2), late + 0.1, _line)
+
 		elif last_df['rule_3'][last_df.index[0]] == 0 and last_df['rule_4'][last_df.index[0]] == 0:
 			_message = ("sell chance order #",str(late))
 			_units = 0 - (units * 2)
@@ -145,6 +144,7 @@ class Trade():
 			_target_price = late - 0.1
 		
 		if _event_open_id:
+			_target_price =  round(_target_price, 2)
 			self.order(instrument, _units,_target_price, _line)
 			self.history.insert(0, late,  'order:' + str(_target_price), instrument, _units, 0, _event_open_id, trend_usd, is_golden, is_dead)
 			_line.send(_message)
@@ -152,15 +152,11 @@ class Trade():
 		return late
 
 	
-	def get_now_dt(self, candles_csv_string):
+	def get_info(self, candles_csv_string):
 		df = pd.read_csv(candles_csv_string, sep=',', engine='python', skipinitialspace=True)
 		last_df = df.tail(1)
-		return last_df['time'][last_df.index[0]]
+		return {'time' : last_df['time'][last_df.index[0]], 'close' : last_df['close'][last_df.index[0]]}
 
-	def get_last_rate(self, candles_csv_string):
-		df = pd.read_csv(candles_csv_string, sep=',', engine='python', skipinitialspace=True)
-		last_df = df.tail(1)
-		return last_df['c'][last_df.index[0]]
 	
 def main():
 
@@ -195,18 +191,14 @@ def main():
 		
 	candles_csv = file.file_utility.File_utility(filename, drive_id)
 	candles_csv_string = candles_csv.get_string()
-	now_dt = trade.get_now_dt(candles_csv_string)
-
-	candles_csv = file.file_utility.File_utility(filename, drive_id)
-	candles_csv_string = candles_csv.get_string()
-	last_rate = trade.get_last_rate(candles_csv_string)
+	info = trade.get_info(candles_csv_string)
 
 	filename = 'transaction.csv'
 	transaction_csv = file.file_utility.File_utility(filename, drive_id)
 	transaction_csv_string = transaction_csv.get_string()
 
-	if transaction_csv_string and now_dt:
-		trade.close(instrument, transaction_csv_string, hours, now_dt, last_rate, _line)
+	if transaction_csv_string and info['time']:
+		trade.close(instrument, transaction_csv_string, hours, now_dt, info['close'], _line)
 
 	filename = 'details.csv'
 	details = trade.get_account_details()
