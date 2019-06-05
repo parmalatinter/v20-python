@@ -85,7 +85,7 @@ class History():
 
 def main():
 	history = History()
-	history.drop()
+	# history.drop()
 	history.create()
 	trade_id = 1
 	price = 100.20
