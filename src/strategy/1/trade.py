@@ -204,7 +204,6 @@ def main():
 		exit()
 
 	trade.exec_command('v20-instrument-data-tables')
-	time.sleep(5)
 	
 	filename = 'candles.csv'
 	candles_csv = file.file_utility.File_utility(filename, drive_id)
@@ -219,7 +218,6 @@ def main():
 	info = trade.get_info(candles_df)
 
 	trade.exec_command('v20-transaction-get-all')
-	time.sleep(5)
 
 	filename = 'transaction.csv'
 	transaction_csv = file.file_utility.File_utility(filename, drive_id)
