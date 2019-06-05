@@ -24,6 +24,8 @@ import trend.get
 import db.history
 
 import time
+import copy
+
 
 class Trade():
 
@@ -39,6 +41,9 @@ class Trade():
 		googleDrive.delete_all()
 		time.sleep(5)
 
+	def get_df(self, csv_string):
+		return pd.read_csv(csv_string, sep=',', engine='python', skipinitialspace=True)
+
 	def order(self, instrument, units, price, _line):
 		args = dict(instrument=instrument, units=units, price=price)
 		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price=%(price)s' % args
@@ -48,9 +53,7 @@ class Trade():
 		_line.send('order #', command + ' ' + out.decode('utf-8') )
 		self.is_ordered = True
 
-	def close(self, instrument, transaction_csv_string, hours, now_dt, last_rate, _line):
-
-		df = pd.read_csv(transaction_csv_string, sep=',', engine='python', skipinitialspace=True)
+	def close(self, instrument, df, hours, now_dt, last_rate, _line):
 
 		now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
@@ -69,7 +72,7 @@ class Trade():
 				res.wait()
 				out, err = res.communicate()
 				self.is_ordered = True
-				self.history.insert(int(row.id), last_rate,  'close:' + str(last_rate), instrument, 0, 0, 99, 0, False, False)
+				self.history.update(int(row.id), last_rate,  0, 99)
 				_line.send('order #', command + ' ' + out.decode('utf-8') )
 
 	def get_account_details(self):
@@ -144,18 +147,40 @@ class Trade():
 			_target_price = late - 0.1
 		
 		if _event_open_id:
+			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
 			self.order(instrument, _units,_target_price, _line)
-			self.history.insert(0, late,  'order:' + str(_target_price), instrument, _units, 0, _event_open_id, trend_usd, is_golden, is_dead)
 			_line.send(_message)
+			return {
+				'late': late,
+				'target_price' : _target_price,
+				'instrument': instrument,
+				'units': _units,
+				'event_open_id' : _event_open_id,
+				'trend' : trend_usd,
+				'is_golden': is_golden,
+				'is_dead' :is_dead
+			}
 
-		return late
-
+		return None
 	
-	def get_info(self, candles_csv_string):
-		df = pd.read_csv(candles_csv_string, sep=',', engine='python', skipinitialspace=True)
+	def get_info(self, df):
 		last_df = df.tail(1)
 		return {'time' : last_df['time'][last_df.index[0]], 'close' : last_df['close'][last_df.index[0]]}
+
+	def insert_histoy(self, trade_history, trade_id):
+		self.history.insert(
+			int(trade_id),
+			trade_history.late,
+			'target:' + str(trade_history.target_price),
+			trade_history.instrument,
+			trade_history.units,
+			0,
+			trade_history.event_open_id,
+			trade_history.trend,
+			trade_history.is_golden,
+			trade_history.is_dead
+		)
 
 	
 def main():
@@ -185,20 +210,29 @@ def main():
 	filename = 'candles.csv'
 	candles_csv = file.file_utility.File_utility(filename, drive_id)
 	candles_csv_string = candles_csv.get_string()
+	candles_csv_string2 = copy.copy(candles_csv_string)
+	candles_df= trade.get_df(candles_csv_string)
 		
+	trade_history = None
 	if condition.get_is_eneble_new_order(reduce_time):
-		trade.golden_trade(instrument, units, candles_csv_string, _line)
+		trade_history = trade.golden_trade(instrument, units, candles_csv_string2, _line)
 		
-	candles_csv = file.file_utility.File_utility(filename, drive_id)
-	candles_csv_string = candles_csv.get_string()
-	info = trade.get_info(candles_csv_string)
+	info = trade.get_info(candles_df)
+
+	trade.exec_command('v20-transaction-get-all')
+	time.sleep(5)
 
 	filename = 'transaction.csv'
 	transaction_csv = file.file_utility.File_utility(filename, drive_id)
 	transaction_csv_string = transaction_csv.get_string()
+	transaction_df= trade.get_df(transaction_csv_string)
 
-	if transaction_csv_string and info['time']:
-		trade.close(instrument, transaction_csv_string, hours, info['time'], info['close'], _line)
+	if not transaction_df.empty:
+		if info['time']:
+			trade.close(instrument, transaction_df, hours, info['time'], info['close'], _line)
+
+		if trade_history:
+			trade.insert_histoy(trade_history,transaction_df['id'][transaction_df.index[0]])
 
 	filename = 'details.csv'
 	details = trade.get_account_details()

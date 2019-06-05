@@ -10,7 +10,6 @@ class Account():
 		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 		res.wait()
 
-		print(command)
 		out, err = res.communicate()
 		return command + ' ' + out.decode('utf-8')
 		

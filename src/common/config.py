@@ -16,7 +16,7 @@ DEFAULT_ENV = "V20_CONF"
 #
 # The default path for the v20 configuration file
 #
-DEFAULT_PATH = "~/.v20.conf"
+DEFAULT_PATH = "/.v20.conf"
 
 
 class ConfigPathError(Exception):
