@@ -198,7 +198,7 @@ def main():
 	transaction_csv_string = transaction_csv.get_string()
 
 	if transaction_csv_string and info['time']:
-		trade.close(instrument, transaction_csv_string, hours, now_dt, info['close'], _line)
+		trade.close(instrument, transaction_csv_string, hours, info['time'], info['close'], _line)
 
 	filename = 'details.csv'
 	details = trade.get_account_details()
