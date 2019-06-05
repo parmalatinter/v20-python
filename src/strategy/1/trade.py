@@ -112,6 +112,7 @@ class Trade():
 
 			else:
 				_message = ("buy order 3 #",str(late))
+				_units = units
 				_event_open_id = 3
 				_target_price = late + 0.05
 
