@@ -202,9 +202,7 @@ def main():
 	if condition.get_is_opening() == False:
 		exit()
 
-	trade.exec_command('v20-transaction-get-all')
 	trade.exec_command('v20-instrument-data-tables')
-
 	time.sleep(5)
 	
 	filename = 'candles.csv'
