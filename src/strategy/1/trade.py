@@ -146,7 +146,7 @@ class Trade():
 			_event_open_id = 8
 			_target_price = late - 0.1
 		
-		if _event_open_id:
+		if _event_open_id > 0:
 			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
 			self.order(instrument, _units,_target_price, _line)
