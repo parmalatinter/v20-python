@@ -191,6 +191,8 @@ class Trade():
 			trend_usd['res']
 		)
 
+	def get_histoy_csv(self):
+		return self.history.get_all_by_csv()
 	
 def main():
 
@@ -245,6 +247,12 @@ def main():
 	candles_csv = file.file_utility.File_utility( 'candles.csv', drive_id)
 	candles_csv.set_contents(candles_csv_string)
 	candles_csv.export_drive()
+
+	histoy_csv_string = trade.get_histoy_csv()
+	histoy_csv = file.file_utility.File_utility( 'history.csv', drive_id)
+	histoy_csv.set_contents(histoy_csv_string)
+	histoy_csv.export_drive()
+
 
 if __name__ == "__main__":
 	main()

@@ -75,6 +75,11 @@ class History():
 
 		return rows
 
+	def get_all_by_csv(self):
+		df = self.get_all_by_panda()
+
+		return df.to_csv()
+
 	def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, judge_1, judge_2, memo=''):
 		create_time = datetime.datetime.now() 
 		
