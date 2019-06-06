@@ -174,7 +174,7 @@ class Trade():
 			int(trade_id),
 			float(trade_history['late']),
 			float(trade_history['target_price']),
-			'open'
+			'open',
 			trade_history['instrument'],
 			trade_history['units'],
 			0,
