@@ -1,9 +1,10 @@
 import psycopg2
-from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT
+from psycopg2.extensions import ISOLATION_LEVEL_AUTOCOMMIT, register_adapter, AsIs
 import strategy.environ
 import os 
 import datetime
 import pandas as pd
+import numpy
 
 class History():
 
@@ -21,6 +22,9 @@ class History():
 		self.password = _environ.get('password') if _environ.get('password') else self.password
 		self.host = _environ.get('host') if _environ.get('host') else self.host
 		self.port = _environ.get('port') if _environ.get('port') else self.port
+
+		register_adapter(numpy.float64, addapt_numpy_float64)
+		register_adapter(numpy.int64, addapt_numpy_int64)
 
 	def get_conn(self):
 		conn = psycopg2.connect("host=" + self.host + " port=" + self.port + " dbname=" + self.dbname + " user=" + self.user + " password=" + self.password)
@@ -111,6 +115,11 @@ class History():
 	def drop(self):
 
 		self.exec_query( 'DROP TABLE IF EXISTS history')
+
+	def addapt_numpy_float64(numpy_float64):
+	    return AsIs(numpy_float64)
+	def addapt_numpy_int64(numpy_int64):
+	    return AsIs(numpy_int64)
 
 def main():
 	history = History()
