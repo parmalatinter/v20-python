@@ -151,13 +151,13 @@ class Trade():
 		else:
 			is_dead = False
 
-		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
+		if rule_1 and rule_2:
 			_message = ("buy chance order #",str(late))
 			_units = units * 2
 			_event_open_id = 7
 			_target_price = late + 0.1
 
-		elif last_df['rule_3'][last_df.index[0]] == 0 and last_df['rule_4'][last_df.index[0]] == 0:
+		elif rule_3 and rule_4:
 			_message = ("sell chance order #",str(late))
 			_units = 0 - (units * 2)
 			_event_open_id = 8
