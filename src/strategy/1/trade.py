@@ -170,6 +170,7 @@ class Trade():
 		return {'time' : last_df['time'][last_df.index[0]], 'close' : last_df['close'][last_df.index[0]]}
 
 	def insert_histoy(self, trade_history, trade_id):
+		print(trade_history,trade_id)
 		self.history.insert(
 			int(trade_id),
 			float(trade_history.late),
