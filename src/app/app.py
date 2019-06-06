@@ -2,12 +2,19 @@
 # coding: utf-8
 
 import os
+import sys
 from flask import Flask, render_template
+import file.file_utility
+import strategy.environ
 
 app = Flask(__name__)
 app.debug = True
 
+environ = strategy.environ.Environ()
+
 template_path = os.path.dirname(app.instance_path) + '/src/app/templates/'
+drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
+
 
 @app.route('/')
 def index():
@@ -15,10 +22,16 @@ def index():
 
 
 @app.route('/hello/<name>')
-def hello(name=''):
-    if name == '':
-    	name = u'ななしさん'
-    return render_template('hello.html', name=name)
+def hello(name='candles'):
+	candles_csv = file.file_utility.File_utility(name + '.csv', drive_id)
+	candles_csv_string = candles_csv.get_string()
+	contents = candles_csv_string.getvalue()
+	print(contents, file=sys.stderr)
+	print(123456, file=sys.stderr)
+	candles_csv_string.close()
+	if name == '':
+		name = u'ななしさん'
+	return render_template('hello.html', name=name, contents=contents)
 
 
 @app.route('/debug')
