@@ -172,6 +172,7 @@ def main():
     candle_temp = draw.caculate_candle(df)
     print(df)
     draw.plot(df, candle_temp)
+    df.to_csv('out.csv')
 
 if __name__ == "__main__":
     main()
