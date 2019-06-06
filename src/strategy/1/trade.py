@@ -173,15 +173,15 @@ class Trade():
 		print(trade_history,trade_id)
 		self.history.insert(
 			int(trade_id),
-			float(trade_history.late),
-			'target:' + str(trade_history.target_price),
-			trade_history.instrument,
-			trade_history.units,
+			float(trade_history['late']),
+			'target:' + str(trade_history['target_price']),
+			trade_history['instrument'],
+			trade_history['units'],
 			0,
-			trade_history.event_open_id,
-			trade_history.trend,
-			trade_history.is_golden,
-			trade_history.is_dead
+			trade_history['event_open_id'],
+			trade_history['trend'],
+			trade_history['is_golden'],
+			trade_history['is_dead']
 		)
 
 	
