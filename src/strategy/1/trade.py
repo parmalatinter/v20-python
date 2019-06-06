@@ -177,10 +177,10 @@ class Trade():
 				'event_open_id' : _event_open_id,
 				'is_golden': is_golden,
 				'is_dead' :is_dead,
-				'rule_1' :rule_1,
-				'rule_2' :rule_2,
-				'rule_3' :rule_3,
-				'rule_4' :rule_4
+				'rule_1' :bool(rule_1),
+				'rule_2' :bool(rule_2),
+				'rule_3' :bool(rule_3),
+				'rule_4' :bool(rule_4)
 			}
 
 		return None
