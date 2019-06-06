@@ -93,6 +93,7 @@ class Trade():
 	def golden_trade(self, instrument, units, df_candles, trend_usd, _line):
 		draw = golden.draw.Draw()
 		df = draw.caculate(df_candles)
+		print(df)
 		last_df = df.tail(1)
 		late = last_df['c'][last_df.index[0]]
 		

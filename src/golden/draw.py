@@ -76,7 +76,7 @@ class Draw(object):
         df.loc[(df['c3'] > df['upper']),'rule_3']=0
 
         # ルールその4
-        df['rule_2'] = -1
+        df['rule_4'] = -1
         df.loc[(df['o'] - df['c'] > 0) & (df['o1'] - df['c1'] > 0) & (df['o2'] - df['c2'] > 0),'rule_4']=0
 
         # ゴールデンクロスを検出
@@ -142,31 +142,35 @@ class Draw(object):
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['rule_1'])
         ax.plot(candle_temp['rule_2'])
+        ax.plot(candle_temp['rule_3'])
+        ax.plot(candle_temp['rule_4'])
 
-        ax = plt.subplot(2, 1, 2)
-        ax.plot(candle_temp['g_profit'])
-        ax.plot(candle_temp['d_profit'])
-        print(candle_temp.head(1)['t'])
-        print(candle_temp['g_profit'].sum())
-        print(candle_temp['d_profit'].sum())
-        print(candle_temp.tail(1)['t'])
+        # ax = plt.subplot(2, 1, 2)
+        # ax.plot(candle_temp['g_profit'])
+        # ax.plot(candle_temp['d_profit'])
+        # print(candle_temp.head(1)['t'])
+        # print(candle_temp['g_profit'].sum())
+        # print(candle_temp['d_profit'].sum())
+        # print(candle_temp.tail(1)['t'])
 
         plt.show()
         
-        ax = plt.subplot(2, 1, 1)
-        # バックテストの結果
-        df[['g_profit', 'd_profit']].cumsum().plot(grid=True, figsize=(15, 10))
+        # ax = plt.subplot(2, 1, 1)
+        # # バックテストの結果
+        # df[['g_profit', 'd_profit']].cumsum().plot(grid=True, figsize=(15, 10))
      
-        plt.savefig('my_figure.png')
-        plt.show()
+        # plt.savefig('my_figure.png')
+        # plt.show()
 
 def main():
-    dir_path = os.path.dirname(os.path.realpath(__file__))
     draw = Draw()
+    dir_path = os.path.dirname(os.path.realpath(__file__))
     draw.chdir(dir_path + "/datas")
+    df = pd.read_csv('usd_10min_api.csv', sep=',', engine='python', skipinitialspace=True)
     draw.set_file_name('usd_10min_api.csv')
-    df = draw.caculate()
+    df = draw.caculate(df)
     candle_temp = draw.caculate_candle(df)
+    print(df)
     draw.plot(df, candle_temp)
 
 if __name__ == "__main__":
