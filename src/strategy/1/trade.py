@@ -72,7 +72,7 @@ class Trade():
 				res.wait()
 				out, err = res.communicate()
 				self.is_ordered = True
-				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), 99)
+				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), 99, row.state)
 				_line.send('order #', command + ' ' + out.decode('utf-8') )
 
 	def get_account_details(self):
@@ -85,12 +85,12 @@ class Trade():
 		res.wait()
 		time.sleep(5)
 
-	def golden_trade(self, instrument, units, candles_csv_string, _line):
+	def golden_trade(self, instrument, units, candles_csv_string, trend_usd, _line):
 		draw = golden.draw.Draw()
 		df = draw.caculate(candles_csv_string)
 		last_df = df.tail(1)
 		late = last_df['c'][last_df.index[0]]
-		trend_usd = trend.get.Trend().get()
+		
 		is_golden = last_df['golden'][last_df.index[0]]
 		is_dead = last_df['dead'][last_df.index[0]]
 		_units = 0
@@ -98,13 +98,13 @@ class Trade():
 		_message = ''
 		_target_price = 0
 		if is_golden:
-			if trend_usd > 5:
+			if trend_usd['res'] > 5:
 				_message = ("buy order 1 #",str(late))
 				_units = units
 				_event_open_id = 1
 				_target_price = late + 0.1
 				
-			elif trend_usd < -5:
+			elif trend_usd['res'] < -5:
 				_message = ("sell order 2 #",str(late))
 				_units = 0 - units
 				_event_open_id = 2
@@ -117,13 +117,13 @@ class Trade():
 				_target_price = late + 0.05
 
 		elif is_dead:
-			if trend_usd < -5:
+			if trend_usd['res'] < -5:
 				_message = ("sell order 1 #",str(late))
 				_units = 0 - units
 				_event_open_id = 4
 				_target_price = late - 0.1
 
-			elif trend_usd > 5:
+			elif trend_usd['res'] > 5:
 				_message = ("buy order 2 #",str(late))
 				_units = units
 				_event_open_id = 5
@@ -158,7 +158,6 @@ class Trade():
 				'instrument': instrument,
 				'units': _units,
 				'event_open_id' : _event_open_id,
-				'trend' : trend_usd,
 				'is_golden': is_golden,
 				'is_dead' :is_dead
 			}
@@ -169,17 +168,19 @@ class Trade():
 		last_df = df.tail(1)
 		return {'time' : last_df['time'][last_df.index[0]], 'close' : last_df['close'][last_df.index[0]]}
 
-	def insert_histoy(self, trade_history, trade_id):
+	def insert_histoy(self, trade_history, trade_id, trend_usd):
 		print(trade_history,trade_id)
 		self.history.insert(
 			int(trade_id),
 			float(trade_history['late']),
-			'target:' + str(trade_history['target_price']),
+			float(trade_history['target_price']),
+			'open'
 			trade_history['instrument'],
 			trade_history['units'],
 			0,
 			trade_history['event_open_id'],
-			trade_history['trend'],
+			trend_usd['v1'],
+			trend_usd['v2'],
 			trade_history['is_golden'],
 			trade_history['is_dead']
 		)
@@ -194,6 +195,7 @@ def main():
 	hours = int(_environ.get('hours')) if _environ.get('hours') else 3
 	reduce_time = float(_environ.get('reduce_time')) if _environ.get('reduce_time') else 5
 	drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
+	trend_usd = trend.get.Trend().get()
 	now_dt = None
 
 	trade = Trade()
@@ -214,7 +216,7 @@ def main():
 		
 	trade_history = None
 	if condition.get_is_eneble_new_order(reduce_time):
-		trade_history = trade.golden_trade(instrument, units, candles_csv_string2, _line)
+		trade_history = trade.golden_trade(instrument, units, candles_csv_string2, trend_usd, _line)
 		
 	info = trade.get_info(candles_df)
 
@@ -230,7 +232,7 @@ def main():
 			trade.close(instrument, transaction_df, hours, info['time'], info['close'], _line)
 
 		if trade_history:
-			trade.insert_histoy(trade_history,transaction_df['id'][transaction_df.index[0]])
+			trade.insert_histoy(trade_history,transaction_df['id'][transaction_df.index[0]], trend_usd)
 
 	filename = 'details.csv'
 	details = trade.get_account_details()

@@ -2,15 +2,21 @@ INSERT INTO history (
 	trade_id,
 	create_time,
 	price,
+	price_target,
 	state,
 	instrument,
 	units,
 	unrealized_pl,
 	event_open_id,
-	trend,
+	trend_1,
+	trend_2,
 	judge_1,
-	judge_2
+	judge_2,
+	memo
 ) VALUES (
+	%s,
+	%s,
+	%s,
 	%s,
 	%s,
 	%s,

@@ -4,6 +4,7 @@ CREATE TABLE IF NOT EXISTS history (
 	create_time timestamp default CURRENT_TIMESTAMP,
 	update_time timestamp,
 	price numeric,
+	price_target numeric,
 	price_close numeric,
 	state varchar,
 	instrument varchar,
@@ -12,7 +13,9 @@ CREATE TABLE IF NOT EXISTS history (
 	pl numeric,
 	event_open_id integer,
 	event_close_id integer,
-	trend numeric,
+	trend_1 numeric,
+	trend_2 numeric,
 	judge_1 boolean,
-	judge_2 boolean
+	judge_2 boolean,
+	memo varchar
 )

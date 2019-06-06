@@ -70,7 +70,11 @@ class Trend():
 			JPY = (-EURJPY-USDJPY-CHFJPY-GBPJPY-AUDJPY-CADJPY-NZDJPY)/Pairs;
 			res[val] = USD - JPY
 
-		return (res['v1'] + res['v2']) /2
+		return {
+			'res' : (res['v1'] + res['v2']) /2,
+			'v1' : res['v1'],
+			'v2' : res['v2']
+		}
 
 	# 変化率
 	def getVal(self, v1, v2):
