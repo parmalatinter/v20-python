@@ -22,6 +22,7 @@ import strategy.environ
 import strategy.account
 import trend.get
 import db.history
+import instrument.candles as inst
 
 import time
 import copy
@@ -43,6 +44,9 @@ class Trade():
 
 	def get_df(self, csv_string):
 		return pd.read_csv(csv_string, sep=',', engine='python', skipinitialspace=True)
+
+	def get_df_by_string(self, csv_string):
+		return pd.read_csv(pd.compat.StringIO(csv_string), sep=',', engine='python', skipinitialspace=True)
 
 	def order(self, instrument, units, price, _line):
 		args = dict(instrument=instrument, units=units, price=price)
@@ -85,9 +89,9 @@ class Trade():
 		res.wait()
 		time.sleep(5)
 
-	def golden_trade(self, instrument, units, candles_csv_string, trend_usd, _line):
+	def golden_trade(self, instrument, units, df_candles, trend_usd, _line):
 		draw = golden.draw.Draw()
-		df = draw.caculate(candles_csv_string)
+		df = draw.caculate(df_candles)
 		last_df = df.tail(1)
 		late = last_df['c'][last_df.index[0]]
 		
@@ -174,7 +178,7 @@ class Trade():
 			int(trade_id),
 			float(trade_history['late']),
 			float(trade_history['target_price']),
-			'open'
+			'open',
 			trade_history['instrument'],
 			trade_history['units'],
 			0,
@@ -183,7 +187,7 @@ class Trade():
 			trend_usd['v2'],
 			trade_history['is_golden'],
 			trade_history['is_dead'],
-			trend_usd['res'],
+			trend_usd['res']
 		)
 
 	
@@ -207,17 +211,15 @@ def main():
 	if condition.get_is_opening() == False:
 		exit()
 
-	trade.exec_command('v20-instrument-data-tables')
-	
-	filename = 'candles.csv'
-	candles_csv = file.file_utility.File_utility(filename, drive_id)
-	candles_csv_string = candles_csv.get_string()
-	candles_csv_string2 = copy.copy(candles_csv_string)
-	candles_df= trade.get_df(candles_csv_string)
-		
+	candles = inst.Candles()
+	candles_csv_string= candles.get('USD_JPY', 'M10')
+	candles_df= trade.get_df_by_string(candles_csv_string)
+
+	print(candles_df)
+
 	trade_history = None
 	if condition.get_is_eneble_new_order(reduce_time):
-		trade_history = trade.golden_trade(instrument, units, candles_csv_string2, trend_usd, _line)
+		trade_history = trade.golden_trade(instrument, units, candles_df, trend_usd, _line)
 		
 	info = trade.get_info(candles_df)
 
@@ -235,11 +237,14 @@ def main():
 		if trade_history:
 			trade.insert_histoy(trade_history,transaction_df['id'][transaction_df.index[0]], trend_usd)
 
-	filename = 'details.csv'
 	details = trade.get_account_details()
-	details_csv = file.file_utility.File_utility(filename, drive_id)
+	details_csv = file.file_utility.File_utility('details.csv', drive_id)
 	details_csv.set_contents(details)
 	details_csv.export_drive()
+
+	candles_csv = file.file_utility.File_utility( 'candles.csv', drive_id)
+	candles_csv.set_contents(candles_csv_string)
+	candles_csv.export_drive()
 
 if __name__ == "__main__":
 	main()
