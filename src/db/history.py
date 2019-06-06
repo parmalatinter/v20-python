@@ -23,8 +23,8 @@ class History():
 		self.host = _environ.get('host') if _environ.get('host') else self.host
 		self.port = _environ.get('port') if _environ.get('port') else self.port
 
-		register_adapter(numpy.float64, addapt_numpy_float64)
-		register_adapter(numpy.int64, addapt_numpy_int64)
+		register_adapter(numpy.float64, self.addapt_numpy_float64)
+		register_adapter(numpy.int64, self.addapt_numpy_int64)
 
 	def get_conn(self):
 		conn = psycopg2.connect("host=" + self.host + " port=" + self.port + " dbname=" + self.dbname + " user=" + self.user + " password=" + self.password)
