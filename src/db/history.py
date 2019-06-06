@@ -91,12 +91,12 @@ class History():
 
 		self.exec_query( query, (id,))
 
-	def update(self, id, price_close, pl, event_close_id):
+	def update(self, trade_id, price_close, pl, event_close_id):
 
 		update_time = datetime.datetime.now() 
 		
 		sql_file = open(self.dir_path + '/query/update.sql','r')
-		self.exec_query(sql_file.read(),(update_time, price_close, pl, event_close_id, id))
+		self.exec_query(sql_file.read(),(update_time, price_close, pl, event_close_id, trade_id))
 
 	def create(self):
 
