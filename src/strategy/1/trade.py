@@ -165,15 +165,15 @@ class Trade():
 			self.order(instrument, _units,_target_price, _line)
 			_line.send(_event_open_id, _message)
 
-		return {
-			'late': late,
-			'target_price' : _target_price,
-			'instrument': instrument,
-			'units': _units,
-			'event_open_id' : _event_open_id,
-			'is_golden': is_golden,
-			'is_dead' :is_dead
-		}
+			return {
+				'late': late,
+				'target_price' : _target_price,
+				'instrument': instrument,
+				'units': _units,
+				'event_open_id' : _event_open_id,
+				'is_golden': is_golden,
+				'is_dead' :is_dead
+			}
 
 		return None
 	
