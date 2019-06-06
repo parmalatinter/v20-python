@@ -93,7 +93,6 @@ class Trade():
 	def golden_trade(self, instrument, units, df_candles, trend_usd, _line):
 		draw = golden.draw.Draw()
 		df = draw.caculate(df_candles)
-		print(df)
 		last_df = df.tail(1)
 		late = last_df['c'][last_df.index[0]]
 		
@@ -182,7 +181,6 @@ class Trade():
 		return {'time' : last_df['time'][last_df.index[0]], 'close' : last_df['close'][last_df.index[0]]}
 
 	def insert_histoy(self, trade_history, trade_id, trend_usd):
-		print(trade_history,trade_id)
 		self.history.insert(
 			int(trade_id),
 			float(trade_history['late']),
