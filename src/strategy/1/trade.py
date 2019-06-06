@@ -104,6 +104,7 @@ class Trade():
 		_message = ''
 		_target_price = 0
 		if is_golden:
+			is_golden = True
 			if trend_usd['res'] > 5:
 				_message = ("buy order 1 #",str(late))
 				_units = units
@@ -121,8 +122,11 @@ class Trade():
 				_units = units
 				_event_open_id = 3
 				_target_price = late + 0.05
+		else:
+			is_golden = False
 
-		elif is_dead:
+		if is_dead:
+			is_dead = True
 			if trend_usd['res'] < -5:
 				_message = ("sell order 1 #",str(late))
 				_units = 0 - units
@@ -140,6 +144,8 @@ class Trade():
 				_units = 0 - units
 				_event_open_id = 6
 				_target_price = late - 0.05
+		else:
+			is_dead = False
 
 		if last_df['rule_1'][last_df.index[0]] == 0 and last_df['rule_2'][last_df.index[0]] == 0:
 			_message = ("buy chance order #",str(late))
@@ -158,15 +164,16 @@ class Trade():
 			_target_price =  round(_target_price, 2)
 			self.order(instrument, _units,_target_price, _line)
 			_line.send(_event_open_id, _message)
-			return {
-				'late': late,
-				'target_price' : _target_price,
-				'instrument': instrument,
-				'units': _units,
-				'event_open_id' : _event_open_id,
-				'is_golden': is_golden,
-				'is_dead' :is_dead
-			}
+
+		return {
+			'late': late,
+			'target_price' : _target_price,
+			'instrument': instrument,
+			'units': _units,
+			'event_open_id' : _event_open_id,
+			'is_golden': is_golden,
+			'is_dead' :is_dead
+		}
 
 		return None
 	
