@@ -12,8 +12,16 @@ INSERT INTO history (
 	trend_2,
 	judge_1,
 	judge_2,
+	rule_1,
+	rule_2,
+	rule_3,
+	rule_4,
 	memo
 ) VALUES (
+	%s,
+	%s,
+	%s,
+	%s,
 	%s,
 	%s,
 	%s,

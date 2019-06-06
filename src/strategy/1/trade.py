@@ -102,6 +102,11 @@ class Trade():
 		_event_open_id = 0
 		_message = ''
 		_target_price = 0
+		rule_1 = last_df['rule_1'][last_df.index[0]] == 0
+		rule_2 = last_df['rule_2'][last_df.index[0]] == 0
+		rule_3 = last_df['rule_3'][last_df.index[0]] == 0
+		rule_4 = last_df['rule_4'][last_df.index[0]] == 0
+
 		if is_golden:
 			is_golden = True
 			if trend_usd['res'] > 5:
@@ -171,7 +176,11 @@ class Trade():
 				'units': _units,
 				'event_open_id' : _event_open_id,
 				'is_golden': is_golden,
-				'is_dead' :is_dead
+				'is_dead' :is_dead,
+				'rule_1' :rule_1,
+				'rule_2' :rule_2,
+				'rule_3' :rule_3,
+				'rule_4' :rule_4
 			}
 
 		return None
@@ -194,7 +203,11 @@ class Trade():
 			trend_usd['v2'],
 			trade_history['is_golden'],
 			trade_history['is_dead'],
-			trend_usd['res']
+			trade_history['rule_1'],
+			trade_history['rule_2'],
+			trade_history['rule_3'],
+			trade_history['rule_4'],
+			trend_usd['res'],
 		)
 
 	def get_histoy_csv(self):

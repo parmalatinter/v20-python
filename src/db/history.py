@@ -81,11 +81,30 @@ class History():
 
 		return df.to_csv()
 
-	def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, judge_1, judge_2, memo=''):
+	def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, memo=''):
 		create_time = datetime.datetime.now() 
 		
 		sql_file = open(self.dir_path + '/query/insert.sql','r')
-		args =(trade_id, create_time, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, judge_1, judge_2, memo)
+		args =(
+			trade_id,
+			create_time,
+			price,
+			price_target,
+			state,
+			instrument,
+			units,
+			unrealized_pl,
+			event_open_id,
+			trend_1,
+			trend_2,
+			judge_1,
+			judge_2,
+			rule_1,
+			rule_2,
+			rule_3,
+			rule_4,
+			memo
+		)
 		self.exec_query( sql_file.read(), args)
 
 
@@ -129,7 +148,30 @@ def main():
 	judge_1 = True 
 	judge_2 = False
 	memo = 'test'
-	history.insert(trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, judge_1, judge_2, memo)
+	rule_1 = True
+	rule_2 = True
+	rule_3 = True
+	rule_4 = True
+
+	history.insert(
+		trade_id,
+		price,
+		price_target,
+		state,
+		instrument,
+		units,
+		unrealized_pl,
+		event_open_id,
+		trend_1,
+		trend_2,
+		judge_1,
+		judge_2,
+		rule_1,
+		rule_2,
+		rule_3,
+		rule_4,
+		memo
+	)
 
 	pl = 20000
 	price_close = 100.40

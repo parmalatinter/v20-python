@@ -17,5 +17,9 @@ CREATE TABLE IF NOT EXISTS history (
 	trend_2 numeric,
 	judge_1 boolean,
 	judge_2 boolean,
+	rule_1 boolean,
+	rule_2 boolean,
+	rule_3 boolean,
+	rule_4 boolean,
 	memo varchar
 )
