@@ -34,7 +34,7 @@ setup(
             'v20-transaction-stream = transaction.stream:main',
             'v20-transaction-poll = transaction.poll:main',
             'v20-transaction-get = transaction.get:main',
-            'v20-transaction-get-all = transaction.get_all:main',
+            'v20-transaction-get-all = transaction.transactions:main',
             'v20-transaction-range = transaction.range:main',
             'v20-trade-get = trade.get:main',
             'v20-trade-close = trade.close:main',

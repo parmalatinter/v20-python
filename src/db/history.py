@@ -129,7 +129,7 @@ def main():
 	pl = 20000
 	price_close = 100.40
 	event_close_id = 1
-	history.update(trade_id, price_close, pl, event_close_id)
+	history.update(trade_id, price_close, pl, event_close_id, state)
 
 	print(history.get_all_by_panda())
 

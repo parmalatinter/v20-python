@@ -23,6 +23,7 @@ import strategy.account
 import trend.get
 import db.history
 import instrument.candles as inst
+import transaction.transactions
 
 import time
 import copy
@@ -215,20 +216,15 @@ def main():
 	candles_csv_string= candles.get('USD_JPY', 'M10')
 	candles_df= trade.get_df_by_string(candles_csv_string)
 
-	print(candles_df)
-
 	trade_history = None
 	if condition.get_is_eneble_new_order(reduce_time):
 		trade_history = trade.golden_trade(instrument, units, candles_df, trend_usd, _line)
 		
 	info = trade.get_info(candles_df)
 
-	trade.exec_command('v20-transaction-get-all')
-
-	filename = 'transaction.csv'
-	transaction_csv = file.file_utility.File_utility(filename, drive_id)
-	transaction_csv_string = transaction_csv.get_string()
-	transaction_df= trade.get_df(transaction_csv_string)
+	transactions = transaction.transactions.Transactions()
+	transactions_csv_string = transactions.get()
+	transaction_df= trade.get_df_by_string(transactions_csv_string)
 
 	if not transaction_df.empty:
 		if info['time']:
@@ -241,6 +237,10 @@ def main():
 	details_csv = file.file_utility.File_utility('details.csv', drive_id)
 	details_csv.set_contents(details)
 	details_csv.export_drive()
+
+	transactions_csv = file.file_utility.File_utility( 'transactions.csv', drive_id)
+	transactions_csv.set_contents(transactions_csv_string)
+	transactions_csv.export_drive()
 
 	candles_csv = file.file_utility.File_utility( 'candles.csv', drive_id)
 	candles_csv.set_contents(candles_csv_string)
