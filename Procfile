@@ -1,1 +1,2 @@
-web: pip install -r requirements/base.txt & gunicorn src.app.app:app --log-file -
+worker: pip install -r requirements/base.txt
+web: gunicorn src.app.app:app --log-file -
