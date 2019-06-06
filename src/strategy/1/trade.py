@@ -182,7 +182,8 @@ class Trade():
 			trend_usd['v1'],
 			trend_usd['v2'],
 			trade_history['is_golden'],
-			trade_history['is_dead']
+			trade_history['is_dead'],
+			trend_usd['res'],
 		)
 
 	
