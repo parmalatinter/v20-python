@@ -5,4 +5,4 @@ SET
 	pl = %s,
 	event_close_id = %s
 WHERE
-	id = %s;
+	trade_id = %s;
