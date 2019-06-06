@@ -151,7 +151,7 @@ class Trade():
 			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
 			self.order(instrument, _units,_target_price, _line)
-			_line.send(_message)
+			_line.send(_event_open_id, _message)
 			return {
 				'late': late,
 				'target_price' : _target_price,
