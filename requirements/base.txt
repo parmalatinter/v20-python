@@ -40,6 +40,7 @@ urllib3==1.24.1
 v20==3.0.25.0
 Flask==0.12.2
 Flask-Cors==3.0.3
+gunicorn==19.1.1
 # Editable install with no version control (v20-python-samples==0.1.1)
 -e ./
 # -e git+https://github.com/parmalatinter/v20-python.git@5270bea197294d42fbc6dcde4c10d94764c26c3f#egg=v20_python_samples
