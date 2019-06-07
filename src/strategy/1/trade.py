@@ -77,7 +77,7 @@ class Trade():
 				res.wait()
 				out, err = res.communicate()
 				self.is_ordered = True
-				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), 99, row.state)
+				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), 99, 'CLOSED')
 				_line.send('order #', command + ' ' + out.decode('utf-8') )
 
 	def get_account_details(self):
@@ -194,7 +194,7 @@ class Trade():
 			int(trade_id),
 			float(trade_history['late']),
 			float(trade_history['target_price']),
-			'open',
+			'OPEN',
 			trade_history['instrument'],
 			trade_history['units'],
 			0,
