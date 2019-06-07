@@ -4,3 +4,4 @@ env-python2/
 build/
 *.sw*
 *.egg-info
+src/drive/mycreds.txt

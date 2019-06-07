@@ -252,7 +252,8 @@ def main():
 			trade.close(instrument, transaction_df, hours, info['time'], info['close'], _line)
 
 		if trade_history:
-			trade.insert_histoy(trade_history,transaction_df['id'][transaction_df.index[0]], trend_usd)
+			last_df = transaction_df.tail(1)
+			trade.insert_histoy(trade_history,last_df['id'][last_df.index[0]], trend_usd)
 
 	details = trade.get_account_details()
 	details_csv = file.file_utility.File_utility('details.csv', drive_id)
