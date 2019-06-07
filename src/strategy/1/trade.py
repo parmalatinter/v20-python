@@ -170,8 +170,8 @@ class Trade():
 			_line.send(_event_open_id, _message)
 
 			return {
-				'late': late,
-				'target_price' : _target_price,
+				'late': round(late, 2),
+				'target_price' : round(_target_price),
 				'instrument': instrument,
 				'units': _units,
 				'event_open_id' : _event_open_id,
@@ -199,15 +199,15 @@ class Trade():
 			trade_history['units'],
 			0,
 			trade_history['event_open_id'],
-			trend_usd['v1'],
-			trend_usd['v2'],
+			round(trend_usd['v1']),
+			round(trend_usd['v2']),
 			trade_history['is_golden'],
 			trade_history['is_dead'],
 			trade_history['rule_1'],
 			trade_history['rule_2'],
 			trade_history['rule_3'],
 			trade_history['rule_4'],
-			trend_usd['res'],
+			round(trend_usd['res']),
 		)
 
 	def get_histoy_csv(self):
