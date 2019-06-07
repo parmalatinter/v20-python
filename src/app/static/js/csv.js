@@ -85,8 +85,11 @@ function convertToArray(sCSV, options) {
 		return result;
 }
 
-function tag(element, value) {
-		return "<" + element + ">" + value + "</" + element + ">";
+function tag(element, value, className) {
+		if(!className){
+			return "<" + element + ">" + value + "</" + element + ">";
+		}
+		return "<" + element + ' class="' + className +'"' + ">" + value + "</" + element + ">";
 }
 
 function toHTML(arr) {
@@ -95,10 +98,10 @@ function toHTML(arr) {
 				var sRow = "";
 				row.map(function(cell, ii) {
 						var tagname = (i === 0) ? "th" : "td";
-						sRow += tag(tagname, cell);
+						sRow += tag(tagname, cell, arr[0][ii] ? arr[0][ii] : '');
 				});
 
-				sTable += tag("tr", sRow) + ((i === 0) ? "</thead><tbody>" : "");
+				sTable += tag("tr", sRow, false) + ((i === 0) ? "</thead><tbody>" : "");
 		});
 		return sTable + "</tbody></table>";
 }
@@ -107,6 +110,32 @@ function csvToHtml($source, $output, options) {
 				var sCSV = $source.val(),
 						result = convertToArray(sCSV, options || {});
 				$output.html(toHTML(result.rows));
+				$('#output > table > tbody tr td').each(function(a,b){
+						$(this).each(function(c,d){
+							var className = $(this).attr('class');
+							var price = parseFloat($(this).text())
+							if(className == 'price'){
+								var price_close = parseFloat($(this).parent().find('.price_close').text())
+								if(!price_close){
+									var price_target = $(this).parent().find('.price_target').text()
+									$(this).parent().find('.price_close').text(price_target)
+									$(this).parent().find('.price_close').addClass('success')
+								}
+							}else if(className == 'units'){
+								var units = parseFloat($(this).parent().find('.units').text())
+								if(units > 0){
+									$(this).parent().find('.units').addClass('info')
+								}else{
+									$(this).parent().find('.units').addClass('warning')
+								}
+							}
+							// var text = '#output > table > tbody > tr:nth-child(' + b + ') > td.' + className;
+							// var $target = $(text)
+							// console.log($target)
+
+						}
+					)
+				});
 		}
 		// INCLUDE TO HERE - csvToHtml
 

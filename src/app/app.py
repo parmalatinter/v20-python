@@ -26,8 +26,6 @@ def hello(name='candles'):
 	candles_csv = file.file_utility.File_utility(name + '.csv', drive_id)
 	candles_csv_string = candles_csv.get_string()
 	contents = candles_csv_string.getvalue()
-	print(contents, file=sys.stderr)
-	print(123456, file=sys.stderr)
 	candles_csv_string.close()
 	if name == '':
 		name = u'ななしさん'
