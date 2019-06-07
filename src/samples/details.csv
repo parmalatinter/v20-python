@@ -1,0 +1,63 @@
+v20-account-details Account 101-009-10849561-003
+============================
+
+===============================  ==============================
+Account ID                       101-009-10849561-003
+Alias                            Demo
+Home Currency                    JPY
+Balance                          3572513.4786
+Created by User ID               10849561
+Create Time                      2019-03-27T07:24:17.593880325Z
+Guaranteed Stop Loss Order Mode  DISABLED
+Profit/Loss                      30856.948
+Resettable Profit/Loss           30856.948
+Profit/Loss Reset Time           0
+Financing                        -3343.4694
+Commission                       0.0
+Guaranteed Execution Fees        0.0
+Margin Rate                      0.04
+Open Trade Count                 1
+Open Position Count              1
+Pending Order Count              1
+Hedging Enabled                  True
+Unrealized Profit/Loss           -1600.0
+Net Asset Value                  3570913.4786
+Margin Used                      432432.0
+Margin Available                 3138481.4786
+Position Value                   10810800.0
+Closeout UPL                     -1400.0
+Closeout NAV                     3571113.4786
+Closeout Margin Used             432432.0
+Margin Closeout Percentage       0.12109
+Margin Closeout Position Value   10810800.0
+Withdrawal Limit                 3138481.4786
+Last Transaction ID              1219
+===============================  ==============================
+
+1 Open Positions
+================
+
+============  =======  ================  ==================  ==========
+Instrument        P/L    Unrealized P/L  Long                Short
+============  =======  ================  ==================  ==========
+USD_JPY       30856.9             -1600  100000.0 @ 108.122  0.0 @ None
+============  =======  ================  ==================  ==========
+
+1 Orders
+========
+
+====  ===========  =======  ===================================
+  ID  Type         State    Summary
+====  ===========  =======  ===================================
+1204  Take Profit  PENDING  Take Profit for Trade 1203 @ 108.22
+====  ===========  =======  ===================================
+
+1 Trades
+========
+
+====  =======  ========================================  ================  =====
+  ID  State    Summary                                     Unrealized P/L    P/L
+====  =======  ========================================  ================  =====
+1203  OPEN     100000.0 (100000.0) of USD_JPY @ 108.122             -1600      0
+====  =======  ========================================  ================  =====
+
