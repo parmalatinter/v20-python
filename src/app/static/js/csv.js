@@ -113,7 +113,7 @@ function csvToHtml($source, $output, options) {
 				$('#output > table > tbody tr td').each(function(a,b){
 						$(this).each(function(c,d){
 							var className = $(this).attr('class');
-							var price = parseFloat($(this).text())
+							var text = $(this).text();
 							if(className == 'price'){
 								var price_close = parseFloat($(this).parent().find('.price_close').text())
 								if(!price_close){
@@ -128,6 +128,9 @@ function csvToHtml($source, $output, options) {
 								}else{
 									$(this).parent().find('.units').addClass('warning')
 								}
+							}
+							if(text == 'True'){
+								$(this).addClass('danger')
 							}
 							// var text = '#output > table > tbody > tr:nth-child(' + b + ') > td.' + className;
 							// var $target = $(text)
