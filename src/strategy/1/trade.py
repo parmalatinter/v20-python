@@ -42,9 +42,9 @@ class Trade():
 	def __init__(self, _environ):
 		os.environ['TZ'] = 'America/New_York'
 		self.is_ordered = False
-		self.instrument = _environ.get('instrument') if _environ.get('instrument')
-		self.units = int(_environ.get('units')) if _environ.get('units') 
-		self.hours = int(_environ.get('hours')) if _environ.get('hours')
+		self.instrument = _environ.get('instrument') if _environ.get('instrument') else self.instrument
+		self.units = int(_environ.get('units')) if _environ.get('units') else self.units
+		self.hours = int(_environ.get('hours')) if _environ.get('hours') else self.hours
 
 	def get_df(self, csv_string):
 		return pd.read_csv(csv_string, sep=',', engine='python', skipinitialspace=True)
@@ -220,7 +220,6 @@ def main():
 	_environ = strategy.environ.Environ()
 	reduce_time = float(_environ.get('reduce_time')) if _environ.get('reduce_time') else 5
 	drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
-	now_dt = None
 
 	googleDrive = drive.drive.Drive(drive_id)
 	googleDrive.delete_all()
