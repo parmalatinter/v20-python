@@ -34,6 +34,7 @@ class Trade():
 	is_ordered = False
 	drive_id = ''
 	history = db.history.History()
+	_line = line.line.Line()
 
 	def init(self, drive_id):
 		self.is_ordered = False
@@ -49,16 +50,16 @@ class Trade():
 	def get_df_by_string(self, csv_string):
 		return pd.read_csv(pd.compat.StringIO(csv_string), sep=',', engine='python', skipinitialspace=True)
 
-	def order(self, instrument, units, price, _line):
+	def order(self, instrument, units, price):
 		args = dict(instrument=instrument, units=units, price=price)
 		command = ' v20-order-market %(instrument)s %(units)s --take-profit-price=%(price)s' % args
 		res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 		res.wait()
 		out, err = res.communicate()
-		_line.send('order #', command + ' ' + out.decode('utf-8') )
+		self._line.send('order #', command + ' ' + out.decode('utf-8') )
 		self.is_ordered = True
 
-	def close(self, instrument, df, hours, now_dt, last_rate, _line):
+	def close(self, instrument, df, hours, now_dt, last_rate):
 
 		now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
@@ -78,7 +79,7 @@ class Trade():
 				out, err = res.communicate()
 				self.is_ordered = True
 				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), 99, 'CLOSED')
-				_line.send('order #', command + ' ' + out.decode('utf-8') )
+				self._line.send('order #', command + ' ' + out.decode('utf-8') )
 
 	def get_account_details(self):
 		account = strategy.account.Account()
@@ -90,7 +91,7 @@ class Trade():
 		res.wait()
 		time.sleep(5)
 
-	def golden_trade(self, instrument, units, df_candles, trend_usd, _line):
+	def golden_trade(self, instrument, units, df_candles, trend_usd):
 		draw = golden.draw.Draw()
 		df = draw.caculate(df_candles)
 		last_df = df.tail(1)
@@ -166,8 +167,8 @@ class Trade():
 		if _event_open_id > 0:
 			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
-			self.order(instrument, _units,_target_price, _line)
-			_line.send(_event_open_id, _message)
+			self.order(instrument, _units,_target_price)
+			self._line.send(_event_open_id, _message)
 
 			return {
 				'late': round(late, 2),
@@ -224,22 +225,21 @@ def main():
 	drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
 	trend_usd = trend.get.Trend().get()
 	now_dt = None
-
-	trade = Trade()
-	trade.init(drive_id)
-
-	_line = line.line.Line()
+	
 	condition = market.condition.Market()
 	if condition.get_is_opening() == False:
 		exit()
 
+	trade = Trade()
+	trade.init(drive_id)
+	
 	candles = inst.Candles()
 	candles_csv_string= candles.get('USD_JPY', 'M10')
 	candles_df= trade.get_df_by_string(candles_csv_string)
 
 	trade_history = None
 	if condition.get_is_eneble_new_order(reduce_time):
-		trade_history = trade.golden_trade(instrument, units, candles_df, trend_usd, _line)
+		trade_history = trade.golden_trade(instrument, units, candles_df, trend_usd)
 		
 	info = trade.get_info(candles_df)
 
@@ -249,7 +249,7 @@ def main():
 
 	if not transaction_df.empty:
 		if info['time']:
-			trade.close(instrument, transaction_df, hours, info['time'], info['close'], _line)
+			trade.close(instrument, transaction_df, hours, info['time'], info['close'])
 
 		if trade_history:
 			last_df = transaction_df.tail(1)
