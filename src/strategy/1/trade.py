@@ -235,14 +235,13 @@ def main():
 	trade_history = None
 	if condition.get_is_eneble_new_order(reduce_time):
 		trade_history = trade.golden_trade(candles_df)
-		
-	info = trade.get_info(candles_df)
 
 	transactions = transaction.transactions.Transactions()
 	transactions_csv_string = transactions.get()
 	transaction_df= trade.get_df_by_string(transactions_csv_string)
 
 	if not transaction_df.empty:
+		info = trade.get_info(candles_df)
 		if info['time']:
 			trade.close(transaction_df, hours, info['time'], info['close'])
 
