@@ -34,6 +34,7 @@ class Trade():
 	units = 10
 	hours = 3
 	trend_usd = trend.get.Trend().get()
+	caculate_df = pd.DataFrame(columns=[])
 
 	def __init__(self, _environ):
 		os.environ['TZ'] = 'America/New_York'
@@ -57,11 +58,11 @@ class Trade():
 		self._line.send('order #', command + ' ' + out.decode('utf-8') )
 		self.is_ordered = True
 
-	def close(self, df, now_dt, last_rate):
+	def close(self, transaction_df, caculate_df, now_dt, last_rate):
 
 		now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
-		for index, row in df.iterrows():
+		for index, row in transaction_df.iterrows():
 
 			trade_dt = datetime.strptime(row.time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 			delta = now_dt - trade_dt
@@ -86,6 +87,9 @@ class Trade():
 			if history_df.empty:
 				continue
 
+			upper = caculate_df['upper'][caculate_df.index[0]]
+			lower = caculate_df['lower'][caculate_df.index[0]]
+
 			# 90 ~ でclose処理無しの場合の場合
 			if delta_total_minuts >= 90 and not history_df['event_close_id'][history_df.index[0]]:
 
@@ -101,14 +105,24 @@ class Trade():
 					state = 'profit close 90min'
 					# buyの場合 現在価格プラス0.1でcloseする
 					if row.currentUnits > 0:
-						profit_rate = float(last_rate) + 0.01
+
+						if float(upper) > float(last_rate):
+							profit_rate = float(upper)
+						else:
+							profit_rate = float(last_rate) + 0.01
+
 						args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate)
 						command1 = ' v20-order-take-profit %(tradeid)s "%(profit_rate)s" --units="ALL"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s "%(rate)s" --units="ALL"' % args
 						event_close_id = 1
 					# sellの場合 現在価格マイナス0.1でcloseする
 					else:
-						profit_rate = float(last_rate) - 0.01
+
+						if float(lower) < float(last_rate):
+							profit_rate = float(lower)
+						else:
+							profit_rate = float(last_rate) - 0.01
+
 						args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate)
 						command1 = ' v20-order-take-profit %(tradeid)s "%(profit_rate)s" --units="ALL"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s "%(rate)s" --units="ALL"' % args
@@ -149,10 +163,16 @@ class Trade():
 		details = account.get_account_detail()
 		return details
 
+	def get_caculate_df(self, df_candles):
+		if self.caculate_df.empty:
+			draw = golden.draw.Draw()
+			df = draw.caculate(df_candles)
+			self.caculate_df = df.tail(1)
+
+		return self.caculate_df
+
 	def golden_trade(self, df_candles):
-		draw = golden.draw.Draw()
-		df = draw.caculate(df_candles)
-		last_df = df.tail(1)
+		last_df = self.get_caculate_df(df_candles)
 		late = last_df['c'][last_df.index[0]]
 		
 		is_golden = last_df['golden'][last_df.index[0]]
@@ -303,7 +323,8 @@ def main():
 	if not transaction_df.empty:
 		info = trade.get_info(candles_df)
 		if info['time']:
-			trade.close(transaction_df, info['time'], info['close'])
+			caculate_df = trade.get_caculate_df(candles_df)
+			trade.close(transaction_df, caculate_df, info['time'], info['close'])
 
 		if trade_history:
 			last_df = transaction_df.tail(1)
