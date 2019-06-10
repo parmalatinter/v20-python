@@ -73,6 +73,7 @@ class Trade():
 			delta_total_minuts = delta.total_seconds()/60
 			delta_total_hours = delta_total_minuts/60
 
+			# 3時間経過後
 			if delta_total_hours >= self.hours:
 				args = dict(tradeid=row.id, units='ALL')
 				command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
@@ -82,6 +83,53 @@ class Trade():
 				self.is_ordered = True
 				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), 99, 'CLOSED')
 				self._line.send('order #', command + ' ' + out.decode('utf-8') )
+				continue
+			
+
+			# 90 ~ 100分の場合
+			if delta_total_minuts >= 90 and delta_total_minuts <= 100:
+
+				args = dict()
+				command = ''
+				args = dict(tradeid=row.id, units='ALL')
+				event_close_id = 99
+				state = ''
+				# 勝ちの場合
+				if row.unrealizedPL > 0
+					state = 'profit close 90min'
+					# buyの場合 現在価格プラス0.1でcloseする
+					if row.currentUnits > 0:
+						rate = float(last_rate) + 0.01
+						command = ' v20-order-take-profit %(tradeid)s "%(rate)s" --units="ALL"' % args
+						event_close_id = 1
+					# sellの場合 現在価格マイナス0.1でcloseする
+					else:
+						rate = float(last_rate) - 0.01
+						command = ' v20-order-take-profit %(tradeid)s "%(rate)s" --units="ALL"' % args
+						event_close_id = 2
+
+				# 負けの場合
+				else:
+					state = 'lose close 90min'
+					rate = float(row.late)
+					# buyの場合 発注価格でcloseする
+					if row.currentUnits > 0:
+						# v20-order-take-profit
+						command = ' v20-order-take-profit %(tradeid)s "%(rate)s" --units="ALL"' % args
+						event_close_id = 3
+					# sellの場合 発注価格でcloseする
+					else:
+						rate = float(row.late)
+						command = ' v20-order-take-profit %(tradeid)s "%(rate)s" --units="ALL"' % args
+						event_close_id = 4
+			
+				res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
+				res.wait()
+				out, err = res.communicate()
+				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), event_close_id, state)
+				self._line.send('order #', command + ' ' + out.decode('utf-8') )
+				
+
 
 	def get_account_details(self):
 		account = strategy.account.Account()
