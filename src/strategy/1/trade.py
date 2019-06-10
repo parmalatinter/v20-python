@@ -87,6 +87,9 @@ class Trade():
 			
 			history_df =self.history.get_by_panda(row.id)
 
+			if not history_df
+				continue
+
 			# 90 ~ でclose処理無しの場合の場合
 			if delta_total_minuts >= 90 and not history_df['event_close_id'][history_df.index[0]]:
 
