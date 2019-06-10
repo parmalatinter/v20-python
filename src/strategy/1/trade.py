@@ -4,18 +4,17 @@ import subprocess
 import os 
 import sys
 from pathlib import Path
+import pandas as pd
+import numpy as np
+from datetime import datetime
+from pytz import timezone
+from io import StringIO
+import time
+import copy
+
 import market.condition
 import golden.draw
 import line.line
-
-import pandas as pd
-import numpy as np
-
-from datetime import datetime
-from pytz import timezone
-
-from io import StringIO
-
 import drive.drive
 import file.file_utility
 import strategy.environ
@@ -24,9 +23,6 @@ import trend.get
 import db.history
 import instrument.candles as inst
 import transaction.transactions
-
-import time
-import copy
 
 
 class Trade():
