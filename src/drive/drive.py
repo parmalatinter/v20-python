@@ -48,6 +48,10 @@ class Drive():
 
 	def delete_by_filename(self, filename):
 		file = self.get_content_by_filename(filename)
+
+		if not file:
+			return
+			
 		file.Delete()
 		print('deleted: %s, id: %s' % (file['title'], file['id']))
 		self.reset_file_list()
@@ -70,7 +74,7 @@ class Drive():
 			index = file_list.index(filename)
 		except ValueError as e:
 			print(e)
-			return []
+			return None
     		
 		if self.file_list[index]: 
 			return self.file_list[index]
