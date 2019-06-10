@@ -96,7 +96,7 @@ class Trade():
 				rate = row.late
 				state = ''
 				# 勝ちの場合
-				if row.unrealizedPL > 0
+				if row.unrealizedPL > 0:
 					state = 'profit close 90min'
 					# buyの場合 現在価格プラス0.1でcloseする
 					if row.currentUnits > 0:
