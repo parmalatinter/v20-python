@@ -130,14 +130,14 @@ class Trade():
 				res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
 				res.wait()
 				out, err = res.communicate()
-				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), event_close_id, state)
 				self._line.send('order #', command1 + ' ' + out.decode('utf-8') )
 				
 				res = subprocess.Popen(command2, stdout=subprocess.PIPE, stderr=None, shell=True)
 				res.wait()
 				out, err = res.communicate()
-				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), event_close_id, state)
 				self._line.send('order #', command2 + ' ' + out.decode('utf-8') )
+
+				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), event_close_id, state)
 
 
 	def get_account_details(self):
