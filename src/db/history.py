@@ -76,9 +76,6 @@ class History():
 		cur.close()
 		conn.close()
 
-		if rows.empty:
-			return None
-
 		return rows.tail(1)
 
 	def get_all_by_panda(self):
