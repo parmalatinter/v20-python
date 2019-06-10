@@ -297,7 +297,7 @@ def main():
 	candles_df= trade.get_df_by_string(candles_csv_string)
 
 	trade_history = None
-	if condition.get_is_eneble_new_order(reduce_time):
+	if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
 		trade_history = trade.golden_trade(candles_df)
 
 	transactions = transaction.transactions.Transactions()
