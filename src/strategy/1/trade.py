@@ -90,10 +90,12 @@ class Trade():
 			upper = caculate_df['upper'][caculate_df.index[0]]
 			lower = caculate_df['lower'][caculate_df.index[0]]
 
-			# 90 ~ でclose処理無しの場合
-			if delta_total_minuts >= 90 and not history_df['event_close_id'][history_df.index[0]]
-				# 120 ~ で以前利益があったの場合
-				or delta_total_minuts >= 120 and history_df['event_close_id'][history_df.index[0]] <= 2:
+			event_close_id = history_df['event_close_id'][history_df.index[0]] if history_df['event_close_id'][history_df.index[0]] else 0
+			condition_1 = delta_total_minuts >= 90 and event_close_id == 0
+			condition_2 = delta_total_minuts >= 120 and event_close_id <= 2
+
+			# 90分 ~ でclose処理無しの場合 or 120分 ~ で以前利益があったの場合
+			if condition_1 or condition_2:
 
 				args = dict()
 				command1 = ''
@@ -108,7 +110,7 @@ class Trade():
 						state = 'profit close 120min'
 					else:
 						state = 'profit close 90min'
-						
+
 					# buyの場合 現在価格プラス0.1でcloseする
 					if row.currentUnits > 0:
 
