@@ -22,3 +22,8 @@ textarea {
 	background-color: #ffffffb5;
 }
 
+.container .main{
+  padding-right: 0; 
+  padding-left: 0; 
+  width: 100%;
+}
