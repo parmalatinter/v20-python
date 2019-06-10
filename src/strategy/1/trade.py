@@ -242,7 +242,7 @@ def main():
 	if not transaction_df.empty:
 		info = trade.get_info(candles_df)
 		if info['time']:
-			trade.close(transaction_df, hours, info['time'], info['close'])
+			trade.close(transaction_df, info['time'], info['close'])
 
 		if trade_history:
 			last_df = transaction_df.tail(1)
