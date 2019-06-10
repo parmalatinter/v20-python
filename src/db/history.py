@@ -64,6 +64,23 @@ class History():
 
 		return self.exec_query("SELECT * FROM history;", None, True)
 
+	def get_by_panda(self, trade_id):
+		conn = self.get_conn()
+
+		cur = conn.cursor()
+
+		args = dict(trade_id=trade_id)
+		query = 'SELECT * FROM history where trade_id = %(trade_id)s;' % args
+		rows = self.exec_query_by_panda(query, 'id')
+
+		cur.close()
+		conn.close()
+
+		if rows.empty:
+			return None
+
+		return rows.tail(1)
+
 	def get_all_by_panda(self):
 		conn = self.get_conn()
 
@@ -179,6 +196,8 @@ def main():
 	history.update(trade_id, price_close, pl, event_close_id, state)
 
 	print(history.get_all_by_panda())
+	df = history.get_by_panda(1)
+	print(df['trade_id'][df.index[0]])
 
 	history.delete(event_close_id)
 

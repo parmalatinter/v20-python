@@ -85,9 +85,10 @@ class Trade():
 				self._line.send('order #', command + ' ' + out.decode('utf-8') )
 				continue
 			
+			history_df =self.history.get_by_panda(row.id)
 
-			# 90 ~ 100分の場合
-			if delta_total_minuts >= 90 and delta_total_minuts <= 100:
+			# 90 ~ でclose処理無しの場合の場合
+			if delta_total_minuts >= 90 and not history_df['event_close_id'][history_df.index[0]]:
 
 				args = dict()
 				command1 = ''
@@ -95,18 +96,21 @@ class Trade():
 				event_close_id = 99
 				rate = row.late
 				state = ''
+				units = 'ALL'
 				# 勝ちの場合
 				if row.unrealizedPL > 0:
 					state = 'profit close 90min'
 					# buyの場合 現在価格プラス0.1でcloseする
 					if row.currentUnits > 0:
 						profit_rate = float(last_rate) + 0.01
+						args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate)
 						command1 = ' v20-order-take-profit %(tradeid)s "%(profit_rate)s" --units="ALL"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s "%(rate)s" --units="ALL"' % args
 						event_close_id = 1
 					# sellの場合 現在価格マイナス0.1でcloseする
 					else:
 						profit_rate = float(last_rate) - 0.01
+						args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate)
 						command1 = ' v20-order-take-profit %(tradeid)s "%(profit_rate)s" --units="ALL"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s "%(rate)s" --units="ALL"' % args
 						event_close_id = 2
@@ -117,6 +121,7 @@ class Trade():
 					# buyの場合 発注価格でcloseする
 					if row.currentUnits > 0:
 						stop_rate = float(last_rate) - 0.5
+						args = dict(tradeid=row.id, units=units, stop_rate=stop_rate, rate=rate)
 						command1 = ' v20-order-take-profit %(tradeid)s "%(rate)s" --units="ALL"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s "%(stop_rate)s" --units="ALL"' % args
 						event_close_id = 3
