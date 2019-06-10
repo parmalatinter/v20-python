@@ -333,4 +333,12 @@ def main():
 
 
 if __name__ == "__main__":
-	main()
+
+	try:
+	    main()
+	except:
+		_line = line.line.Line()
+		import traceback
+		self._line.send('Error', traceback.print_exc() )
+
+	
