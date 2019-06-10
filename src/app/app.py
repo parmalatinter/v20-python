@@ -25,6 +25,10 @@ def index():
 def hello(name='candles'):
 	candles_csv = file.file_utility.File_utility(name + '.csv', drive_id)
 	candles_csv_string = candles_csv.get_string()
+
+	if not candles_csv_string
+		return u'Now Uploading...'
+
 	contents = candles_csv_string.getvalue()
 	candles_csv_string.close()
 	if name == '':
