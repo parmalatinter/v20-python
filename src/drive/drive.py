@@ -47,14 +47,13 @@ class Drive():
 		return file
 
 	def delete_by_filename(self, filename):
-		file = self.get_row_by_filename(filename)
-		file1.Delete()
-		print('deleted: %s, id: %s' % (file1['title'], file1['id']))
+		file = self.get_content_by_filename(filename)
+		file.Delete()
+		print('deleted: %s, id: %s' % (file['title'], file['id']))
 		self.reset_file_list()
 
 	def get_file_list(self):
-		for file1 in self.file_list:
-	  		print('title: %s, id: %s' % (file1['title'], file1['id']))
+		return self.file_list
 
 	def delete_all(self):
 		for file1 in self.file_list:

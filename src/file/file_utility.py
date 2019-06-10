@@ -28,6 +28,9 @@ class File_utility():
 	def export_drive(self):
 		self.googleDrive.upload(self.filemame, self.header +self.content)
 
+	def delete_drive(self):
+		self.googleDrive.delete_by_filename(self.filemame)
+
 	def get_string(self):
 		self.googleDrive.reset_file_list()
 		res = self.googleDrive.get_content_by_filename(self.filemame)
