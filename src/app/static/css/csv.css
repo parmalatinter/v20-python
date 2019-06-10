@@ -27,3 +27,7 @@ textarea {
   padding-left: 0; 
   width: 100%;
 }
+
+#output > table > tbody > tr:last-child{
+  display: none;
+}

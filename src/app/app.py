@@ -18,7 +18,7 @@ drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxs
 
 @app.route('/')
 def index():
-    return u'テスト'
+    return render_template('index.html')
 
 
 @app.route('/hello/<name>')
