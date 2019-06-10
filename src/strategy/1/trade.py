@@ -90,8 +90,10 @@ class Trade():
 			upper = caculate_df['upper'][caculate_df.index[0]]
 			lower = caculate_df['lower'][caculate_df.index[0]]
 
-			# 90 ~ でclose処理無しの場合の場合
-			if delta_total_minuts >= 90 and not history_df['event_close_id'][history_df.index[0]]:
+			# 90 ~ でclose処理無しの場合
+			if delta_total_minuts >= 90 and not history_df['event_close_id'][history_df.index[0]]
+				# 120 ~ で以前利益があったの場合
+				or delta_total_minuts >= 120 and history_df['event_close_id'][history_df.index[0]] <= 2:
 
 				args = dict()
 				command1 = ''
@@ -102,7 +104,11 @@ class Trade():
 				units = 'ALL'
 				# 勝ちの場合
 				if row.unrealizedPL > 0:
-					state = 'profit close 90min'
+					if delta_total_minuts > 90:
+						state = 'profit close 120min'
+					else:
+						state = 'profit close 90min'
+						
 					# buyの場合 現在価格プラス0.1でcloseする
 					if row.currentUnits > 0:
 
@@ -130,7 +136,11 @@ class Trade():
 
 				# 負けの場合
 				else:
-					state = 'lose close 90min'
+					if delta_total_minuts > 90:
+						state = 'lose close 120min'
+					else:
+						state = 'lose close 90min'
+
 					# buyの場合 発注価格でcloseする
 					if row.currentUnits > 0:
 						stop_rate = float(last_rate) - 0.5
