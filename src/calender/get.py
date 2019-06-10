@@ -20,7 +20,6 @@ class Calendar(object):
         _environ = strategy.environ.Environ()
         os.environ['TZ'] = 'America/New_York'
         self.calendar_csv = file.file_utility.File_utility(self.filename, self.folder)
-        self.calendar_csv.delete_drive()
         self.hours = (float(_environ.get('hours')) if _environ.get('hours') else 3) / 2
 
     def dataGet(self):
@@ -100,11 +99,15 @@ class Calendar(object):
                 print(to_us_datetime)
                 return True
         return False
+
+    def delete_drive(self):
+        self.calendar_csv.delete_drive()
             
 
 def main():
 
     calendar = Calendar()
+    calendar.delete_drive()
     dfs = calendar.dataGet()
     df = calendar.format(dfs)
     text = calendar.set_to_drive(df)
