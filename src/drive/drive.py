@@ -91,5 +91,5 @@ if __name__ == '__main__':
     file = drive.upload('filename.txt', 'title')
     res = drive.get_content_by_filename('filename.txt')
     if res: 	
-    	# print(res.GetContentString())
+    	print(res.GetContentString())
     
