@@ -5,6 +5,9 @@ import os
 import datetime
 import pandas as pd
 import numpy
+import math
+
+import account.details
 
 class System():
 
@@ -134,13 +137,16 @@ class System():
 
 def main():
 	system = System()
+	details = account.details.Details()
+	details_dict = details.get_account()
+	'Profit/Loss'
 	# system.drop()
 	system.create()
 	id = 1
-	balance = 100
-	win_count = 100
-	lose_count = 100
-	trade_count = 100
+	balance = math.floor(details_dict['Balance'])
+	win_count = 0
+	lose_count = 0
+	trade_count = 0
 	create_time = datetime.datetime.now() 
 
 	system.insert(

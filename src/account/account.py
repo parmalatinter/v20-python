@@ -74,6 +74,7 @@ class Account(object):
         self.details = account
 
 
+
     def dump(self):
         """
         Print out the whole Account state
@@ -265,3 +266,15 @@ class Account(object):
         self.apply_position_states(state.positions)
 
         self.apply_order_states(state.orders)
+
+    def get_details(self):
+        res = {}
+        for field in self.details.fields():
+            name = field.displayName
+            value = field.value
+            if field.typeClass.startswith("array"):
+                value = "[{}]".format(len(field.value))
+            elif field.typeClass.startswith("object"):
+                value = "<{}>".format(field.typeName)
+            res[name] = value
+        return res
