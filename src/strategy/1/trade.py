@@ -70,6 +70,8 @@ class Trade():
 			delta_total_minuts = delta.total_seconds()/60
 			delta_total_hours = delta_total_minuts/60
 
+			last_rate = round(last_rate,2)
+
 			# 3時間経過後 現在地でcloseする
 			if delta_total_hours >= self.hours:
 				args = dict(tradeid=row.id, units='ALL')
