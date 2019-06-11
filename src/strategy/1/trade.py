@@ -73,7 +73,7 @@ class Trade():
 			# 3時間経過後 現在地でcloseする
 			if delta_total_hours >= self.hours:
 				args = dict(tradeid=row.id, units='ALL')
-				command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
+				command = ' v20-trade-close %(tradeid)s --units=%(units)s' % args
 				res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
 				res.wait()
 				out, err = res.communicate()
@@ -101,7 +101,7 @@ class Trade():
 				command1 = ''
 				args = dict(tradeid=row.id, units='ALL')
 				event_close_id = 99
-				rate = row.price
+				rate = round(row.price,2)
 				state = ''
 				units = 'ALL'
 				# 勝ちの場合
@@ -121,8 +121,8 @@ class Trade():
 
 						event_close_id = 1
 						args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id) )
-						command1 = ' v20-order-take-profit %(tradeid)s "%(profit_rate)s" --client-order-comment="%(client_order_comment)s"' % args
-						command2 = ' v20-order-stop-loss %(tradeid)s "%(rate)s" --client-order-comment="%(client_order_comment)s"' % args
+						command1 = ' v20-order-take-profit %(tradeid)s %(profit_rate)s --client-order-comment="%(client_order_comment)s"' % args
+						command2 = ' v20-order-stop-loss %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
 						
 					# sellの場合 現在価格マイナス0.1でcloseする
 					else:
@@ -134,8 +134,8 @@ class Trade():
 
 						event_close_id = 2
 						args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id) )
-						command1 = ' v20-order-take-profit %(tradeid)s "%(profit_rate)s" --client-order-comment="%(client_order_comment)s"' % args
-						command2 = ' v20-order-stop-loss %(tradeid)s "%(rate)s" --client-order-comment="%(client_order_comment)s"' % args
+						command1 = ' v20-order-take-profit %(tradeid)s %(profit_rate)s --client-order-comment="%(client_order_comment)s"' % args
+						command2 = ' v20-order-stop-loss %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
 
 				# 負けの場合
 				else:
@@ -150,8 +150,8 @@ class Trade():
 
 						event_close_id = 3
 						args = dict(tradeid=row.id, units=units, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id) )
-						command1 = ' v20-order-take-profit %(tradeid)s "%(rate)s" --client-order-comment="%(client_order_comment)s"' % args
-						command2 = ' v20-order-stop-loss %(tradeid)s "%(stop_rate)s" --client-order-comment="%(client_order_comment)s"' % args
+						command1 = ' v20-order-take-profit %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
+						command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s"' % args
 						
 					# sellの場合 発注価格でcloseする
 					else:
@@ -159,8 +159,8 @@ class Trade():
 
 						event_close_id = 4
 						args = dict(tradeid=row.id, units=units, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id) )
-						command1 = ' v20-order-take-profit %(tradeid)s "%(rate)s" --client-order-comment="%(client_order_comment)s"' % args
-						command2 = ' v20-order-stop-loss %(tradeid)s "%(stop_rate)s" --client-order-comment="%(client_order_comment)s"' % args
+						command1 = ' v20-order-take-profit %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
+						command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s"' % args
 						
 			
 				res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
