@@ -152,7 +152,7 @@ class Trade():
 						args = dict(tradeid=row.id, units=units, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s"' % args
-						
+						# v20-order-take-profit 1 116 --client-order-comment="test"
 					# sellの場合 発注価格でcloseする
 					else:
 						stop_rate = float(last_rate) + 0.5
@@ -387,8 +387,8 @@ if __name__ == "__main__":
 	try:
 	    main()
 	except:
-		_line = line.line.Line()
 		import traceback
-		self._line.send('Error', traceback.print_exc() )
+		_line = line.line.Line()
+		_line.send('Error', traceback.print_exc() )
 
 	
