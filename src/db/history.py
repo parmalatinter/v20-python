@@ -122,12 +122,12 @@ class History():
 		self.exec_query( sql_file.read(), args)
 
 
-	def delete(self, id):
+	def delete(self, trade_id):
 		create_time = datetime.datetime.now() 
 		
-		query = 'DELETE FROM history where id = %s'
+		query = 'DELETE FROM history where trade_id = %s'
 
-		self.exec_query( query, (id,))
+		self.exec_query( query, (trade_id,))
 
 	def update(self, trade_id, price_close, pl, event_close_id, state):
 
@@ -196,7 +196,7 @@ def main():
 	df = history.get_by_panda(1)
 	print(df['trade_id'][df.index[0]])
 
-	history.delete(event_close_id)
+	history.delete(trade_id)
 
 	
 if __name__ == "__main__":
