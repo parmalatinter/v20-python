@@ -3,6 +3,7 @@
 
 import os
 import sys
+import pandas as pd
 from flask import Flask, render_template
 import file.file_utility
 import strategy.environ
@@ -10,7 +11,7 @@ import calender.get
 
 app = Flask(__name__)
 app.debug = True
-
+os.environ['TZ'] = 'America/New_York'
 environ = strategy.environ.Environ()
 
 @app.route('/')
@@ -22,7 +23,8 @@ def index():
 def hello(name='candles'):
 	template_path = os.path.dirname(app.instance_path) + '/src/app/templates/'
 	drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
-	
+	now = pd.Timestamp.now()
+
 	if name == 'calendar':
 		_calender = calender.get.Calendar()
 		drive_id =_calender.get_drive_id()
@@ -37,7 +39,7 @@ def hello(name='candles'):
 	candles_csv_string.close()
 	if name == '':
 		name = u'ななしさん'
-	return render_template('hello.html', name=name, contents=contents)
+	return render_template('hello.html', name=name, contents=contents, now=now)
 
 
 @app.route('/debug')
