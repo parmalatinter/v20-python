@@ -6,7 +6,7 @@ import datetime
 import pandas as pd
 import numpy
 
-class History():
+class System():
 
 	dbname ="dat1co0qkecvuj"
 	user = "kenxmeuwltvdre"
@@ -62,15 +62,15 @@ class History():
 
 	def get(self):
 
-		return self.exec_query("SELECT * FROM history;", None, True)
+		return self.exec_query("SELECT * FROM system;", None, True)
 
-	def get_by_panda(self, trade_id):
+	def get_by_panda(self, id):
 		conn = self.get_conn()
 
 		cur = conn.cursor()
 
-		args = dict(trade_id=trade_id)
-		query = 'SELECT * FROM history where trade_id = %(trade_id)s;' % args
+		args = dict(id=id)
+		query = 'SELECT * FROM system where id = %(id)s;' % args
 		rows = self.exec_query_by_panda(query, 'id')
 
 		cur.close()
@@ -83,7 +83,7 @@ class History():
 
 		cur = conn.cursor()
 
-		rows = self.exec_query_by_panda("SELECT * FROM history;", 'id')
+		rows = self.exec_query_by_panda("SELECT * FROM system;", 'id')
 
 		cur.close()
 		conn.close()
@@ -95,108 +95,66 @@ class History():
 
 		return df.to_csv(sep=",", line_terminator='\n', encoding='utf-8')
 
-	def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, memo=''):
+	def insert(self, balance,win_count,lose_count,trade_count,create_time):
 		create_time = datetime.datetime.now() 
 		
-		sql_file = open(self.dir_path + '/query/history/insert.sql','r')
+		sql_file = open(self.dir_path + '/query/system/insert.sql','r')
 		args =(
-			trade_id,
-			create_time,
-			price,
-			price_target,
-			state,
-			instrument,
-			units,
-			unrealized_pl,
-			event_open_id,
-			trend_1,
-			trend_2,
-			judge_1,
-			judge_2,
-			rule_1,
-			rule_2,
-			rule_3,
-			rule_4,
-			memo
+			balance,
+			win_count,
+			lose_count,
+			trade_count,
+			create_time
 		)
 		self.exec_query( sql_file.read(), args)
 
-
-	def delete(self, trade_id):
+	def delete(self, id):
 		create_time = datetime.datetime.now() 
 		
-		query = 'DELETE FROM history where trade_id = %s'
+		query = 'DELETE FROM system where id = %s'
 
-		self.exec_query( query, (trade_id,))
+		self.exec_query( query, (id,))
 
-	def update(self, trade_id, price_close, pl, event_close_id, state):
+	def update(self, update_time,balance,win_count,lose_count,trade_count):
 
 		update_time = datetime.datetime.now() 
 		
-		sql_file = open(self.dir_path + '/query/history/update.sql','r')
-		self.exec_query(sql_file.read(),(update_time, price_close, pl, event_close_id, state, trade_id))
+		sql_file = open(self.dir_path + '/query/system/update.sql','r')
+			
+		self.exec_query(sql_file.read(),(update_time,balance,win_count,lose_count,trade_count))
 
 	def create(self):
 
-		sql_file = open(self.dir_path + '/query/history/create.sql','r')
+		sql_file = open(self.dir_path + '/query/system/create.sql','r')
 		self.exec_query(sql_file.read())
 
 	def drop(self):
 
-		self.exec_query( 'DROP TABLE IF EXISTS history')
+		self.exec_query( 'DROP TABLE IF EXISTS system')
 
 def main():
-	history = History()
-	# history.drop()
-	history.create()
-	trade_id = 1
-	price = 100.20
-	price_target = 100.30
-	state = 'state 1'
-	instrument = 'USD_JPY'
-	units = 10000
-	unrealized_pl = 10000
-	event_open_id = 1
-	trend_1 = 10 
-	trend_2 = 20 
-	judge_1 = True 
-	judge_2 = False
-	memo = 'test'
-	rule_1 = True
-	rule_2 = True
-	rule_3 = True
-	rule_4 = True
+	system = System()
+	# system.drop()
+	system.create()
+	id = 1
+	balance = 100
+	win_count = 100
+	lose_count = 100
+	trade_count = 100
+	create_time = datetime.datetime.now() 
 
-	history.insert(
-		trade_id,
-		price,
-		price_target,
-		state,
-		instrument,
-		units,
-		unrealized_pl,
-		event_open_id,
-		trend_1,
-		trend_2,
-		judge_1,
-		judge_2,
-		rule_1,
-		rule_2,
-		rule_3,
-		rule_4,
-		memo
+	system.insert(
+		balance,
+		win_count,
+		lose_count,
+		trade_count,
+		create_time
 	)
 
-	pl = 20000
-	price_close = 100.40
-	event_close_id = 1
-	history.update(trade_id, price_close, pl, event_close_id, state)
+	update_time = datetime.datetime.now() 
+	system.update(update_time,balance,win_count,lose_count,trade_count)
 
-	# print(history.get_all_by_panda())
-	df = history.get_by_panda(1)
-	# print(df['trade_id'][df.index[0]])
-
-	history.delete(1364)
+	print(system.get_all_by_panda())
 
 	
 if __name__ == "__main__":
