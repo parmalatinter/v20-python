@@ -101,7 +101,7 @@ class Trade():
 				command1 = ''
 				args = dict(tradeid=row.id, units='ALL')
 				event_close_id = 99
-				rate = row.late
+				rate = row.price
 				state = ''
 				units = 'ALL'
 				# 勝ちの場合

@@ -73,8 +73,6 @@ class Trend():
 
 		return {
 			'res' : ((res['v1_usd'] + res['v2_usd']) - (res['v1_jpy'] + res['v2_jpy'])) /2 ,
-			'v1' : res['v1'],
-			'v2' : res['v2'],
 			'v1_usd' : res['v1_usd'],
 			'v2_usd' : res['v2_usd'],
 			'v1_jpy' : res['v1_jpy'],
