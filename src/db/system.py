@@ -8,6 +8,9 @@ import numpy
 import math
 
 import account.details
+import strategy.environ
+import file.file_utility
+
 
 class System():
 
@@ -142,7 +145,6 @@ def main():
 	'Profit/Loss'
 	# system.drop()
 	system.create()
-	id = 1
 	balance = math.floor(details_dict['Balance'])
 	win_count = 0
 	lose_count = 0
@@ -160,8 +162,12 @@ def main():
 	update_time = datetime.datetime.now() 
 	system.update(update_time,balance,win_count,lose_count,trade_count)
 
-	print(system.get_all_by_panda())
-
+	_environ = strategy.environ.Environ()
+	drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
+	csv_string = system.get_all_by_csv()
+	csv = file.file_utility.File_utility( 'system.csv', drive_id)
+	csv.set_contents(csv_string)
+	csv.export_drive()
 	
 if __name__ == "__main__":
 	main()

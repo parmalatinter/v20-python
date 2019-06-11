@@ -27,7 +27,7 @@ def hello(name='candles'):
 	now1 = pd.Timestamp.now()
 	now2 = datetime.datetime.now() 
 
-	if name == 'calendar':
+	if name == 'calendar' or name == 'system':
 		_calender = calender.get.Calendar()
 		drive_id =_calender.get_drive_id()
 
