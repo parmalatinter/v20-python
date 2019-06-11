@@ -4,6 +4,7 @@
 import os
 import sys
 import pandas as pd
+import datetime
 from flask import Flask, render_template
 import file.file_utility
 import strategy.environ
@@ -23,7 +24,8 @@ def index():
 def hello(name='candles'):
 	template_path = os.path.dirname(app.instance_path) + '/src/app/templates/'
 	drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
-	now = pd.Timestamp.now()
+	now1 = pd.Timestamp.now()
+	now2 = datetime.datetime.now() 
 
 	if name == 'calendar':
 		_calender = calender.get.Calendar()
@@ -39,7 +41,7 @@ def hello(name='candles'):
 	candles_csv_string.close()
 	if name == '':
 		name = u'ななしさん'
-	return render_template('hello.html', name=name, contents=contents, now=now)
+	return render_template('hello.html', name=name, contents=contents, now1=now1, now2=now2)
 
 
 @app.route('/debug')

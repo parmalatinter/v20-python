@@ -87,7 +87,6 @@ class Calendar(object):
     def in_danger_time(self, df):
         df = df[df['important'].str.contains('★★★')]
         now = pd.Timestamp.now()
-        print(now)
         
         for index, row in df.iterrows():
             from_us_datetime = pd.to_datetime(row['from_us_datetime'], format='%Y-%m-%d %H:%M:%S')
