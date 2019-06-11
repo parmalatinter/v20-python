@@ -33,7 +33,7 @@ class File_utility():
 
 	def get_string(self):
 		self.googleDrive.reset_file_list()
-		print(self.googleDrive.get_file_list())
+		self.googleDrive.get_file_list()
 		res = self.googleDrive.get_content_by_filename(self.filemame)
 		if res: 	
 			return StringIO(res.GetContentString())
