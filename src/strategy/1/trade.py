@@ -70,7 +70,7 @@ class Trade():
 			delta_total_minuts = delta.total_seconds()/60
 			delta_total_hours = delta_total_minuts/60
 
-			# 3時間経過後
+			# 3時間経過後 現在地でcloseする
 			if delta_total_hours >= self.hours:
 				args = dict(tradeid=row.id, units='ALL')
 				command = ' v20-trade-close %(tradeid)s --units="%(units)s"' % args
@@ -193,67 +193,82 @@ class Trade():
 		_event_open_id = 0
 		_message = ''
 		_target_price = 0
+		# ルールその1 C3 < lower
 		rule_1 = last_df['rule_1'][last_df.index[0]] == 0
+		# ルールその2　3つ陽線
 		rule_2 = last_df['rule_2'][last_df.index[0]] == 0
+		# ルールその3 C3 > upper
 		rule_3 = last_df['rule_3'][last_df.index[0]] == 0
+		# ルールその4 3つ陰線
 		rule_4 = last_df['rule_4'][last_df.index[0]] == 0
 
+		# ゴールデンクロスの場合
 		if is_golden:
 			is_golden = True
+			# trendが5以上の場合
 			if self.trend_usd['res'] > 5:
 				_message = ("buy order 1 #",str(late))
 				_units = self.units
 				_event_open_id = 1
 				_target_price = late + 0.1
-				
+			
+			# trendが-5以下の場合
 			elif self.trend_usd['res'] < -5:
 				_message = ("sell order 2 #",str(late))
 				_units = 0 - self.units
 				_event_open_id = 2
 				_target_price = late - 0.1
-
+			# その他の場合
 			else:
 				_message = ("buy order 3 #",str(late))
 				_units = self.units
 				_event_open_id = 3
 				_target_price = late + 0.05
+		# ゴールデンクロスではない場合
 		else:
 			is_golden = False
 
+		# デッドクロスの場合
 		if is_dead:
 			is_dead = True
+			# trendが-5以下の場合
 			if self.trend_usd['res'] < -5:
 				_message = ("sell order 1 #",str(late))
 				_units = 0 - self.units
 				_event_open_id = 4
 				_target_price = late - 0.1
 
+			# trendが5以上の場合
 			elif self.trend_usd['res'] > 5:
 				_message = ("buy order 2 #",str(late))
 				_units = self.units
 				_event_open_id = 5
 				_target_price = late + 0.1
-				
+			# その他の場合
 			else:
 				_message = ("sell order 3 #",str(late))
 				_units = 0 - self.units
 				_event_open_id = 6
 				_target_price = late - 0.05
+		# デッドクロスではない場合
 		else:
 			is_dead = False
 
+		# ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
 		if rule_1 and rule_2:
 			_message = ("buy chance order #",str(late))
 			_units = self.units * 2
 			_event_open_id = 7
 			_target_price = late + 0.1
 
-		elif rule_3 and rule_4:
+		# ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
+		if rule_3 and rule_4:
 			_message = ("sell chance order #",str(late))
 			_units = 0 - (self.units * 2)
 			_event_open_id = 8
 			_target_price = late - 0.1
 		
+		# 新規オーダーした場合
 		if _event_open_id > 0:
 			self.is_ordered = True
 			_target_price =  round(_target_price, 2)

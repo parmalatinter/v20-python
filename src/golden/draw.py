@@ -79,7 +79,7 @@ class Draw(object):
         df['rule_1'] = 1
         df.loc[(df['c3'] < df['lower']),'rule_1']=0
 
-        # ルールその2
+        # ルールその2　3つ陽線
         df['rule_2'] = -1
         df.loc[(df['o'] - df['c'] < 0) & (df['o1'] - df['c1'] < 0) & (df['o2'] - df['c2'] < 0),'rule_2']=0
 
@@ -88,7 +88,7 @@ class Draw(object):
         df['rule_3'] = 1
         df.loc[(df['c3'] > df['upper']),'rule_3']=0
 
-        # ルールその4
+        # ルールその4 3つ陰線
         df['rule_4'] = -1
         df.loc[(df['o'] - df['c'] > 0) & (df['o1'] - df['c1'] > 0) & (df['o2'] - df['c2'] > 0),'rule_4']=0
 
