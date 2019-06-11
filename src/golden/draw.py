@@ -183,7 +183,7 @@ def main():
     draw.set_file_name('usd_10min_api.csv')
     df = draw.caculate(df)
     candle_temp = draw.caculate_candle(df)
-    print(df)
+    # print(df)
     draw.plot(df, candle_temp)
     df.to_csv('out.csv')
 

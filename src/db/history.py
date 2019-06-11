@@ -192,9 +192,9 @@ def main():
 	event_close_id = 1
 	history.update(trade_id, price_close, pl, event_close_id, state)
 
-	print(history.get_all_by_panda())
+	# print(history.get_all_by_panda())
 	df = history.get_by_panda(1)
-	print(df['trade_id'][df.index[0]])
+	# print(df['trade_id'][df.index[0]])
 
 	history.delete(1364)
 
