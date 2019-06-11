@@ -22,6 +22,9 @@ class Calendar(object):
         self.calendar_csv = file.file_utility.File_utility(self.filename, self.folder)
         self.hours = (float(_environ.get('hours')) if _environ.get('hours') else 3) / 2
 
+    def get_drive_id(self):
+        return self.folder
+
     def dataGet(self):
 
         url = 'https://www.yjfx.jp/gaikaex/mark/calendar/' #みんかぶFXの経済指標URLを取得

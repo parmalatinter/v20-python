@@ -196,7 +196,7 @@ def main():
 	df = history.get_by_panda(1)
 	print(df['trade_id'][df.index[0]])
 
-	history.delete(trade_id)
+	history.delete(1364)
 
 	
 if __name__ == "__main__":

@@ -6,15 +6,12 @@ import sys
 from flask import Flask, render_template
 import file.file_utility
 import strategy.environ
+import calender.get
 
 app = Flask(__name__)
 app.debug = True
 
 environ = strategy.environ.Environ()
-
-template_path = os.path.dirname(app.instance_path) + '/src/app/templates/'
-drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
-
 
 @app.route('/')
 def index():
@@ -23,6 +20,13 @@ def index():
 
 @app.route('/hello/<name>')
 def hello(name='candles'):
+	template_path = os.path.dirname(app.instance_path) + '/src/app/templates/'
+	drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
+	
+	if name == 'calendar':
+		_calender = calender.get.Calendar()
+		drive_id =_calender.get_drive_id()
+
 	candles_csv = file.file_utility.File_utility(name + '.csv', drive_id)
 	candles_csv_string = candles_csv.get_string()
 
