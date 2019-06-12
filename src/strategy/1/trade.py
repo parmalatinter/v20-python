@@ -97,6 +97,7 @@ class Trade():
 			# 30分 ~ close処理無しの場合
 			condition_1 = delta_total_minuts > 30 and event_close_id == 0
 			if condition_1:
+				state = 'fix order 30min'
 				if row.currentUnits > 0:
 					rate = row.price + 0.05
 					event_close_id = 1
