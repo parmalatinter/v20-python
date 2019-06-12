@@ -105,7 +105,7 @@ class Trade():
 					event_close_id = 2
 
 				
-				args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' profit reduce ' + str(event_close_id) )
+				args = dict(tradeid=row.id, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' profit reduce ' + str(event_close_id) )
 				command1 = ' v20-order-take-profit %(tradeid)s "%(rate)s" --client-order-comment="%(client_order_comment)s"' % args
 				res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
 				res.wait()
@@ -121,7 +121,7 @@ class Trade():
 
 				args = dict()
 				command1 = ''
-				args = dict(tradeid=row.id, units='ALL')
+				args = dict(tradeid=row.id)
 				event_close_id = 99
 				rate = round(row.price,2)
 				state = ''
@@ -142,7 +142,7 @@ class Trade():
 							profit_rate = float(last_rate) + 0.01
 
 						event_close_id = 3
-						args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id) )
+						args = dict(tradeid=row.id, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(profit_rate)s --client-order-comment="%(client_order_comment)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
 						
@@ -155,7 +155,7 @@ class Trade():
 							profit_rate = float(last_rate) - 0.01
 
 						event_close_id = 4
-						args = dict(tradeid=row.id, units=units, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id) )
+						args = dict(tradeid=row.id, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(profit_rate)s --client-order-comment="%(client_order_comment)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
 
@@ -171,7 +171,7 @@ class Trade():
 						stop_rate = float(last_rate) - 0.5
 
 						event_close_id = 5
-						args = dict(tradeid=row.id, units=units, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id) )
+						args = dict(tradeid=row.id, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s"' % args
 						# v20-order-take-profit 1 116 --client-order-comment="test"
@@ -180,7 +180,7 @@ class Trade():
 						stop_rate = float(last_rate) + 0.5
 
 						event_close_id = 6
-						args = dict(tradeid=row.id, units=units, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id) )
+						args = dict(tradeid=row.id, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s"' % args
 						
