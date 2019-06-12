@@ -11,6 +11,10 @@ import pytz
 
 class Transactions(object):
 
+    orders = {}
+    position = {}
+    trades = {}
+
     def get(self):
         """
         Poll Transactions for the active Account
@@ -29,8 +33,6 @@ class Transactions(object):
 
         response1 = api.account.get(account_id)
 
-        trades = {}
-
         file_name = 'transaction.csv'
 
         res = '{},{},{},{},{},{},{}\n'.format(
@@ -43,14 +45,26 @@ class Transactions(object):
             'unrealizedPL'
         )
 
-        for trade in getattr(response1.get("account", 200), "trades", []):
+        res = response1.get("account", 200)
+        orders = {}
+        position = {}
+        for pos in getattr(res, "positions", []):
+            self.position = pos
+
+        orders = {}
+        for order in getattr(res, "orders", []):
+            self.orders[order.id] = order
+
+        texts = ''
+        for trade in getattr(res, "trades", []):
             response2 = api.transaction.get(account_id, trade.id)
             transaction = response2.get("transaction", 200)
-            trades[trade.id] = {}
-            trades[trade.id]['trade'] = trade
+            self.trades[trade.id] = {}
+            self.trades[trade.id]['trade'] = trade
 
             # print(transaction.price)
-            trades[trade.id]['transaction'] = transaction
+            self.trades[trade.id]['transaction'] = transaction
+
             # ,time,close,open,high,low,volume
             unix = transaction.time.split(".")[0]
             try:
@@ -68,13 +82,21 @@ class Transactions(object):
                 trade.unrealizedPL
             )
 
-            res = res + text
+            texts = texts + text
 
-        return res
+        return texts
+
+    def get_info(self):
+        return {
+            'orders' : self.orders,
+            'position' : self.position,
+            'trades' : self.trades,
+        }
 
 def main():
     transactions = Transactions()
     print(transactions.get())
+    # print(transactions.get_info())
 
 if __name__ == "__main__":
     main()
