@@ -99,10 +99,10 @@ class Trade():
 			if condition_1:
 				state = 'fix order 30min'
 				if row.currentUnits > 0:
-					rate = row.price + 0.05
+					rate = row.price - 0.05
 					event_close_id = 1
 				else:
-					rate = row.price - 0.05
+					rate = row.price + 0.05
 					event_close_id = 2
 
 				
