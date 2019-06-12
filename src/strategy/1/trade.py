@@ -70,13 +70,14 @@ class Trade():
 			
 			delta = now_dt - trade_dt
 
-            unix = row['createTime'].split(".")[0]
-            try:
-                time = datetime.fromtimestamp(int(unix), pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
-            except:
-                time = transaction.time.split(".")[0]
+			unix = row['createTime'].split(".")[0]
 
-            trade_dt = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+			try:
+				time = datetime.fromtimestamp(int(unix), pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
+			except:
+				time = transaction.time.split(".")[0]
+
+			trade_dt = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
 			takeProfitOrderID = int(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
 			stopLossOrderID = int(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
@@ -185,7 +186,7 @@ class Trade():
 						state = 'lose close 90min'
 
 					# buyの場合 発注価格でcloseする
-					if 'currentUnits'] > 0:
+					if row['currentUnits'] > 0:
 						stop_rate = float(last_rate) - 0.5
 
 						event_close_id = 5
