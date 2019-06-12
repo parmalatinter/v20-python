@@ -67,8 +67,6 @@ class Trade():
 
 		for trade_id, row in orders_info.items():
 
-			
-			delta = now_dt - trade_dt
 
 			unix = row['createTime'].split(".")[0]
 
@@ -78,6 +76,8 @@ class Trade():
 				time = transaction.time.split(".")[0]
 
 			trade_dt = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+
+			delta = now_dt - trade_dt
 
 			takeProfitOrderID = int(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
 			stopLossOrderID = int(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
