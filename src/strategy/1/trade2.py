@@ -60,6 +60,7 @@ class Trade():
 
 	def close(self, transaction_df, caculate_df, now_dt, last_rate):
 
+		last_rate = round(last_rate,2)
 		now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
 		for index, row in transaction_df.iterrows():
@@ -87,8 +88,8 @@ class Trade():
 			if history_df.empty:
 				continue
 
-			upper = caculate_df['upper'][caculate_df.index[0]]
-			lower = caculate_df['lower'][caculate_df.index[0]]
+			upper = round(caculate_df['upper'][caculate_df.index[0]],2)
+			lower = round(caculate_df['lower'][caculate_df.index[0]],2)
 
 			event_close_id = history_df['event_close_id'][history_df.index[0]] if history_df['event_close_id'][history_df.index[0]] else 0
 
@@ -124,7 +125,7 @@ class Trade():
 				command1 = ''
 				args = dict(tradeid=row.id, units='ALL')
 				event_close_id = 99
-				rate = row.price
+				rate = round(row.price, 2)
 				state = ''
 				units = 'ALL'
 				# 勝ちの場合
