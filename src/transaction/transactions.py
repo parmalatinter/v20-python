@@ -49,21 +49,31 @@ class Transactions(object):
         orders = {}
         position = {}
         for pos in getattr(res, "positions", []):
-            self.position = pos
+            self.position = pos.__dict__
 
         orders = {}
         for order in getattr(res, "orders", []):
-            self.orders[order.id] = order
+            self.orders[order.id] = order.__dict__
+            
 
         texts = ''
         for trade in getattr(res, "trades", []):
             response2 = api.transaction.get(account_id, trade.id)
             transaction = response2.get("transaction", 200)
             self.trades[trade.id] = {}
-            self.trades[trade.id]['trade'] = trade
+            self.trades[trade.id] = trade.__dict__
+            self.trades[trade.id]['takeProfitOrder'] = None
+            self.trades[trade.id]['stopLossOrder'] = None
+            self.trades[trade.id]['trailingStopLossOrder'] = None
+            if trade.takeProfitOrderID:
+                self.trades[trade.id]['takeProfitOrder'] = self.orders[trade.takeProfitOrderID]
+            if trade.stopLossOrderID:
+                self.trades[trade.id]['stopLossOrder'] = self.orders[trade.stopLossOrderID]
+            if trade.trailingStopLossOrderID:
+                self.trades[trade.id]['trailingStopLossOrder'] = self.orders[trade.trailingStopLossOrderID]
 
             # print(transaction.price)
-            self.trades[trade.id]['transaction'] = transaction
+            self.trades[trade.id]['transaction'] = transaction.__dict__
 
             # ,time,close,open,high,low,volume
             unix = transaction.time.split(".")[0]
@@ -86,17 +96,13 @@ class Transactions(object):
 
         return texts
 
-    def get_info(self):
-        return {
-            'orders' : self.orders,
-            'position' : self.position,
-            'trades' : self.trades,
-        }
+    def get_orders(self):
+        return self.trades
 
 def main():
     transactions = Transactions()
     print(transactions.get())
-    # print(transactions.get_info())
+    # print(transactions.get_orders())
 
 if __name__ == "__main__":
     main()
