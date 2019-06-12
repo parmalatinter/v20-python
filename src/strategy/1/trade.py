@@ -105,7 +105,7 @@ class Trade():
 					event_close_id = 2
 
 				
-				args = dict(tradeid=row.id, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' profit reduce ' + str(event_close_id) )
+				args = dict(tradeid=row.id, rate=rate, client_order_comment=state + ' profit reduce ' + str(event_close_id) )
 				command1 = ' v20-order-take-profit %(tradeid)s "%(rate)s" --client-order-comment="%(client_order_comment)s"' % args
 				res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
 				res.wait()
