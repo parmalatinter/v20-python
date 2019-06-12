@@ -112,6 +112,8 @@ class Trade():
 				res.wait()
 				out, err = res.communicate()
 				self._line.send('order #', command1 + ' ' + out.decode('utf-8') )
+
+				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), event_close_id, state)
 				continue
 
 			condition_2 = delta_total_minuts >= 90 and event_close_id >= 2
