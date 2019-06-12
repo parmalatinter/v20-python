@@ -125,7 +125,7 @@ class Trade():
 				event_close_id = 99
 				rate = round(row.price,2)
 				state = ''
-				units = 'ALL'
+
 				# 勝ちの場合
 				if row.unrealizedPL > 0:
 					if delta_total_minuts > 90:
