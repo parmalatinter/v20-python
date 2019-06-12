@@ -67,12 +67,20 @@ class Trade():
 
 		for trade_id, row in orders_info.items():
 
-			trade_dt = datetime.strptime(row.time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+			
 			delta = now_dt - trade_dt
 
-			takeProfitOrderID = int(row.takeProfitOrderID) if row.takeProfitOrderID else ''
-			stopLossOrderID = int(row.stopLossOrderID) if row.stopLossOrderID else ''
-			trailingStopLossOrderID = int(row.trailingStopLossOrderID) if row.trailingStopLossOrderID else ''
+            unix = row['createTime'].split(".")[0]
+            try:
+                time = datetime.fromtimestamp(int(unix), pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
+            except:
+                time = transaction.time.split(".")[0]
+
+            trade_dt = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+
+			takeProfitOrderID = int(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
+			stopLossOrderID = int(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
+			trailingStopLossOrderID = int(row['trailingStopLossOrderID']) if row['trailingStopLossOrderID'] else ''
 
 			delta_total_minuts = delta.total_seconds()/60
 			delta_total_hours = delta_total_minuts/60
@@ -87,7 +95,7 @@ class Trade():
 				res.wait()
 				out, err = res.communicate()
 				self.is_ordered = True
-				self.history.update(int(trade_id), last_rate,  float(row.unrealizedPL), 99, 'CLOSED')
+				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), 99, 'CLOSED')
 				self._line.send('order #', command + ' ' + out.decode('utf-8') )
 				continue
 			
@@ -105,11 +113,11 @@ class Trade():
 			condition_1 = delta_total_minuts > 30 and event_close_id == 0
 			if condition_1:
 				state = 'fix order 30min'
-				if row.currentUnits > 0:
-					rate = row.price - 0.05
+				if row['currentUnits'] > 0:
+					rate = row['price'] - 0.05
 					event_close_id = 1
 				else:
-					rate = row.price + 0.05
+					rate = row['price'] + 0.05
 					event_close_id = 2
 
 				
@@ -120,7 +128,7 @@ class Trade():
 				out, err = res.communicate()
 				self._line.send('order #', command1 + ' ' + out.decode('utf-8') )
 
-				self.history.update(int(trade_id), last_rate,  float(row.unrealizedPL), event_close_id, state)
+				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 				continue
 
 			condition_2 = delta_total_minuts >= 90 and event_close_id >= 2
@@ -133,18 +141,18 @@ class Trade():
 				command1 = ''
 				args = dict(tradeid=trade_id)
 				event_close_id = 99
-				rate = round(row.price,2)
+				rate = round(row['price'],2)
 				state = ''
 
 				# 勝ちの場合
-				if row.unrealizedPL > 0:
+				if row['unrealizedPL'] > 0:
 					if delta_total_minuts > 90:
 						state = 'profit close 120min'
 					else:
 						state = 'profit close 90min'
 
 					# buyの場合 現在価格プラス0.1でcloseする
-					if row.currentUnits > 0:
+					if row['currentUnits'] > 0:
 
 						if float(upper) > float(last_rate):
 							profit_rate = float(upper)
@@ -152,7 +160,7 @@ class Trade():
 							profit_rate = float(last_rate) + 0.01
 
 						event_close_id = 3
-						args = dict(tradeid=trade_id, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(row.takeProfitOrderID), replace_stop_order_id=str(row.takeProfitOrderID) )
+						args = dict(tradeid=trade_id, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(takeProfitOrderID) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(profit_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(replace_profit_order_id)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(replace_stop_order_id)s"' % args
 						
@@ -165,7 +173,7 @@ class Trade():
 							profit_rate = float(last_rate) - 0.01
 
 						event_close_id = 4
-						args = dict(tradeid=trade_id, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(row.takeProfitOrderID), replace_stop_order_id=str(row.takeProfitOrderID) )
+						args = dict(tradeid=trade_id, profit_rate=profit_rate, rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(takeProfitOrderID) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(profit_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(takeProfitOrderID)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(replace_stop_order_id)s"' % args
 
@@ -177,11 +185,11 @@ class Trade():
 						state = 'lose close 90min'
 
 					# buyの場合 発注価格でcloseする
-					if row.currentUnits > 0:
+					if 'currentUnits'] > 0:
 						stop_rate = float(last_rate) - 0.5
 
 						event_close_id = 5
-						args = dict(tradeid=trade_id, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id), replace_profit_order_id=str(row.takeProfitOrderID), replace_stop_order_id=str(row.takeProfitOrderID) )
+						args = dict(tradeid=trade_id, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(takeProfitOrderID) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(takeProfitOrderID)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(replace_stop_order_id)s"' % args
 						# v20-order-take-profit 1 116 --client-order-comment="test"
@@ -190,7 +198,7 @@ class Trade():
 						stop_rate = float(last_rate) + 0.5
 
 						event_close_id = 6
-						args = dict(tradeid=trade_id, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id), replace_profit_order_id=str(row.takeProfitOrderID), replace_stop_order_id=str(row.takeProfitOrderID) )
+						args = dict(tradeid=trade_id, stop_rate=stop_rate, rate=rate, client_order_comment=state + ' lose ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(takeProfitOrderID) )
 						command1 = ' v20-order-take-profit %(tradeid)s %(rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(takeProfitOrderID)s"' % args
 						command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(replace_stop_order_id)s"' % args
 						
@@ -204,7 +212,7 @@ class Trade():
 				out, err = res.communicate()
 				self._line.send('order #', command2 + ' ' + out.decode('utf-8') )
 
-				self.history.update(int(row.id), last_rate,  float(row.unrealizedPL), event_close_id, state)
+				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 
 
 	def get_account_details(self):
