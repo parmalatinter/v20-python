@@ -378,10 +378,10 @@ def main():
 	transactions_csv_string = transactions.get()
 	transaction_df= trade.get_df_by_string(transactions_csv_string)
 
+	caculate_df = trade.get_caculate_df(candles_df) 
 	if not transaction_df.empty:
 		info = trade.get_info(candles_df)
 		if info['time']:
-			caculate_df = trade.get_caculate_df(candles_df)
 			trade.close(transaction_df, caculate_df, info['time'], info['close'])
 
 		if trade_history:
@@ -398,7 +398,7 @@ def main():
 	transactions_csv.export_drive()
 
 	candles_csv = file.file_utility.File_utility( 'candles.csv', drive_id)
-	candles_csv.set_contents(candles_csv_string)
+	candles_csv.set_contents(caculate_df.to_csv())
 	candles_csv.export_drive()
 
 	histoy_csv_string = trade.get_histoy_csv()
