@@ -164,7 +164,7 @@ class Trade():
 							profit_rate = float(last_rate) + 0.01
 
 						event_close_id = 3
-						args = dict(tradeid=trade_id, profit_rate=profit_rate, profit_rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(takeProfitOrderID) )
+						args = dict(tradeid=trade_id, profit_rate=profit_rate, profit_rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(stopLossOrderID) )
 
 						
 					# sellの場合 現在価格マイナス0.1でcloseする
@@ -176,7 +176,7 @@ class Trade():
 							profit_rate = float(last_rate) - 0.01
 
 						event_close_id = 4
-						args = dict(tradeid=trade_id, profit_rate=profit_rate, stop_rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(takeProfitOrderID) )
+						args = dict(tradeid=trade_id, profit_rate=profit_rate, stop_rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(stopLossOrderID) )
 
 				# 負けの場合
 				else:
@@ -190,14 +190,14 @@ class Trade():
 						stop_rate = float(last_rate) - 0.5
 
 						event_close_id = 5
-						args = dict(tradeid=trade_id, profit_rate=rate, stop_rate=stop_rate, client_order_comment=state + ' lose ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(takeProfitOrderID) )
+						args = dict(tradeid=trade_id, profit_rate=rate, stop_rate=stop_rate, client_order_comment=state + ' lose ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(stopLossOrderID) )
 						# v20-order-take-profit 1 116 --client-order-comment="test"
 					# sellの場合 発注価格でcloseする
 					else:
 						stop_rate = float(last_rate) + 0.5
 
 						event_close_id = 6
-						args = dict(tradeid=trade_id, profit_rate=rate, stop_rate=stop_rate, client_order_comment=state + ' lose ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(takeProfitOrderID) )
+						args = dict(tradeid=trade_id, profit_rate=rate, stop_rate=stop_rate, client_order_comment=state + ' lose ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(stopLossOrderID) )
 
 				command1 = ' v20-order-take-profit %(tradeid)s %(profit_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(replace_profit_order_id)s"' % args
 				command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(replace_stop_order_id)s"' % args
