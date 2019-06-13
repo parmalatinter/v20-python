@@ -65,7 +65,7 @@ class Trade():
 		self.market.exec(args)
 		response = melf.arket.get_response()
 		if response.status == 200:
-			tansaction = self.market.get_tansaction
+			tansaction = self.market.get_tansaction()
 			self._line.send('order #' + str(tansaction.id), message + ' ' + out.decode('utf-8') )
 			self.is_ordered = True
 			return tansaction
