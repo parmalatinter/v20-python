@@ -60,7 +60,7 @@ class Trade():
 			return pd.DataFrame(columns=[])
 
 	def order(self, instrument, units, price, event_open_id):
-		message = ' market order'
+		client_order_comment = ' market order'
 		args = {'instrument': instrument, 'units':units, 'take-profit-price' : price, 'client-order-comment' : client_order_comment}
 		market.exec(args)
 		response = market.get_response()
