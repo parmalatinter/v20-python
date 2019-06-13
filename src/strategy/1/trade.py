@@ -24,6 +24,7 @@ import db.history
 import instrument.candles as inst
 import transaction.transactions
 import order.market
+import order.take_profit
 
 
 class Trade():
@@ -31,6 +32,7 @@ class Trade():
 	is_ordered = False
 	history = db.history.History()
 	market = order.market.Market()
+	take_profit = order.take_profit.Take_profit()
 
 	_line = line.line.Line()
 	instrument =  "USD_JPY"
@@ -63,10 +65,10 @@ class Trade():
 		client_order_comment = ' market order'
 		args = {'instrument': instrument, 'units':units, 'take-profit-price' : price, 'client-order-comment' : client_order_comment}
 		self.market.exec(args)
-		response = melf.arket.get_response()
+		response = self.market.get_response()
 		if response.status == 200:
 			tansaction = self.market.get_tansaction()
-			self._line.send('order #' + str(tansaction.id), message + ' ' + out.decode('utf-8') )
+			self._line.send('order #' + str(tansaction.id), str(price) + ' ' + str(event_open_id) )
 			self.is_ordered = True
 			return tansaction
 		else:
@@ -207,13 +209,16 @@ class Trade():
 						event_close_id = 6
 						args = dict(tradeid=trade_id, profit_rate=rate, stop_rate=stop_rate, client_order_comment=(state + ' lose ' + event_close_id), profit_id=takeProfitOrderID, stop_id=stopLossOrderID) 
 
-				command1 = ' v20-order-take-profit %(tradeid)s %(profit_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(profit_id)s"' % args
 				command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(stop_id)s"' % args
 
-				res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
-				res.wait()
-				out, err = res.communicate()
-				self._line.send('order #', command1 + ' ' + out.decode('utf-8') )
+				args = {'tradeid': tradeid1, 'profit_rate':profit_rate, 'replace_order_id' : profit_id, 'client-order-comment' : client_order_comment}
+				self.take_profit.exec(args)
+				response = self.take_profit.get_response()
+				if response.status == 200:
+					self._line.send('fix order take profit #', str(profit_rate) + ' ' +str(profit_id) + ' ' + client_order_comment )
+					self.is_ordered = True
+				else:
+					self._line.send('fix order take profit faild #', str(profit_rate) + ' ' +str(profit_id) + ' ' + client_order_comment )
 				
 				res = subprocess.Popen(command2, stdout=subprocess.PIPE, stderr=None, shell=True)
 				res.wait()
