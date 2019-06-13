@@ -164,7 +164,7 @@ class Trade():
 							profit_rate = float(last_rate) + 0.01
 
 						event_close_id = 3
-						args = dict(tradeid=trade_id, profit_rate=profit_rate, profit_rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(stopLossOrderID) )
+						args = dict(tradeid=trade_id, profit_rate=profit_rate, stop_rate=rate, client_order_comment=state + ' win ' + str(event_close_id), replace_profit_order_id=str(takeProfitOrderID), replace_stop_order_id=str(stopLossOrderID) )
 
 						
 					# sellの場合 現在価格マイナス0.1でcloseする
