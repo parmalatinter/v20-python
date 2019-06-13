@@ -68,7 +68,7 @@ class Trade():
 		for trade_id, row in orders_info.items():
 
 
-			unix = row['createTime'].split(".")[0]
+			unix = row['openTime'].split(".")[0]
 
 			try:
 				time = datetime.fromtimestamp(int(unix), pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
