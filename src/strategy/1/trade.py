@@ -176,7 +176,6 @@ class Trade():
 						event_close_id = 3
 						args = dict(tradeid=trade_id, profit_rate=profit_rate, stop_rate=rate, client_order_comment=(state + ' win ' + event_close_id), profit_id=takeProfitOrderID, stop_id=stopLossOrderID) 
 
-						
 					# sellの場合 現在価格マイナス0.1でcloseする
 					else:
 
