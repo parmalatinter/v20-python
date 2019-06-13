@@ -25,7 +25,7 @@ import instrument.candles as inst
 import transaction.transactions
 import order.market
 import order.take_profit
-
+import order.stop_loss
 
 class Trade():
 
@@ -33,6 +33,7 @@ class Trade():
 	history = db.history.History()
 	market = order.market.Market()
 	take_profit = order.take_profit.Take_profit()
+	stop_loss = order.stop_loss.Stop_loss()
 
 	_line = line.line.Line()
 	instrument =  "USD_JPY"
@@ -135,13 +136,17 @@ class Trade():
 					rate = row['price'] + 0.05
 					event_close_id = 2
 
-				
-				args = dict(tradeid=trade_id, rate=rate, client_order_comment=state + ' profit reduce ' + str(event_close_id), replace_order_id=str(takeProfitOrderID) )
-				command1 = ' v20-order-take-profit %(tradeid)s "%(rate)s" --client-order-comment="%(client_order_comment)s"  --replace-order-id="%(takeProfitOrderID)s"' % args
-				res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
-				res.wait()
-				out, err = res.communicate()
-				self._line.send('order #', command1 + ' ' + out.decode('utf-8') )
+				profit_rate = rate
+				client_order_comment = state + ' profit reduce ' + str(event_close_id)
+
+				args = {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment}
+				self.take_profit.exec(args)
+				response = self.take_profit.get_response()
+				if response.status == 200:
+					self._line.send('profit reduce #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+					self.is_ordered = True
+				else:
+					self._line.send('fprofit reduce faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 				continue
@@ -167,6 +172,8 @@ class Trade():
 					else:
 						state = 'profit close 90min'
 
+					stop_rate = rate
+
 					# buyの場合 現在価格プラス0.1でcloseする
 					if row['currentUnits'] > 0:
 
@@ -177,8 +184,7 @@ class Trade():
 
 						event_close_id = 3
 						client_order_comment=(state + ' win ' + event_close_id)
-						args2 = dict(tradeid=trade_id, profit_rate=profit_rate, stop_rate=rate, client_order_comment=(state + ' win ' + event_close_id), profit_id=takeProfitOrderID, stop_id=stopLossOrderID) 
-
+						
 					# sellの場合 現在価格マイナス0.1でcloseする
 					else:
 
@@ -189,8 +195,7 @@ class Trade():
 
 						event_close_id = 4
 						client_order_comment=(state + ' win ' + event_close_id)
-						args2 = dict(tradeid=trade_id, profit_rate=profit_rate, stop_rate=rate, client_order_comment=(state + ' win ' + event_close_id), profit_id=takeProfitOrderID, stop_id=stopLossOrderID) 
-
+						
 				# 負けの場合
 				else:
 					profit_rate=rate
@@ -206,30 +211,34 @@ class Trade():
 
 						event_close_id = 5
 						client_order_comment=(state + ' lose ' + event_close_id)
-						args2 = dict(tradeid=trade_id, profit_rate=rate, stop_rate=stop_rate, client_order_comment=(state + ' lose ' + event_close_id), profit_id=takeProfitOrderID, stop_id=stopLossOrderID) 
+						
 					# sellの場合 発注価格でcloseする
 					else:
 						stop_rate = float(last_rate) + 0.5
 
 						event_close_id = 6
 						client_order_comment=(state + ' lose ' + event_close_id)
-						args2 = dict(tradeid=trade_id, profit_rate=rate, stop_rate=stop_rate, client_order_comment=(state + ' lose ' + event_close_id), profit_id=takeProfitOrderID, stop_id=stopLossOrderID) 
-
 				
-				args = {'tradeid': tradeid1, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment}
+				args = {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment}
+	
 				self.take_profit.exec(args)
 				response = self.take_profit.get_response()
 				if response.status == 200:
-					self._line.send('fix order take profit #', str(profit_rate) + ' ' +str(profit_id) + ' ' + client_order_comment )
+					self._line.send('fix order take profit #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 					self.is_ordered = True
 				else:
-					self._line.send('fix order take profit faild #', str(profit_rate) + ' ' +str(profit_id) + ' ' + client_order_comment )
+					self._line.send('fix order take profit faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+
+				args = {'tradeid': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client-order-comment' : client_order_comment}
 				
-				command2 = ' v20-order-stop-loss %(tradeid)s %(stop_rate)s --client-order-comment="%(client_order_comment)s" --replace-order-id="%(stop_id)s"' % args2
-				res = subprocess.Popen(command2, stdout=subprocess.PIPE, stderr=None, shell=True)
-				res.wait()
-				out, err = res.communicate()
-				self._line.send('order #', command2 + ' ' + out.decode('utf-8') )
+				self.stop_loss.exec(args)
+				response = self.stop_loss.get_response()
+				if response.status == 200:
+					self._line.send('fix order stop loss #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+					self.is_ordered = True
+				else:
+					self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 
