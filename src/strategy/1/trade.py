@@ -73,7 +73,7 @@ class Trade():
 			try:
 				time = datetime.fromtimestamp(int(unix), pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
 			except:
-				time = transaction.time.split(".")[0]
+				time = row['openTime'].split(".")[0]
 
 			trade_dt = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
