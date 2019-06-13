@@ -62,16 +62,15 @@ class Trade():
 	def order(self, instrument, units, price, event_open_id):
 		client_order_comment = ' market order'
 		args = {'instrument': instrument, 'units':units, 'take-profit-price' : price, 'client-order-comment' : client_order_comment}
-		market.exec(args)
-		response = market.get_response()
+		self.market.exec(args)
+		response = melf.arket.get_response()
 		if response.status == 200:
-			tansaction = market.get_tansaction
+			tansaction = self.market.get_tansaction
 			self._line.send('order #' + str(tansaction.id), message + ' ' + out.decode('utf-8') )
 			self.is_ordered = True
 			return tansaction
 		else:
 			self._line.send('order faild #', command + ' ' + out.decode('utf-8') )
-			self.is_ordered = True
 			return None
 
 	def close(self, orders_info, caculate_df, now_dt, last_rate):
