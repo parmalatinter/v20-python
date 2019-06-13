@@ -5,70 +5,112 @@ import common.config
 from .args import OrderArguments, add_replace_order_id_argument
 from .view import print_order_create_response_transactions
 
+class Stop_loss():
 
-def main():
-    """
-    Create or replace an OANDA Stop Loss Order in an Account based on the
-    provided command-line arguments.
-    """
-
+    args = None
+    response = None
+    # transaction = None
     parser = argparse.ArgumentParser()
-
-    #
-    # Add the command line argument to parse to the v20 config
-    #
     common.config.add_argument(parser)
 
-    #
-    # Add the argument to support replacing an existing argument
-    #
-    add_replace_order_id_argument(parser)
+    def exec_by_cmd(self):
 
-    #
-    # Add the command line arguments required for a Limit Order
-    #
-    orderArgs = OrderArguments(parser)
-    orderArgs.add_trade_id()
-    orderArgs.add_price()
-    orderArgs.add_time_in_force(["GTD", "GFD", "GTC"])
-    orderArgs.add_client_order_extensions()
-
-    args = parser.parse_args()
-
-    #
-    # Create the api context based on the contents of the
-    # v20 config file
-    #
-    api = args.config.create_context()
-
-    #
-    # Extract the Limit Order parameters from the parsed arguments
-    #
-    orderArgs.parse_arguments(args)
-
-    if args.replace_order_id is not None:
         #
-        # Submit the request to cancel and replace a Stop Loss Order
+        # Add the argument to support replacing an existing argument
         #
-        response = api.order.stop_loss_replace(
-            args.config.active_account,
-            args.replace_order_id,
-            **orderArgs.parsed_args
-        )
-    else:
+        add_replace_order_id_argument(self.parser)
+
         #
-        # Submit the request to create a Stop Loss Order
+        # Add the command line arguments required for a Limit Order
         #
-        response = api.order.stop_loss(
-            args.config.active_account,
-            **orderArgs.parsed_args
-        )
+        orderArgs = OrderArguments(self.parser)
+        orderArgs.add_trade_id()
+        orderArgs.add_price()
+        orderArgs.add_time_in_force(["GTD", "GFD", "GTC"])
+        orderArgs.add_client_order_extensions()
 
-    print("Response: {} ({})".format(response.status, response.reason))
-    print("")
+        self.args = self.parser.parse_args()
 
-    print_order_create_response_transactions(response)
+        #
+        # Extract the Limit Order parameters from the parsed arguments
+        #
+        orderArgs.parse_arguments(self.args)
 
+        self.exec(orderArgs.parsed_args)
+
+    def exec(self, arguments):
+
+        self.args = self.parser.parse_args()
+
+        #
+        # Create the api context based on the contents of the
+        # v20 config file
+        #
+        api = self.args.config.create_context()
+
+
+        orderArgs = OrderArguments(self.parser)
+
+        orderArgs.parse_arguments(self.args)
+
+
+
+        try:
+            if self.args.replace_order_id is not None:
+                arguments['replace_order_id'] = self.args.replace_order_id
+        except:
+            arguments
+
+        if 'replace_order_id' in arguments:
+            #
+            # Submit the request to cancel and replace a Take Profit Order
+            #
+            
+            response = api.order.stop_loss_replace(
+                self.args.config.active_account,
+                arguments['replace_order_id'],
+                **arguments
+            )
+            
+        else:
+            #
+            # Submit the request to create a Take Profit Order
+            #
+            response = api.order.stop_loss(
+                self.args.config.active_account,
+                **arguments
+            )
+
+
+        
+
+        self.response = response
+        # self.transaction = response.get("orderFillTransaction", None)
+
+    def get_response(self):
+        return self.response
+
+    # def get_tansaction(self):
+    #     return self.transaction
+
+    def print_response(self):
+        print("Response: {} ({})".format(self.response.status, self.response.reason))
+        print("")
+
+        print_order_create_response_transactions(self.response)
+
+def main():
+    stop_loss = Stop_loss()
+    stop_loss.exec({'tradeid': 1, 'profit_rate':110, 'replace_order_id' : 1, 'client-order-comment' : 'test'})
+    response = stop_loss.get_response()
+    # transaction = stop_loss.get_tansaction()
+    print(response)
+
+def main():
+    stop_loss = Stop_loss()
+    stop_loss.exec_by_cmd()
+    stop_loss.print_response()
 
 if __name__ == "__main__":
     main()
+    
