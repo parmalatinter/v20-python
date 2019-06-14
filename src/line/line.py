@@ -16,6 +16,8 @@ class Line(object):
 		args = dict(title=title, message=message)
 		message = '%(title)s\n%(message)s' % args
 
+		print(message)
+
 		payload = {'message': message}
 		line_notify = requests.post(self.line_notify_api, data=payload, headers=self.headers)
 		
