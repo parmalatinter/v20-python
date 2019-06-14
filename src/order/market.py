@@ -13,8 +13,8 @@ class Market():
     transaction = None
     parser = argparse.ArgumentParser()
     common.config.add_argument(parser)
-    
-
+    errorCode = '' 
+    errorMessage = ''
 
     def exec_by_cmd(self):
 
@@ -66,13 +66,25 @@ class Market():
         )
 
         self.response = response
-        self.transaction = response.get("orderFillTransaction", None)
+        # orderRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
+        if self.response.status == 200:
+            self.transaction = response.get("orderFillTransaction", None)
+        else:
+            self.transaction = response.get("orderRejectTransaction", None)
+            self.errorCode = response.get("errorCode", None)
+            self.errorMessage = response.get("errorMessage", None)
 
     def get_response(self):
         return self.response
 
     def get_tansaction(self):
         return self.transaction
+
+    def get_errors(self):
+        return {
+            'errorCode' : self.errorCode,
+            'errorMessage' : self.errorMessage
+        }
 
     def print_response(self):
         if self.response:
