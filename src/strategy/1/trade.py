@@ -421,10 +421,7 @@ def main():
 		trade.golden_trade(candles_df)
 
 	transactions = transaction.transactions.Transactions()
-	transactions_csv_string = transactions.get()
-
 	orders_info = transactions.get_orders()
-	transaction_df= trade.get_df_by_string(transactions_csv_string)
 
 	caculate_df = trade.get_caculate_df(candles_df) 
 	if orders_info:
