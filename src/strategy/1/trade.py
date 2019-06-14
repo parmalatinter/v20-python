@@ -323,7 +323,6 @@ class Trade():
 				_units = self.units
 				_event_open_id = 1
 				_target_price = late + 0.1
-				_stop_rate = 
 			
 			# trendが-5以下の場合
 			elif self.trend_usd['res'] < -5:
