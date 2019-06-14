@@ -296,7 +296,7 @@ class Trade():
 		rule_4 = last_df['rule_4'][last_df.index[0]] == 0
 
 		# ゴールデンクロスの場合
-		if not is_golden:
+		if is_golden:
 			is_golden = True
 			# trendが5以上の場合
 			if self.trend_usd['res'] > 5:
