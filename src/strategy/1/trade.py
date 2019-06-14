@@ -470,8 +470,7 @@ if __name__ == "__main__":
 	try:
 	    main()
 	except:
-		import traceback
 		_line = line.line.Line()
-		_line.send('Error', traceback.print_exc() )
+		_line.send('Error', sys.exc_info() )
 
 	
