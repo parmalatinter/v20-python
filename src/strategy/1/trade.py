@@ -65,6 +65,32 @@ class Trade():
 		else:
 			return pd.DataFrame(columns=[])
 
+	def get_account_details(self):
+		account = strategy.account.Account()
+		details = account.get_account_detail()
+		return details
+
+	def get_caculate_df(self, df_candles):
+		if self.caculate_df.empty:
+			draw = golden.draw.Draw()
+			self.caculate_df_all = draw.caculate(df_candles)
+			self.caculate_df = self.caculate_df_all.tail(1)
+
+		return self.caculate_df
+
+	def get_caculate_df_all(self, df_candles):
+		if self.caculate_df_all.empty:
+			self.get_caculate_df(df_candles)
+
+		return self.caculate_df_all
+
+	def get_info(self, df):
+		last_df = df.tail(1)
+		return {'time' : last_df['time'][last_df.index[0]], 'close' : last_df['close'][last_df.index[0]]}
+
+	def get_histoy_csv(self):
+		return self.history.get_all_by_csv()
+
 	def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 		self._take_profit.exec( {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment})
 		response = self._take_profit.get_response()
@@ -169,16 +195,7 @@ class Trade():
 				profit_rate = rate
 				client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
-				args = {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment}
-				self._take_profit.exec(args)
-				response = self._take_profit.get_response()
-				if response.status == 200:
-					self._line.send('profit reduce #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
-					self.is_ordered = True
-				else:
-					errors =  self.market.get_errors()
-					self._line.send('profit reduce faild  #', ' evrent:' +str(event_close_id) + ' ' + errors['errorCode'] + ':' + errors['errorMessage'] )
-
+				take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id)
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 				continue
 
@@ -253,26 +270,6 @@ class Trade():
 				self.stop_loss(trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id)
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
-
-
-	def get_account_details(self):
-		account = strategy.account.Account()
-		details = account.get_account_detail()
-		return details
-
-	def get_caculate_df(self, df_candles):
-		if self.caculate_df.empty:
-			draw = golden.draw.Draw()
-			self.caculate_df_all = draw.caculate(df_candles)
-			self.caculate_df = self.caculate_df_all.tail(1)
-
-		return self.caculate_df
-
-	def get_caculate_df_all(self, df_candles):
-		if self.caculate_df_all.empty:
-			self.get_caculate_df(df_candles)
-
-		return self.caculate_df_all
 
 	def golden_trade(self, df_candles):
 
@@ -384,10 +381,6 @@ class Trade():
 				'rule_4' :bool(rule_4)
 			}
 			trade.insert_histoy(trade_history,transaction.id)
-	
-	def get_info(self, df):
-		last_df = df.tail(1)
-		return {'time' : last_df['time'][last_df.index[0]], 'close' : last_df['close'][last_df.index[0]]}
 
 	def insert_histoy(self, trade_history, trade_id):
 		self.history.insert(
@@ -409,13 +402,9 @@ class Trade():
 			trade_history['rule_4'],
 			round(self.trend_usd['res'], 2),
 		)
-
-	def get_histoy_csv(self):
-		return self.history.get_all_by_csv()
 	
 def main():
 
-	
 	condition = market.condition.Market()
 	if condition.get_is_opening() == False:
 		exit()
