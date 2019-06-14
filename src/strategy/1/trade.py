@@ -41,6 +41,7 @@ class Trade():
 	hours = 3
 	trend_usd = trend.get.Trend().get()
 	caculate_df = pd.DataFrame(columns=[])
+	caculate_df_all = pd.DataFrame(columns=[])
 
 
 	def __init__(self, _environ):
@@ -254,10 +255,16 @@ class Trade():
 	def get_caculate_df(self, df_candles):
 		if self.caculate_df.empty:
 			draw = golden.draw.Draw()
-			df = draw.caculate(df_candles)
-			self.caculate_df = df.tail(1)
+			self.caculate_df_all = draw.caculate(df_candles)
+			self.caculate_df = self.caculate_df_all.tail(1)
 
 		return self.caculate_df
+
+	def get_caculate_df_all(self, df_candles):
+		if self.caculate_df_all.empty:
+			self.get_caculate_df(df_candles)
+
+		return self.caculate_df_all
 
 	def golden_trade(self, df_candles):
 
@@ -431,6 +438,8 @@ def main():
 	orders_info = transactions.get_orders()
 
 	caculate_df = trade.get_caculate_df(candles_df) 
+	caculate_df_all = trade.get_caculate_df_all(candles_df) 
+
 	if orders_info:
 		info = trade.get_info(candles_df)
 
@@ -450,7 +459,7 @@ def main():
 	# 	transactions_csv.export_drive()
 
 	candles_csv = file.file_utility.File_utility( 'candles.csv', drive_id)
-	candles_csv.set_contents(caculate_df.to_csv())
+	candles_csv.set_contents(caculate_df_all.to_csv())
 	candles_csv.export_drive()
 
 	histoy_csv_string = trade.get_histoy_csv()
