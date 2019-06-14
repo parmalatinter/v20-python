@@ -32,8 +32,8 @@ class Trade():
 	is_ordered = False
 	history = db.history.History()
 	market = order.market.Market()
-	take_profit = order.take_profit.Take_profit()
-	stop_loss = order.stop_loss.Stop_loss()
+	_take_profit = order.take_profit.Take_profit()
+	_stop_loss = order.stop_loss.Stop_loss()
 
 	_line = line.line.Line()
 	instrument =  "USD_JPY"
@@ -62,6 +62,26 @@ class Trade():
 			return pd.read_csv(pd.compat.StringIO(csv_string), sep=',', engine='python', skipinitialspace=True)
 		else:
 			return pd.DataFrame(columns=[])
+
+	def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
+		self._take_profit.exec( {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment})
+		response = self._take_profit.get_response()
+		if response.status == 201:
+			self._line.send('fix order take profit #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+			self.is_ordered = True
+		else:
+			self._line.send('fix order take profit faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
+
+	def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
+		self._stop_loss.exec( {'tradeid': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client-order-comment' : client_order_comment})
+		response = self._stop_loss.get_response()
+		print(response.status)
+		if response.status == 201:
+			self._line.send('fix order stop loss #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+			self.is_ordered = True
+		else:
+			self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
+
 
 	def order(self, instrument, units, price, event_open_id):
 		client_order_comment = ' market order'
@@ -143,8 +163,8 @@ class Trade():
 				client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
 				args = {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment}
-				self.take_profit.exec(args)
-				response = self.take_profit.get_response()
+				self._take_profit.exec(args)
+				response = self._take_profit.get_response()
 				if response.status == 200:
 					self._line.send('profit reduce #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 					self.is_ordered = True
@@ -222,27 +242,8 @@ class Trade():
 						event_close_id = 6
 						client_order_comment=(state + ' lose ' + event_close_id)
 				
-				args = {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment}
-	
-				self.take_profit.exec(args)
-				response = self.take_profit.get_response()
-				if response.status == 200:
-					self._line.send('fix order take profit #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
-					self.is_ordered = True
-				else:
-					self._line.send('fix order take profit faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
-
-				args = {'tradeid': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client-order-comment' : client_order_comment}
-				
-				self.stop_loss.exec(args)
-				response = self.stop_loss.get_response()
-				print(response.status)
-				if response.status == 201:
-					self._line.send('fix order stop loss #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
-					self.is_ordered = True
-				else:
-					self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
-
+				self.take_profit(trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id)
+				self.stop_loss(trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id)
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 
@@ -287,7 +288,6 @@ class Trade():
 		# ルールその4 3つ陰線
 		rule_4 = last_df['rule_4'][last_df.index[0]] == 0
 
-		print( self.trend_usd['res'] )
 		# ゴールデンクロスの場合
 		if not is_golden:
 			is_golden = True
@@ -356,7 +356,6 @@ class Trade():
 		
 		# 新規オーダーした場合
 		if _event_open_id > 0:
-			print(10000000000)
 			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
 			transaction = self.order(self.instrument, _units,_target_price, _event_open_id)
