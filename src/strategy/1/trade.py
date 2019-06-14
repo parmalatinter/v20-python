@@ -109,26 +109,36 @@ class Trade():
 		response = self._stop_loss.get_response()
 		print(response.status)
 		if response.status == 201:
-			self._line.send('fix order stop loss #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+			self._line.send('fix order stop loss #', str(stop_rate) + ' event:' +str(event_close_id) + ' ' + client_order_comment )
 			self.is_ordered = True
 		else:
 			self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
 
-	def order(self, instrument, units, price, event_open_id, client_order_comment):
-		args = {'instrument': instrument, 'units':units, 'takeProfitOnFill' : price}
-		self.market.exec(args)
+	def order(self, instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment):
+		self.market.exec({'instrument': instrument, 'units':units})
 		response = self.market.get_response()
 		print(response.status)
 		if response.status == 201:
 			tansaction = self.market.get_tansaction()
-			response = self._take_profit.exec( {'tradeid': tansaction.id, 'profit_rate':price})
-			if response.status == 201:
+			
+			response1 = self._take_profit.exec( {'tradeid': tansaction.id, 'profit_rate':profit_rate})
+			if response1.status == 201:
 				self._line.send('order #' + str(tansaction.id), str(price) + ' ' + str(event_open_id) )
 				self.is_ordered = True
-				return tansaction
+			else:
+				self._line.send('order profit faild #', '??????' )
+				return None
 
-			self._line.send('order profit faild #', '??????' )
-			return None
+			response2 = self._stop_loss.exec( {'tradeid': tansaction.id, 'stop_rate':stop_rate})
+			if response2.status == 201:
+				self._line.send('order #' + str(tansaction.id), str(price) + ' ' + str(event_open_id) )
+				self.is_ordered = True
+
+			else:
+				self._line.send('order stop faild #', '??????' )
+				return None
+
+			return transaction
 
 		errors =  self.market.get_errors()
 		self._line.send('order faild #', errors['errorMessage'] )
@@ -287,6 +297,10 @@ class Trade():
 		is_golden = True
 		# last_df['golden'][last_df.index[0]]
 		is_dead = last_df['dead'][last_df.index[0]]
+
+		upper = last_df['upper'][last_df.index[0]]
+		lower = last_df['lower'][last_df.index[0]]
+
 		_units = 0
 		_event_open_id = 0
 		_message = ''
@@ -309,6 +323,7 @@ class Trade():
 				_units = self.units
 				_event_open_id = 1
 				_target_price = late + 0.1
+				_stop_rate = 
 			
 			# trendが-5以下の場合
 			elif self.trend_usd['res'] < -5:
@@ -366,11 +381,16 @@ class Trade():
 			_event_open_id = 8
 			_target_price = late - 0.1
 		
-		# 新規オーダーした場合
+		# 新規オーダーする場合
 		if _event_open_id > 0:
+			if _units > 0
+				_stop_rate = round(lower, 2)
+			else
+				_stop_rate = round(upper, 2)
+
 			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
-			transaction = self.order(self.instrument, _units,_target_price, _event_open_id, _message)
+			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
 			self._line.send(_event_open_id, _message)
 
 			if not transaction:
