@@ -121,7 +121,7 @@ class Trade():
 		print(response.status)
 		if response.status == 201:
 			tansaction = self.market.get_tansaction()
-			response = self._take_profit.exec( {'tradeid': trade_id, 'profit_rate':price})
+			response = self._take_profit.exec( {'tradeid': tansaction.id, 'profit_rate':price})
 			if response.status == 201:
 				self._line.send('order #' + str(tansaction.id), str(price) + ' ' + str(event_open_id) )
 				self.is_ordered = True
