@@ -229,7 +229,7 @@ class Trade():
 					self._line.send('fix order take profit #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 					self.is_ordered = True
 				else:
-					self._line.send('fix order take profit faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+					self._line.send('fix order take profit faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
 
 				args = {'tradeid': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client-order-comment' : client_order_comment}
 				
@@ -240,7 +240,7 @@ class Trade():
 					self._line.send('fix order stop loss #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 					self.is_ordered = True
 				else:
-					self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+					self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
 
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
