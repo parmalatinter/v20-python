@@ -121,13 +121,18 @@ class Trade():
 		print(response.status)
 		if response.status == 201:
 			tansaction = self.market.get_tansaction()
-			self._line.send('order #' + str(tansaction.id), str(price) + ' ' + str(event_open_id) )
-			self.is_ordered = True
-			return tansaction
-		else:
-			errors =  self.market.get_errors()
-			self._line.send('order faild #', errors['errorCode'] + ':' + errors['errorMessage'] )
+			response = self._take_profit.exec( {'tradeid': trade_id, 'profit_rate':price})
+			if response.status == 201:
+				self._line.send('order #' + str(tansaction.id), str(price) + ' ' + str(event_open_id) )
+				self.is_ordered = True
+				return tansaction
+
+			self._line.send('order profit faild #', '??????' )
 			return None
+
+		errors =  self.market.get_errors()
+		self._line.send('order faild #', errors['errorMessage'] )
+		return None
 
 	def market_close(self, tradeid, units, event_close_id):
 		self._close.exec(tradeid, units)
