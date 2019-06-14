@@ -73,7 +73,8 @@ class Trade():
 			self.is_ordered = True
 			return tansaction
 		else:
-			self._line.send('order faild #', command + ' ' + out.decode('utf-8') )
+			errors =  self.market.get_errors()
+			self._line.send('order faild #', errors['errorCode'] + ':' + errors['errorMessage'] )
 			return None
 
 	def close(self, orders_info, caculate_df, now_dt, last_rate):
@@ -146,7 +147,8 @@ class Trade():
 					self._line.send('profit reduce #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 					self.is_ordered = True
 				else:
-					self._line.send('fprofit reduce faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+					errors =  self.market.get_errors()
+					self._line.send('profit reduce faild  #', ' evrent:' +str(event_close_id) + ' ' + errors['errorCode'] + ':' + errors['errorMessage'] )
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 				continue
@@ -158,7 +160,6 @@ class Trade():
 			if condition_2 or condition_3:
 
 				args = dict()
-				command1 = ''
 				args = dict(tradeid=trade_id)
 				event_close_id = 99
 				rate = round(row['price'],2)
@@ -257,6 +258,7 @@ class Trade():
 		return self.caculate_df
 
 	def golden_trade(self, df_candles):
+
 		last_df = self.get_caculate_df(df_candles)
 		late = last_df['c'][last_df.index[0]]
 		
