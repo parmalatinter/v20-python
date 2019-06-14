@@ -62,7 +62,7 @@ class History():
 
 	def get(self):
 
-		return self.exec_query("SELECT * FROM history;", None, True)
+		return self.exec_query("SELECT * FROM history ORDER BY trade_id;", None, True)
 
 	def get_by_panda(self, trade_id):
 		conn = self.get_conn()
@@ -83,7 +83,7 @@ class History():
 
 		cur = conn.cursor()
 
-		rows = self.exec_query_by_panda("SELECT * FROM history;", 'id')
+		rows = self.exec_query_by_panda("SELECT * FROM history ORDER BY trade_id;", 'id')
 
 		cur.close()
 		conn.close()

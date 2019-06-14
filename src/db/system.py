@@ -68,7 +68,7 @@ class System():
 
 	def get(self):
 
-		return self.exec_query("SELECT * FROM system;", None, True)
+		return self.exec_query("SELECT * FROM system ORDER BY update_time;", None, True)
 
 	def get_by_panda(self, id):
 		conn = self.get_conn()
@@ -89,7 +89,7 @@ class System():
 
 		cur = conn.cursor()
 
-		rows = self.exec_query_by_panda("SELECT * FROM system;", 'id')
+		rows = self.exec_query_by_panda("SELECT * FROM system ORDER BY update_time;", 'id')
 
 		cur.close()
 		conn.close()
