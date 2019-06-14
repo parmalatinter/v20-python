@@ -96,7 +96,7 @@ class Trade():
 		return self.history.get_all_by_csv()
 
 	def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
-		self._take_profit.exec( {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client-order-comment' : client_order_comment})
+		self._take_profit.exec( {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client_order_comment' : client_order_comment})
 		response = self._take_profit.get_response()
 		if response.status == 201:
 			self._line.send('fix order take profit #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
@@ -105,7 +105,7 @@ class Trade():
 			self._line.send('fix order take profit faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
 
 	def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
-		self._stop_loss.exec( {'tradeid': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client-order-comment' : client_order_comment})
+		self._stop_loss.exec( {'tradeid': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client_order_comment' : client_order_comment})
 		response = self._stop_loss.get_response()
 		print(response.status)
 		if response.status == 201:
