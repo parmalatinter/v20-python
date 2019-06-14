@@ -67,7 +67,8 @@ class Trade():
 		args = {'instrument': instrument, 'units':units, 'take-profit-price' : price, 'client-order-comment' : client_order_comment}
 		self.market.exec(args)
 		response = self.market.get_response()
-		if response.status == 200:
+		print(response.status)
+		if response.status == 201:
 			tansaction = self.market.get_tansaction()
 			self._line.send('order #' + str(tansaction.id), str(price) + ' ' + str(event_open_id) )
 			self.is_ordered = True
@@ -234,7 +235,8 @@ class Trade():
 				
 				self.stop_loss.exec(args)
 				response = self.stop_loss.get_response()
-				if response.status == 200:
+				print(response.status)
+				if response.status == 201:
 					self._line.send('fix order stop loss #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 					self.is_ordered = True
 				else:
@@ -262,7 +264,8 @@ class Trade():
 		last_df = self.get_caculate_df(df_candles)
 		late = last_df['c'][last_df.index[0]]
 		
-		is_golden = last_df['golden'][last_df.index[0]]
+		is_golden = True
+		# last_df['golden'][last_df.index[0]]
 		is_dead = last_df['dead'][last_df.index[0]]
 		_units = 0
 		_event_open_id = 0
@@ -278,7 +281,7 @@ class Trade():
 		rule_4 = last_df['rule_4'][last_df.index[0]] == 0
 
 		# ゴールデンクロスの場合
-		if is_golden:
+		if not is_golden:
 			is_golden = True
 			# trendが5以上の場合
 			if self.trend_usd['res'] > 5:
