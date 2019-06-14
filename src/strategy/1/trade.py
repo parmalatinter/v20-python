@@ -26,6 +26,7 @@ import transaction.transactions
 import order.market
 import order.take_profit
 import order.stop_loss
+import trade.close
 
 class Trade():
 
@@ -34,6 +35,7 @@ class Trade():
 	market = order.market.Market()
 	_take_profit = order.take_profit.Take_profit()
 	_stop_loss = order.stop_loss.Stop_loss()
+	_close = trade.close.Close()
 
 	_line = line.line.Line()
 	instrument =  "USD_JPY"
@@ -98,6 +100,17 @@ class Trade():
 			self._line.send('order faild #', errors['errorCode'] + ':' + errors['errorMessage'] )
 			return None
 
+	def market_close(self, tradeid, units, event_close_id):
+		self._close.exec(tradeid, units)
+		response = self._close.get_response()
+		print(response.status)
+		if response.status == 201:
+			self._line.send('expire close  #', str(tradeid) + ' evrent:' +str(event_close_id))
+			self.is_ordered = True
+		else:
+			self._line.send('expire close  faild #', str(tradeid) + ' evrent:' +str(event_close_id) + ' ' + response.reason)
+
+
 	def close(self, orders_info, caculate_df, now_dt, last_rate):
 
 		now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
@@ -125,16 +138,11 @@ class Trade():
 
 			last_rate = round(last_rate,2)
 
-			# 3時間経過後 現在地でcloseする
+			# 3時間経過後 現在値でcloseする
 			if delta_total_hours >= self.hours:
-				args = dict(tradeid=trade_id, units='ALL')
-				command = ' v20-trade-close %(tradeid)s --units=%(units)s' % args
-				res = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=None, shell=True)
-				res.wait()
-				out, err = res.communicate()
+				self.market_close(trade_id, 'ALL', 99)
 				self.is_ordered = True
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), 99, 'CLOSED')
-				self._line.send('order #', command + ' ' + out.decode('utf-8') )
 				continue
 			
 			history_df =self.history.get_by_panda(trade_id)

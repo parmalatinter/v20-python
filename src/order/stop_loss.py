@@ -99,12 +99,12 @@ class Stop_loss():
 
         print_order_create_response_transactions(self.response)
 
-def main():
-    stop_loss = Stop_loss()
-    stop_loss.exec({'tradeid': 1, 'profit_rate':110, 'replace_order_id' : 1, 'client-order-comment' : 'test'})
-    response = stop_loss.get_response()
-    # transaction = stop_loss.get_tansaction()
-    print(response)
+# def main():
+#     stop_loss = Stop_loss()
+#     stop_loss.exec({'tradeid': 1, 'profit_rate':110, 'replace_order_id' : 1, 'client-order-comment' : 'test'})
+#     response = stop_loss.get_response()
+#     # transaction = stop_loss.get_tansaction()
+#     print(response)
 
 def main():
     stop_loss = Stop_loss()
