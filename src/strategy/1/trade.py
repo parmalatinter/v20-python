@@ -383,7 +383,7 @@ class Trade():
 				'rule_3' :bool(rule_3),
 				'rule_4' :bool(rule_4)
 			}
-			trade.insert_histoy(trade_history,transaction.id)
+			self.insert_histoy(trade_history,transaction.id)
 
 	def insert_histoy(self, trade_history, trade_id):
 		self.history.insert(
