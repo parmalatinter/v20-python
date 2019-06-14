@@ -67,7 +67,8 @@ class Market():
 
         self.response = response
         # orderRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
-        if self.response.status == 200:
+        # 'orderCreateTransaction', 'orderFillTransaction', 'relatedTransactionIDs', 'lastTransactionID')
+        if self.response.status == 201:
             self.transaction = response.get("orderFillTransaction", None)
         else:
             self.transaction = response.get("orderRejectTransaction", None)
