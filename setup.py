@@ -50,6 +50,7 @@ setup(
             'v20-line-send = line.line:main',
             'v20-trend-get = trend.get:main',
             'v20-db-history-get = db.history:main',
+            'v20-db-system-get = db.system:main',
         ]
     }
 )
