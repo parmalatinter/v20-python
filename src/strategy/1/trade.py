@@ -280,6 +280,7 @@ class Trade():
 		# ルールその4 3つ陰線
 		rule_4 = last_df['rule_4'][last_df.index[0]] == 0
 
+		print( self.trend_usd['res'] )
 		# ゴールデンクロスの場合
 		if not is_golden:
 			is_golden = True
@@ -347,7 +348,10 @@ class Trade():
 			_target_price = late - 0.1
 		
 		# 新規オーダーした場合
+		print(11111111111)
+		print(_event_open_id)
 		if _event_open_id > 0:
+			print(10000000000)
 			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
 			transaction = self.order(self.instrument, _units,_target_price, _event_open_id)
