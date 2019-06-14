@@ -355,8 +355,6 @@ class Trade():
 			_target_price = late - 0.1
 		
 		# 新規オーダーした場合
-		print(11111111111)
-		print(_event_open_id)
 		if _event_open_id > 0:
 			print(10000000000)
 			self.is_ordered = True
