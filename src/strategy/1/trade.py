@@ -21,6 +21,7 @@ import strategy.environ
 import strategy.account
 import trend.get
 import db.history
+import db.system
 import instrument.candles as inst
 import transaction.transactions
 import order.market
@@ -32,6 +33,7 @@ class Trade():
 
 	is_ordered = False
 	history = db.history.History()
+	_system = db.system.System()
 	market = order.market.Market()
 	_take_profit = order.take_profit.Take_profit()
 	_stop_loss = order.stop_loss.Stop_loss()
@@ -50,7 +52,8 @@ class Trade():
 		os.environ['TZ'] = 'America/New_York'
 		self.is_ordered = False
 		self.instrument = _environ.get('instrument') if _environ.get('instrument') else self.instrument
-		self.units = int(_environ.get('units')) if _environ.get('units') else self.units
+		units = int(_environ.get('units')) if _environ.get('units') else self.units
+		self.units = math.floor(units *_system.get_last_pl_percent())
 		self.hours = int(_environ.get('hours')) if _environ.get('hours') else self.hours
 
 	def get_is_orderd(self):

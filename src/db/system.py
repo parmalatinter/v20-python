@@ -70,6 +70,15 @@ class System():
 
 		return self.exec_query("SELECT * FROM system ORDER BY update_time;", None, True)
 
+	def get_last_pl_percent(self):
+
+		rows = self.exec_query("SELECT pl_percent FROM system ORDER BY id DESC LIMIT 1;", None, True)
+
+		if rows[0]:
+			return rows[0][0]
+		else:
+			return 1
+
 	def get_by_panda(self, id):
 		conn = self.get_conn()
 
@@ -101,12 +110,14 @@ class System():
 
 		return df.to_csv(sep=",", line_terminator='\n', encoding='utf-8')
 
-	def insert(self, balance,win_count,lose_count,trade_count,create_time):
+	def insert(self, balance, pl, pl_percent, win_count,lose_count,trade_count,create_time):
 		create_time = datetime.datetime.now() 
 		
 		sql_file = open(self.dir_path + '/query/system/insert.sql','r')
 		args =(
 			balance,
+			pl,
+			pl_percent,
 			win_count,
 			lose_count,
 			trade_count,
@@ -121,13 +132,13 @@ class System():
 
 		self.exec_query( query, (id,))
 
-	def update(self, update_time,balance,win_count,lose_count,trade_count):
+	def update(self, update_time, balance, pl, pl_percent, win_count,lose_count,trade_count):
 
 		update_time = datetime.datetime.now() 
 		
 		sql_file = open(self.dir_path + '/query/system/update.sql','r')
 			
-		self.exec_query(sql_file.read(),(update_time,balance,win_count,lose_count,trade_count))
+		self.exec_query(sql_file.read(),(update_time, balance, pl, pl_percent, win_count, lose_count, trade_count))
 
 	def create(self):
 
@@ -140,12 +151,14 @@ class System():
 
 def main():
 	system = System()
+	# print(system.get_last_pl_percent())
 	details = account.details.Details()
 	details_dict = details.get_account()
-	'Profit/Loss'
 	# system.drop()
 	system.create()
 	balance = math.floor(details_dict['Balance'])
+	pl = math.floor(details_dict['Profit/Loss'])
+	pl_percent = round(((pl / balance) + 1),2)
 	win_count = 0
 	lose_count = 0
 	trade_count = 0
@@ -153,6 +166,8 @@ def main():
 
 	system.insert(
 		balance,
+		pl,
+		pl_percent,
 		win_count,
 		lose_count,
 		trade_count,
@@ -160,7 +175,7 @@ def main():
 	)
 
 	update_time = datetime.datetime.now() 
-	system.update(update_time,balance,win_count,lose_count,trade_count)
+	system.update(update_time, balance, pl, pl_percent, win_count, lose_count, trade_count)
 
 	_environ = strategy.environ.Environ()
 	drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'

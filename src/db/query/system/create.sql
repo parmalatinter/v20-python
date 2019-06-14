@@ -1,6 +1,8 @@
 CREATE TABLE IF NOT EXISTS system (
 	id serial PRIMARY KEY,
 	balance integer,
+	pl integer,
+	pl_percent numeric,
 	win_count integer,
 	lose_count integer,
 	trade_count integer,
