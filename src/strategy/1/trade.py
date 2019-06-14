@@ -11,6 +11,7 @@ from pytz import timezone
 from io import StringIO
 import time
 import copy
+import math
 
 import market.condition
 import golden.draw
@@ -53,7 +54,7 @@ class Trade():
 		self.is_ordered = False
 		self.instrument = _environ.get('instrument') if _environ.get('instrument') else self.instrument
 		units = int(_environ.get('units')) if _environ.get('units') else self.units
-		self.units = math.floor(units *_system.get_last_pl_percent())
+		self.units = math.floor(units * self._system.get_last_pl_percent())
 		self.hours = int(_environ.get('hours')) if _environ.get('hours') else self.hours
 
 	def get_is_orderd(self):
