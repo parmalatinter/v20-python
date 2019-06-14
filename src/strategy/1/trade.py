@@ -115,8 +115,7 @@ class Trade():
 			self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
 
 	def order(self, instrument, units, price, event_open_id, client_order_comment):
-		client_order_comment = ' market order'
-		args = {'instrument': instrument, 'units':units, 'take-profit-price' : price, 'client-order-comment' : client_order_comment}
+		args = {'instrument': instrument, 'units':units, 'takeProfitOnFill' : price}
 		self.market.exec(args)
 		response = self.market.get_response()
 		print(response.status)
