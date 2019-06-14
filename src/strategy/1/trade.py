@@ -382,9 +382,9 @@ class Trade():
 		
 		# 新規オーダーする場合
 		if _event_open_id > 0:
-			if _units > 0
+			if _units > 0:
 				_stop_rate = round(lower, 2)
-			else
+			else:
 				_stop_rate = round(upper, 2)
 
 			self.is_ordered = True
