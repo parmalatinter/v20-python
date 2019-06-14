@@ -82,8 +82,7 @@ class Trade():
 		else:
 			self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
 
-
-	def order(self, instrument, units, price, event_open_id):
+	def order(self, instrument, units, price, event_open_id, client_order_comment):
 		client_order_comment = ' market order'
 		args = {'instrument': instrument, 'units':units, 'take-profit-price' : price, 'client-order-comment' : client_order_comment}
 		self.market.exec(args)
@@ -358,7 +357,7 @@ class Trade():
 		if _event_open_id > 0:
 			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
-			transaction = self.order(self.instrument, _units,_target_price, _event_open_id)
+			transaction = self.order(self.instrument, _units,_target_price, _event_open_id, _message)
 			self._line.send(_event_open_id, _message)
 
 			if not transaction:
