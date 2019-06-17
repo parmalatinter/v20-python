@@ -96,7 +96,11 @@ class Trade():
 		return self.history.get_all_by_csv()
 
 	def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
-		self._take_profit.exec( {'tradeID': str(trade_id), 'price':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client_order_comment' : client_order_comment})
+
+		if takeProfitOrderID:
+			self._take_profit.exec( {'tradeID': str(trade_id), 'price':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client_order_comment' : client_order_comment})
+		else:
+			self._take_profit.exec( {'tradeID': str(trade_id), 'price':profit_rate, 'client_order_comment' : client_order_comment})
 		response = self._take_profit.get_response()
 		if response.status == 201:
 			self._line.send('fix order take profit #', str(profit_rate) + ' event:' +str(event_close_id) + ' ' + client_order_comment )
@@ -106,7 +110,12 @@ class Trade():
 			self._line.send('fix order take profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' event:' +str(event_close_id))
 
 	def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
-		self._stop_loss.exec( {'tradeID': str(trade_id),  'price':stop_rate, 'replace_order_id' : stopLossOrderID, 'client_order_comment' : client_order_comment})
+		
+		if stopLossOrderID:
+			self._stop_loss.exec( {'tradeID': str(trade_id),  'price':stop_rate, 'replace_order_id' : stopLossOrderID, 'client_order_comment' : client_order_comment})
+		else:
+			self._stop_loss.exec( {'tradeID': str(trade_id),  'price':stop_rate, 'client_order_comment' : client_order_comment})
+		
 		response = self._stop_loss.get_response()
 		print(response.status)
 		if response.status == 201:
@@ -240,7 +249,7 @@ class Trade():
 				profit_rate = round(rate, 2)
 				client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
-				take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id)
+				self.take_profit(trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id)
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 				continue
 
