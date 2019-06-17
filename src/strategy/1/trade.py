@@ -117,7 +117,7 @@ class Trade():
 			self._stop_loss.exec( {'tradeID': str(trade_id),  'price':stop_rate, 'client_order_comment' : client_order_comment})
 		
 		response = self._stop_loss.get_response()
-		print(response.status)
+
 		if response.status == 201:
 			self._line.send('fix order stop loss #', str(stop_rate) + ' event:' +str(event_close_id) + ' ' + client_order_comment )
 			self.is_ordered = True
@@ -162,7 +162,7 @@ class Trade():
 	def market_close(self, trade_id, units, event_close_id):
 		self._close.exec(trade_id, units)
 		response = self._close.get_response()
-		print(response.status)
+
 		if response.status == 201 or response.reason == 'OK':
 			self._line.send('expire close  #', str(trade_id) + ' event:' +str(event_close_id))
 			self.is_ordered = True
@@ -223,12 +223,6 @@ class Trade():
 				}
 				self.insert_histoy(trade_history,trade_id)
 				continue
-
-			print(history_df)
-			print('delta_total_hours')
-			print(delta_total_hours)
-			print('self.hours')
-			print(self.hours)
 
 			upper = caculate_df['upper'][caculate_df.index[0]]
 			lower = caculate_df['lower'][caculate_df.index[0]]
@@ -320,8 +314,8 @@ class Trade():
 						event_close_id = 6
 						client_order_comment=(state + ' lose ' + str(event_close_id))
 				
-				self._take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, client_order_comment, event_close_id)
-				self._stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, client_order_comment, event_close_id)
+				self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, client_order_comment, event_close_id)
+				self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, client_order_comment, event_close_id)
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 
