@@ -3,6 +3,7 @@ SET
 	update_time = %s,
 	balance = %s,
 	pl = %s,
+	unrealized_pl = %s,
 	pl_percent = %s,
 	win_count = %s,
 	lose_count = %s,

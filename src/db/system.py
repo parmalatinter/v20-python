@@ -132,13 +132,21 @@ class System():
 
 		self.exec_query( query, (id,))
 
-	def update(self, update_time, balance, pl, pl_percent, win_count,lose_count,trade_count):
+	def update(self, balance, pl, unrealized_pl, pl_percent, win_count,lose_count,trade_count):
 
 		update_time = datetime.datetime.now() 
 		
 		sql_file = open(self.dir_path + '/query/system/update.sql','r')
 			
-		self.exec_query(sql_file.read(),(update_time, balance, pl, pl_percent, win_count, lose_count, trade_count))
+		self.exec_query(sql_file.read(),(update_time, balance, pl, unrealized_pl, pl_percent, win_count, lose_count, trade_count))
+
+	def update_profit(self, pl, unrealized_pl):
+
+		update_time = datetime.datetime.now() 
+		
+		sql_file = open(self.dir_path + '/query/system/update_profit.sql','r')
+			
+		self.exec_query(sql_file.read(),(update_time, pl, unrealized_pl))
 
 	def create(self):
 
@@ -149,6 +157,14 @@ class System():
 
 		self.exec_query( 'DROP TABLE IF EXISTS system')
 
+	def export_drive(self):
+		_environ = strategy.environ.Environ()
+		drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
+		csv_string = self.get_all_by_csv()
+		csv = file.file_utility.File_utility( 'system.csv', drive_id)
+		csv.set_contents(csv_string)
+		csv.export_drive()
+
 def main():
 	system = System()
 	# print(system.get_last_pl_percent())
@@ -158,6 +174,7 @@ def main():
 	system.create()
 	balance = math.floor(details_dict['Balance'])
 	pl = math.floor(details_dict['Profit/Loss'])
+	unrealized_pl = math.floor(details_dict['Unrealized Profit/Loss'])
 	pl_percent = round(((pl / balance) + 1),2)
 	win_count = 0
 	lose_count = 0
@@ -174,15 +191,9 @@ def main():
 		create_time
 	)
 
-	update_time = datetime.datetime.now() 
-	system.update(update_time, balance, pl, pl_percent, win_count, lose_count, trade_count)
-
-	_environ = strategy.environ.Environ()
-	drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
-	csv_string = system.get_all_by_csv()
-	csv = file.file_utility.File_utility( 'system.csv', drive_id)
-	csv.set_contents(csv_string)
-	csv.export_drive()
+	system.update(balance, pl, unrealized_pl, pl_percent, win_count, lose_count, trade_count)
+	system.export_drive()
+	
 	
 if __name__ == "__main__":
 	main()

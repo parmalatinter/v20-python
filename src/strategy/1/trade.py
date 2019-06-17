@@ -32,7 +32,6 @@ import trade.close
 
 class Trade():
 
-	is_ordered = False
 	history = db.history.History()
 	_system = db.system.System()
 	market = order.market.Market()
@@ -51,14 +50,10 @@ class Trade():
 
 	def __init__(self, _environ):
 		os.environ['TZ'] = 'America/New_York'
-		self.is_ordered = False
 		self.instrument = _environ.get('instrument') if _environ.get('instrument') else self.instrument
 		units = int(_environ.get('units')) if _environ.get('units') else self.units
 		self.units = math.floor(units * self._system.get_last_pl_percent())
 		self.hours = int(_environ.get('hours')) if _environ.get('hours') else self.hours
-
-	def get_is_orderd(self):
-		return self.is_ordered
 
 	def get_df(self, csv_string):
 		return pd.read_csv(csv_string, sep=',', engine='python', skipinitialspace=True)
@@ -105,7 +100,6 @@ class Trade():
 		response = self._take_profit.get_response()
 		if response.status == 201:
 			self._line.send('fix order take profit #', profit_rate + ' event:' +str(event_close_id) + ' ' + client_order_comment )
-			self.is_ordered = True
 		else:
 			errors = self._take_profit.get_errors()
 			self._line.send('fix order take profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' event:' +str(event_close_id))
@@ -123,7 +117,6 @@ class Trade():
 
 		if response.status == 201:
 			self._line.send('fix order stop loss #', stop_rate + ' event:' +str(event_close_id) + ' ' + client_order_comment )
-			self.is_ordered = True
 		else:
 			errors = self._stop_loss.get_errors()
 			self._line.send('fix order stop loss faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' event:' +str(event_close_id))
@@ -143,7 +136,6 @@ class Trade():
 			response1 = self._take_profit.get_response()
 			if response1.status == 201:
 				self._line.send('order profit #' + tradeID, str(profit_rate) + ' ' + str(event_open_id) )
-				self.is_ordered = True
 			else:
 				errors = self._take_profit.get_errors()
 				self._line.send('order profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tradeID)
@@ -153,7 +145,6 @@ class Trade():
 			response2 = self._stop_loss.get_response()
 			if response2.status == 201:
 				self._line.send('order stop #' + tradeID, str(stop_rate) + ' ' + str(event_open_id) )
-				self.is_ordered = True
 			else:
 				errors = self._stop_loss.get_errors()
 				self._line.send('order stop faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tradeID)
@@ -171,7 +162,6 @@ class Trade():
 
 		if response.status == 201 or response.reason == 'OK':
 			self._line.send('expire close  #', str(trade_id) + ' event:' +str(event_close_id))
-			self.is_ordered = True
 		else:
 			self._line.send('expire close  faild #', str(trade_id) + ' event:' +str(event_close_id) + ' ' + response.reason)
 
@@ -207,7 +197,7 @@ class Trade():
 			# 3時間経過後 現在値でcloseする
 			if delta_total_hours >= self.hours:
 				self.market_close(trade_id, 'ALL', 99)
-				self.is_ordered = True
+
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), 99, 'CLOSED')
 				continue
 			
@@ -422,7 +412,6 @@ class Trade():
 			else:
 				_stop_rate = round(upper, 2)
 
-			self.is_ordered = True
 			_target_price =  round(_target_price, 2)
 			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
 			self._line.send(_event_open_id, _message)
@@ -465,6 +454,11 @@ class Trade():
 			round(self.trend_usd['res'], 2),
 		)
 	
+	def system_update(self, positions_infos):
+		self._system.update_profit(positions_infos['pl'], positions_infos['unrealizedPL'])
+		self._system.export_drive()
+
+
 def main():
 
 	condition = market.condition.Market()
@@ -492,6 +486,8 @@ def main():
 	transactions = transaction.transactions.Transactions()
 	transactions.get()
 	trades_infos = transactions.get_trades()
+	positions_infos = transactions.get_positions()
+	trade.system_update(positions_infos)
 
 	caculate_df = trade.get_caculate_df(candles_df) 
 	caculate_df_all = trade.get_caculate_df_all(candles_df) 
@@ -501,7 +497,6 @@ def main():
 
 		if info['time']:
 			trade.close(trades_infos, caculate_df, info['time'], info['close'])
-			transactions.get()
 
 	details = trade.get_account_details()
 	details_csv = file.file_utility.File_utility('details.csv', drive_id)
