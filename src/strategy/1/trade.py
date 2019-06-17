@@ -121,7 +121,8 @@ class Trade():
 		if response.status == 201:
 			tansaction = self.market.get_tansaction()
 			
-			response1 = self._take_profit.exec( {'tradeid': tansaction.id, 'profit_rate':profit_rate})
+			self._take_profit.exec( {'tradeid': tansaction.id, 'profit_rate':profit_rate})
+			response1 = self._take_profit.get_redponse()
 			if response1.status == 201:
 				self._line.send('order profit#' + str(tansaction.id), str(profit_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
@@ -129,7 +130,8 @@ class Trade():
 				self._line.send('order profit faild #', '??????' )
 				return None
 
-			response2 = self._stop_loss.exec( {'tradeid': tansaction.id, 'stop_rate':stop_rate})
+			self._stop_loss.exec( {'tradeid': tansaction.id, 'stop_rate':stop_rate})
+			response2 = self._stpo_loss.get_redponse()
 			if response2.status == 201:
 				self._line.send('order stop#' + str(tansaction.id), str(stop_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
