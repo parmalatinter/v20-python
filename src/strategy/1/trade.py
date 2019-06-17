@@ -174,6 +174,7 @@ class Trade():
 
 
 			unix = row['openTime'].split(".")[0]
+			price = float(row['price'])
 
 			try:
 				time = datetime.fromtimestamp(int(unix), pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
@@ -206,7 +207,7 @@ class Trade():
 			if history_df.empty:
 				# 万が一	hitstoryが存在しない場合は追加する
 				trade_history = {
-					'late': row['price'],
+					'late': price,
 					'target_price' : 0,
 					'units':  row['initialUnits'],
 					'event_open_id' : 0,
@@ -230,10 +231,10 @@ class Trade():
 			if condition_1:
 				state = 'fix order 30min'
 				if row['currentUnits'] > 0:
-					rate = row['price'] - 0.05
+					rate = price - 0.05
 					event_close_id = 1
 				else:
-					rate = row['price'] + 0.05
+					rate = price + 0.05
 					event_close_id = 2
 
 				profit_rate = round(rate, 2)
@@ -243,16 +244,17 @@ class Trade():
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 				continue
 
-			condition_2 = delta_total_minuts >= 90 and event_close_id > 2
-			condition_3 = delta_total_minuts >= 120 and event_close_id <= 4
+			# 90分 ~ でclose処理(id:1,2)の場合
+			condition_2 = delta_total_minuts >= 90 and event_close_id <= 2
+			# 120分 ~ で以前利益があったの場合
+			condition_3 = delta_total_minuts >= 120 and event_close_id == 3 and event_close_id == 4
 
-			# 90分 ~ でclose処理(id:1,2)無しの場合 or 120分 ~ で以前利益があったの場合
 			if condition_2 or condition_3:
 
 				args = dict()
 				args = dict(trade_id=trade_id)
 				event_close_id = 99
-				rate = round(row['price'],2)
+				rate = round(price,2)
 				state = ''
 				profit_rate = 0
 
@@ -298,14 +300,14 @@ class Trade():
 
 					# buyの場合 発注価格でcloseする
 					if row['currentUnits'] > 0:
-						stop_rate = float(last_rate) - 0.5
+						stop_rate = price - 0.5
 
 						event_close_id = 5
 						client_order_comment=(state + ' lose ' + str(event_close_id))
 						
 					# sellの場合 発注価格でcloseする
 					else:
-						stop_rate = float(last_rate) + 0.5
+						stop_rate = price + 0.5
 
 						event_close_id = 6
 						client_order_comment=(state + ' lose ' + str(event_close_id))
@@ -314,6 +316,12 @@ class Trade():
 				self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, client_order_comment, event_close_id)
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
+			else:
+				# 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
+				event_close_id = 7
+				self.take_profit(trade_id, round(price, 2), takeProfitOrderID, client_order_comment, event_close_id)
+
+
 
 	def golden_trade(self, df_candles):
 
