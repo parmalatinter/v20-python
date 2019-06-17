@@ -330,8 +330,7 @@ class Trade():
 		last_df = self.get_caculate_df(df_candles)
 		late = last_df['c'][last_df.index[0]]
 		
-		is_golden = True
-		# last_df['golden'][last_df.index[0]]
+		is_golden = last_df['golden'][last_df.index[0]]
 		is_dead = last_df['dead'][last_df.index[0]]
 
 		upper = last_df['upper'][last_df.index[0]]
