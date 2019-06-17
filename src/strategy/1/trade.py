@@ -122,25 +122,25 @@ class Trade():
 		print(response.status)
 		if response.status == 201:
 			tansaction = self.market.get_tansaction()
-			
-			self._take_profit.exec( {'tradeID': str(tansaction.id), 'price':profit_rate})
+
+			self._take_profit.exec( {'tradeID': tansaction.tradeOpened.tradeID, 'price':profit_rate})
 			response1 = self._take_profit.get_response()
 			if response1.status == 201:
-				self._line.send('order profit #' + str(tansaction.id), str(profit_rate) + ' ' + str(event_open_id) )
+				self._line.send('order profit #' + tansaction.tradeOpened.tradeID, str(profit_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
 			else:
 				errors = self._take_profit.get_errors()
-				self._line.send('order profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  str(tansaction.id))
+				self._line.send('order profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tansaction.tradeOpened.tradeID)
 				return None
 
-			self._stop_loss.exec( {'tradeID': str(tansaction.id), 'price':stop_rate})
+			self._stop_loss.exec( {'tradeID': tansaction.tradeOpened.tradeID, 'price':stop_rate})
 			response2 = self._stop_loss.get_response()
 			if response2.status == 201:
-				self._line.send('order stop#' + str(tansaction.id), str(stop_rate) + ' ' + str(event_open_id) )
+				self._line.send('order stop#' + tansaction.tradeOpened.tradeID, str(stop_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
 			else:
 				errors = self._stop_loss.get_errors()
-				self._line.send('order stop faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  str(tansaction.id))
+				self._line.send('order stop faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tansaction.tradeOpened.tradeID)
 				return None
 
 			return transaction
@@ -460,18 +460,18 @@ def main():
 		trade.golden_trade(candles_df)
 
 	transactions = transaction.transactions.Transactions()
-	orders_info = transactions.get_orders()
+	transactions.get()
+	trades_infos = transactions.get_trades()
 
 	caculate_df = trade.get_caculate_df(candles_df) 
 	caculate_df_all = trade.get_caculate_df_all(candles_df) 
 
-	if orders_info:
+	if trades_infos:
 		info = trade.get_info(candles_df)
 
 		if info['time']:
-			trade.close(orders_info, caculate_df, info['time'], info['close'])
+			trade.close(trades_infos, caculate_df, info['time'], info['close'])
 			transactions.get()
-			orders_info = transactions.get_orders()
 
 	details = trade.get_account_details()
 	details_csv = file.file_utility.File_utility('details.csv', drive_id)
