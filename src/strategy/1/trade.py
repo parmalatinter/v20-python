@@ -102,7 +102,8 @@ class Trade():
 			self._line.send('fix order take profit #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 			self.is_ordered = True
 		else:
-			self._line.send('fix order take profit faild #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
+			errors = self._take_profit.get_errors()
+			self._line.send('fix order take profit faild #', errors['errorCode'] + ':'+ errors['errorMessage'] + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 
 	def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
 		self._stop_loss.exec( {'tradeid': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client_order_comment' : client_order_comment})
@@ -112,7 +113,8 @@ class Trade():
 			self._line.send('fix order stop loss #', str(stop_rate) + ' event:' +str(event_close_id) + ' ' + client_order_comment )
 			self.is_ordered = True
 		else:
-			self._line.send('fix order stop loss faild #', str(stop_rate) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' ' + client_order_comment )
+			errors = self._stpo_loss.get_errors()
+			self._line.send('fix order stop loss faild #', errors['errorCode'] + ':'+ errors['errorMessage'] + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 
 	def order(self, instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment):
 		self.market.exec({'instrument': instrument, 'units':units})
@@ -127,7 +129,8 @@ class Trade():
 				self._line.send('order profit#' + str(tansaction.id), str(profit_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
 			else:
-				self._line.send('order profit faild #', '??????' )
+				errors = self._take_profit.get_errors()
+				self._line.send('order profit faild #', errors['errorCode'] + ':'+ errors['errorMessage'])
 				return None
 
 			self._stop_loss.exec( {'tradeid': tansaction.id, 'stop_rate':stop_rate})
@@ -135,9 +138,9 @@ class Trade():
 			if response2.status == 201:
 				self._line.send('order stop#' + str(tansaction.id), str(stop_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
-
 			else:
-				self._line.send('order stop faild #', '??????' )
+				errors = self._stpo_loss.get_errors()
+				self._line.send('order stop faild #', errors['errorCode'] + ':'+ errors['errorMessage'])
 				return None
 
 			return transaction

@@ -85,10 +85,21 @@ class Take_profit():
         
 
         self.response = response
+        #  (contains 'orderCancelRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
+        if not self.response.status == 201:
+            self.errorCode = response.get("errorCode", None)
+            self.errorMessage = response.get("errorMessage", None)
+        
         # self.transaction = response.get("orderFillTransaction", None)
 
     def get_response(self):
         return self.response
+
+    def get_errors(self):
+        return {
+            'errorCode' : self.errorCode,
+            'errorMessage' : self.errorMessage
+        }
 
     # def get_tansaction(self):
     #     return self.transaction
@@ -104,7 +115,7 @@ class Take_profit():
 #     take_profit.exec({'tradeid': 1, 'profit_rate':110, 'replace_order_id' : 1, 'client-order-comment' : 'test'})
 #     response = take_profit.get_response()
 #     # transaction = take_profit.get_tansaction()
-#     print(response)
+#     print(take_profit.get_errors())
 
 def main():
     take_profit = Take_profit()
