@@ -69,7 +69,7 @@ class Market():
         # orderRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
         # 'orderCreateTransaction', 'orderFillTransaction', 'relatedTransactionIDs', 'lastTransactionID')
         if self.response.status == 201:
-            self.transaction = response.get("orderCreateTransaction", None)
+            self.transaction = response.get("orderFillTransaction", None)
         else:
             self.transaction = response.get("orderRejectTransaction", None)
             self.errorCode = response.get("errorCode", None)
@@ -78,7 +78,7 @@ class Market():
     def get_response(self):
         return self.response
 
-    def get_tansaction(self):
+    def get_transaction(self):
         return self.transaction
 
     def get_errors(self):
@@ -98,7 +98,7 @@ class Market():
 #     market = Market()
 #     market.exec({'instrument': 'USD_JPY', 'units':1, 'take-profit-price' : 120, 'client-order-comment' : 'test'})
 #     response = market.get_response()
-#     transaction = market.get_tansaction()
+#     transaction = market.get_transaction()
 #     print(transaction)
 
 def main():

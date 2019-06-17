@@ -99,11 +99,11 @@ class Trade():
 		self._take_profit.exec( {'tradeID': str(trade_id), 'price':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client_order_comment' : client_order_comment})
 		response = self._take_profit.get_response()
 		if response.status == 201:
-			self._line.send('fix order take profit #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+			self._line.send('fix order take profit #', str(profit_rate) + ' event:' +str(event_close_id) + ' ' + client_order_comment )
 			self.is_ordered = True
 		else:
 			errors = self._take_profit.get_errors()
-			self._line.send('fix order take profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' evrent:' +str(event_close_id) + ' trade_id:' +  str(tansaction.id))
+			self._line.send('fix order take profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' event:' +str(event_close_id))
 
 	def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
 		self._stop_loss.exec( {'tradeID': str(trade_id),  'price':stop_rate, 'replace_order_id' : stopLossOrderID, 'client_order_comment' : client_order_comment})
@@ -114,33 +114,33 @@ class Trade():
 			self.is_ordered = True
 		else:
 			errors = self._stop_loss.get_errors()
-			self._line.send('fix order stop loss faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' evrent:' +str(event_close_id) + ' trade_id:' +  str(tansaction.id))
+			self._line.send('fix order stop loss faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' event:' +str(event_close_id))
 
 	def order(self, instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment):
 		self.market.exec({'instrument': instrument, 'units':units})
 		response = self.market.get_response()
 		print(response.status)
 		if response.status == 201:
-			tansaction = self.market.get_tansaction()
+			transaction = self.market.get_transaction()
 
-			self._take_profit.exec( {'tradeID': tansaction.tradeOpened.tradeID, 'price':profit_rate})
+			self._take_profit.exec( {'tradeID': transaction.tradeOpened.tradeID, 'price':profit_rate})
 			response1 = self._take_profit.get_response()
 			if response1.status == 201:
-				self._line.send('order profit #' + tansaction.tradeOpened.tradeID, str(profit_rate) + ' ' + str(event_open_id) )
+				self._line.send('order profit #' + transaction.tradeOpened.tradeID, str(profit_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
 			else:
 				errors = self._take_profit.get_errors()
-				self._line.send('order profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tansaction.tradeOpened.tradeID)
+				self._line.send('order profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  transaction.tradeOpened.tradeID)
 				return None
 
-			self._stop_loss.exec( {'tradeID': tansaction.tradeOpened.tradeID, 'price':stop_rate})
+			self._stop_loss.exec( {'tradeID': transaction.tradeOpened.tradeID, 'price':stop_rate})
 			response2 = self._stop_loss.get_response()
 			if response2.status == 201:
-				self._line.send('order stop#' + tansaction.tradeOpened.tradeID, str(stop_rate) + ' ' + str(event_open_id) )
+				self._line.send('order stop#' + transaction.tradeOpened.tradeID, str(stop_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
 			else:
 				errors = self._stop_loss.get_errors()
-				self._line.send('order stop faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tansaction.tradeOpened.tradeID)
+				self._line.send('order stop faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  transaction.tradeOpened.tradeID)
 				return None
 
 			return transaction
@@ -153,11 +153,11 @@ class Trade():
 		self._close.exec(trade_id, units)
 		response = self._close.get_response()
 		print(response.status)
-		if response.status == 201:
-			self._line.send('expire close  #', str(trade_id) + ' evrent:' +str(event_close_id))
+		if response.status == 201 or response.reason == 'OK':
+			self._line.send('expire close  #', str(trade_id) + ' event:' +str(event_close_id))
 			self.is_ordered = True
 		else:
-			self._line.send('expire close  faild #', str(trade_id) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' trade_id:' +  str(tansaction.id))
+			self._line.send('expire close  faild #', str(trade_id) + ' event:' +str(event_close_id) + ' ' + response.reason)
 
 
 	def close(self, orders_info, caculate_df, now_dt, last_rate):
@@ -324,20 +324,20 @@ class Trade():
 			is_golden = True
 			# trendが5以上の場合
 			if self.trend_usd['res'] > 5:
-				_message = ("buy order 1 #",str(late))
+				_message = ("buy order 1 #", round(late, 2))
 				_units = self.units
 				_event_open_id = 1
 				_target_price = late + 0.1
 			
 			# trendが-5以下の場合
 			elif self.trend_usd['res'] < -5:
-				_message = ("sell order 2 #",str(late))
+				_message = ("sell order 2 #", round(late, 2))
 				_units = 0 - self.units
 				_event_open_id = 2
 				_target_price = late - 0.1
 			# その他の場合
 			else:
-				_message = ("buy order 3 #",str(late))
+				_message = ("buy order 3 #", round(late, 2))
 				_units = self.units
 				_event_open_id = 3
 				_target_price = late + 0.05
@@ -350,20 +350,20 @@ class Trade():
 			is_dead = True
 			# trendが-5以下の場合
 			if self.trend_usd['res'] < -5:
-				_message = ("sell order 1 #",str(late))
+				_message = ("sell order 1 #", round(late, 2))
 				_units = 0 - self.units
 				_event_open_id = 4
 				_target_price = late - 0.1
 
 			# trendが5以上の場合
 			elif self.trend_usd['res'] > 5:
-				_message = ("buy order 2 #",str(late))
+				_message = ("buy order 2 #", round(late, 2))
 				_units = self.units
 				_event_open_id = 5
 				_target_price = late + 0.1
 			# その他の場合
 			else:
-				_message = ("sell order 3 #",str(late))
+				_message = ("sell order 3 #", round(late, 2))
 				_units = 0 - self.units
 				_event_open_id = 6
 				_target_price = late - 0.05
@@ -373,14 +373,14 @@ class Trade():
 
 		# ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
 		if rule_1 and rule_2:
-			_message = ("buy chance order #",str(late))
+			_message = ("buy chance order #", round(late, 2))
 			_units = self.units * 2
 			_event_open_id = 7
 			_target_price = late + 0.1
 
 		# ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
 		if rule_3 and rule_4:
-			_message = ("sell chance order #",str(late))
+			_message = ("sell chance order #", round(late, 2))
 			_units = 0 - (self.units * 2)
 			_event_open_id = 8
 			_target_price = late - 0.1
@@ -412,7 +412,7 @@ class Trade():
 				'rule_3' :bool(rule_3),
 				'rule_4' :bool(rule_4)
 			}
-			self.insert_histoy(trade_history, tansaction.tradeOpened.tradeID)
+			self.insert_histoy(trade_history,transaction.tradeOpened.tradeID)
 
 	def insert_histoy(self, trade_history, trade_id):
 		self.history.insert(

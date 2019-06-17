@@ -12,7 +12,7 @@ import pytz
 class Transactions(object):
 
     orders = {}
-    position = {}
+    positions = {}
     trades = {}
 
     def get(self):
@@ -46,16 +46,13 @@ class Transactions(object):
         )
 
         res = response1.get("account", 200)
-        orders = {}
-        position = {}
-        for pos in getattr(res, "positions", []):
-            self.position = pos.__dict__
 
-        orders = {}
+        for pos in getattr(res, "positions", []):
+            self.positions = pos.__dict__
+
         for order in getattr(res, "orders", []):
             self.orders[order.id] = order.__dict__
             
-
         texts = ''
         for trade in getattr(res, "trades", []):
             response2 = api.transaction.get(account_id, trade.id)
@@ -96,13 +93,19 @@ class Transactions(object):
 
         return texts
 
-    def get_orders(self):
+    def get_trades(self):
         return self.trades
+
+    def get_orders(self):
+        return self.orders
+
+    def get_positions(self):
+        return self.positions
 
 def main():
     transactions = Transactions()
     print(transactions.get())
-    # print(transactions.get_orders())
+    print(transactions.get_trades())
 
 if __name__ == "__main__":
     main()
