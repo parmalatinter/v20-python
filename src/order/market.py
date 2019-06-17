@@ -15,6 +15,7 @@ class Market():
     common.config.add_argument(parser)
     errorCode = '' 
     errorMessage = ''
+    trade_id = ''
 
     def exec_by_cmd(self):
 
@@ -66,20 +67,33 @@ class Market():
         )
 
         self.response = response
+
+        print(self.response)
         # orderRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
         # 'orderCreateTransaction', 'orderFillTransaction', 'relatedTransactionIDs', 'lastTransactionID')
-        if self.response.status == 201:
-            self.transaction = response.get("orderFillTransaction", None)
+        # 'orderCreateTransaction', 'orderCancelTransaction', 'relatedTransactionIDs', 'lastTransactionID')
+        if self.response.status == 201 and self.response.reason == "Created":
+            try:
+                self.transaction = self.response.get("orderCreateTransaction", None)
+                self.trade_id = self.transaction.tradeOpened.tradeID
+            except:
+                self.transaction = self.response.get("orderFillTransaction", None)
+                self.trade_id = self.transaction.id
         else:
-            self.transaction = response.get("orderRejectTransaction", None)
-            self.errorCode = response.get("errorCode", None)
-            self.errorMessage = response.get("errorMessage", None)
+            self.transaction = self.response.get("orderRejectTransaction", None)
+            self.errorCode = self.response.get("errorCode", None)
+            self.errorMessage = self.response.get("errorMessage", None)
+
+        print(self.transaction)
 
     def get_response(self):
         return self.response
 
     def get_transaction(self):
         return self.transaction
+
+    def get_trade_id(self):
+        return self.trade_id
 
     def get_errors(self):
         return {
