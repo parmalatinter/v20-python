@@ -184,8 +184,14 @@ class Trade():
 
 			delta_total_minuts = delta.total_seconds()/60
 			delta_total_hours = delta_total_minuts/60
+			event_close_id = 0
 
 			last_rate = round(last_rate,2)
+
+			print('delta_total_hours')
+			print(delta_total_hours)
+			print('self.hours')
+			print(self.hours)
 
 			# 3時間経過後 現在値でcloseする
 			if delta_total_hours >= self.hours:
