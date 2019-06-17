@@ -311,8 +311,8 @@ class Trade():
 						event_close_id = 6
 						client_order_comment=(state + ' lose ' + event_close_id)
 				
-				self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, client_order_comment, event_close_id)
-				self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, client_order_comment, event_close_id)
+				self._take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, client_order_comment, event_close_id)
+				self._stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, client_order_comment, event_close_id)
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 
