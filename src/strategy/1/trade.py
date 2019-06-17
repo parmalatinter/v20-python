@@ -97,13 +97,14 @@ class Trade():
 
 	def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 
+		profit_rate = str(profit_rate)
 		if takeProfitOrderID:
 			self._take_profit.exec( {'tradeID': str(trade_id), 'price':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client_order_comment' : client_order_comment})
 		else:
 			self._take_profit.exec( {'tradeID': str(trade_id), 'price':profit_rate, 'client_order_comment' : client_order_comment})
 		response = self._take_profit.get_response()
 		if response.status == 201:
-			self._line.send('fix order take profit #', str(profit_rate) + ' event:' +str(event_close_id) + ' ' + client_order_comment )
+			self._line.send('fix order take profit #', profit_rate + ' event:' +str(event_close_id) + ' ' + client_order_comment )
 			self.is_ordered = True
 		else:
 			errors = self._take_profit.get_errors()
@@ -111,6 +112,8 @@ class Trade():
 
 	def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
 		
+		stop_rate = str(stop_rate)
+
 		if stopLossOrderID:
 			self._stop_loss.exec( {'tradeID': str(trade_id),  'price':stop_rate, 'replace_order_id' : stopLossOrderID, 'client_order_comment' : client_order_comment})
 		else:
@@ -119,7 +122,7 @@ class Trade():
 		response = self._stop_loss.get_response()
 
 		if response.status == 201:
-			self._line.send('fix order stop loss #', str(stop_rate) + ' event:' +str(event_close_id) + ' ' + client_order_comment )
+			self._line.send('fix order stop loss #', stop_rate + ' event:' +str(event_close_id) + ' ' + client_order_comment )
 			self.is_ordered = True
 		else:
 			errors = self._stop_loss.get_errors()
@@ -128,6 +131,9 @@ class Trade():
 	def order(self, instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment):
 		self.market.exec({'instrument': instrument, 'units':units})
 		response = self.market.get_response()
+
+		stop_rate = str(stop_rate)
+		profit_rate = str(profit_rate)
 
 		if response.status == 201:
 			transaction = self.market.get_transaction()
