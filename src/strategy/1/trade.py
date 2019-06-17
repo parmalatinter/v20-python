@@ -96,17 +96,17 @@ class Trade():
 		return self.history.get_all_by_csv()
 
 	def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
-		self._take_profit.exec( {'tradeid': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client_order_comment' : client_order_comment})
+		self._take_profit.exec( {'tradeID': trade_id, 'profit_rate':profit_rate, 'replace_order_id' : takeProfitOrderID, 'client_order_comment' : client_order_comment})
 		response = self._take_profit.get_response()
 		if response.status == 201:
 			self._line.send('fix order take profit #', str(profit_rate) + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
 			self.is_ordered = True
 		else:
 			errors = self._take_profit.get_errors()
-			self._line.send('fix order take profit faild #', errors['errorCode'] + ':'+ errors['errorMessage'] + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+			self._line.send('fix order take profit faild #', errors['errorCode'] + ':'+ errors['errorMessage'] + ' evrent:' +str(event_close_id) + ' trade_id:' +  str(tansaction.id))
 
 	def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
-		self._stop_loss.exec( {'tradeid': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client_order_comment' : client_order_comment})
+		self._stop_loss.exec( {'tradeID': trade_id, 'stop_rate':stop_rate, 'replace_order_id' : stopLossOrderID, 'client_order_comment' : client_order_comment})
 		response = self._stop_loss.get_response()
 		print(response.status)
 		if response.status == 201:
@@ -114,7 +114,7 @@ class Trade():
 			self.is_ordered = True
 		else:
 			errors = self._stpo_loss.get_errors()
-			self._line.send('fix order stop loss faild #', errors['errorCode'] + ':'+ errors['errorMessage'] + ' evrent:' +str(event_close_id) + ' ' + client_order_comment )
+			self._line.send('fix order stop loss faild #', errors['errorCode'] + ':'+ errors['errorMessage'] + ' evrent:' +str(event_close_id) + ' trade_id:' +  str(tansaction.id))
 
 	def order(self, instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment):
 		self.market.exec({'instrument': instrument, 'units':units})
@@ -123,24 +123,24 @@ class Trade():
 		if response.status == 201:
 			tansaction = self.market.get_tansaction()
 			
-			self._take_profit.exec( {'tradeid': tansaction.id, 'profit_rate':profit_rate})
+			self._take_profit.exec( {'tradeID': tansaction.id, 'profit_rate':profit_rate})
 			response1 = self._take_profit.get_response()
 			if response1.status == 201:
-				self._line.send('order profit#' + str(tansaction.id), str(profit_rate) + ' ' + str(event_open_id) )
+				self._line.send('order profit #' + str(tansaction.id), str(profit_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
 			else:
 				errors = self._take_profit.get_errors()
-				self._line.send('order profit faild #', errors['errorCode'] + ':'+ errors['errorMessage'])
+				self._line.send('order profit faild #', errors['errorCode'] + ':'+ errors['errorMessage'] + ' trade_id:' +  str(tansaction.id))
 				return None
 
-			self._stop_loss.exec( {'tradeid': tansaction.id, 'stop_rate':stop_rate})
+			self._stop_loss.exec( {'tradeID': tansaction.id, 'stop_rate':stop_rate})
 			response2 = self._stpo_loss.get_response()
 			if response2.status == 201:
 				self._line.send('order stop#' + str(tansaction.id), str(stop_rate) + ' ' + str(event_open_id) )
 				self.is_ordered = True
 			else:
 				errors = self._stpo_loss.get_errors()
-				self._line.send('order stop faild #', errors['errorCode'] + ':'+ errors['errorMessage'])
+				self._line.send('order stop faild #', errors['errorCode'] + ':'+ errors['errorMessage'] + ' trade_id:' +  str(tansaction.id))
 				return None
 
 			return transaction
@@ -149,15 +149,15 @@ class Trade():
 		self._line.send('order faild #', errors['errorMessage'] )
 		return None
 
-	def market_close(self, tradeid, units, event_close_id):
-		self._close.exec(tradeid, units)
+	def market_close(self, trade_id, units, event_close_id):
+		self._close.exec(trade_id, units)
 		response = self._close.get_response()
 		print(response.status)
 		if response.status == 201:
-			self._line.send('expire close  #', str(tradeid) + ' evrent:' +str(event_close_id))
+			self._line.send('expire close  #', str(trade_id) + ' evrent:' +str(event_close_id))
 			self.is_ordered = True
 		else:
-			self._line.send('expire close  faild #', str(tradeid) + ' evrent:' +str(event_close_id) + ' ' + response.reason)
+			self._line.send('expire close  faild #', str(trade_id) + ' evrent:' +str(event_close_id) + ' ' + response.reason + ' trade_id:' +  str(tansaction.id))
 
 
 	def close(self, orders_info, caculate_df, now_dt, last_rate):
@@ -229,7 +229,7 @@ class Trade():
 			if condition_2 or condition_3:
 
 				args = dict()
-				args = dict(tradeid=trade_id)
+				args = dict(trade_id=trade_id)
 				event_close_id = 99
 				rate = round(row['price'],2)
 				state = ''
