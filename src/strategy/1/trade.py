@@ -215,7 +215,7 @@ class Trade():
 					rate = row['price'] + 0.05
 					event_close_id = 2
 
-				profit_rate = rate
+				profit_rate = round(rate, 2)
 				client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
 				take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id)
