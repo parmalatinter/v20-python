@@ -199,7 +199,22 @@ class Trade():
 			history_df =self.history.get_by_panda(trade_id)
 
 			if history_df.empty:
+				# 万が一	hitstoryが存在しない場合は追加する
+				trade_history = {
+					'late': row['price']
+					'target_price' : None,
+					'units':  row['initialUnits'],
+					'event_open_id' : 0,
+					'is_golden': False,
+					'is_dead' :False,
+					'rule_1' :False,
+					'rule_2' :False,
+					'rule_3' :False,
+					'rule_4' :False
+				}
+				self.insert_histoy(trade_history,trade_id)
 				continue
+				
 			print(history_df)
 			print('delta_total_hours')
 			print(delta_total_hours)
