@@ -9,6 +9,8 @@ class Take_profit():
 
     args = None
     response = None
+    errorCode = '' 
+    errorMessage = ''
     # transaction = None
     parser = argparse.ArgumentParser()
     common.config.add_argument(parser)
@@ -87,7 +89,7 @@ class Take_profit():
         self.response = response
         #  (contains 'orderCancelRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
         if not self.response.status == 201:
-            self.errorCode = response.get("errorCode", None)
+            # self.errorCode = response.get("errorCode", None)
             self.errorMessage = response.get("errorMessage", None)
         
         # self.transaction = response.get("orderFillTransaction", None)
@@ -97,7 +99,7 @@ class Take_profit():
 
     def get_errors(self):
         return {
-            'errorCode' : self.errorCode,
+            'errorCode' : self.response.status,
             'errorMessage' : self.errorMessage
         }
 
@@ -112,7 +114,7 @@ class Take_profit():
 
 # def main():
 #     take_profit = Take_profit()
-#     take_profit.exec({'tradeid': 1, 'profit_rate':110, 'replace_order_id' : 1, 'client-order-comment' : 'test'})
+#     take_profit.exec({'tradeID': '1719', 'price':110, 'client-order-comment' : 'test'})
 #     response = take_profit.get_response()
 #     # transaction = take_profit.get_tansaction()
 #     print(take_profit.get_errors())
