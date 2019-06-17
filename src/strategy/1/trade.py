@@ -284,7 +284,7 @@ class Trade():
 							profit_rate = float(last_rate) + 0.01
 
 						event_close_id = 3
-						client_order_comment=(state + ' win ' + event_close_id)
+						client_order_comment=(state + ' win ' + str(event_close_id))
 						
 					# sellの場合 現在価格マイナス0.1でcloseする
 					else:
@@ -295,7 +295,7 @@ class Trade():
 							profit_rate = float(last_rate) - 0.01
 
 						event_close_id = 4
-						client_order_comment=(state + ' win ' + event_close_id)
+						client_order_comment=(state + ' win ' + str(event_close_id))
 						
 				# 負けの場合
 				else:
@@ -311,14 +311,14 @@ class Trade():
 						stop_rate = float(last_rate) - 0.5
 
 						event_close_id = 5
-						client_order_comment=(state + ' lose ' + event_close_id)
+						client_order_comment=(state + ' lose ' + str(event_close_id))
 						
 					# sellの場合 発注価格でcloseする
 					else:
 						stop_rate = float(last_rate) + 0.5
 
 						event_close_id = 6
-						client_order_comment=(state + ' lose ' + event_close_id)
+						client_order_comment=(state + ' lose ' + str(event_close_id))
 				
 				self._take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, client_order_comment, event_close_id)
 				self._stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, client_order_comment, event_close_id)
