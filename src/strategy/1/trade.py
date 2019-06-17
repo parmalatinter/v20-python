@@ -243,7 +243,7 @@ class Trade():
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
 				continue
 
-			condition_2 = delta_total_minuts >= 90 and event_close_id >= 2
+			condition_2 = delta_total_minuts >= 90 and event_close_id > 2
 			condition_3 = delta_total_minuts >= 120 and event_close_id <= 4
 
 			# 90分 ~ でclose処理(id:1,2)無しの場合 or 120分 ~ で以前利益があったの場合
