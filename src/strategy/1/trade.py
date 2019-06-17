@@ -119,7 +119,7 @@ class Trade():
 	def order(self, instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment):
 		self.market.exec({'instrument': instrument, 'units':units})
 		response = self.market.get_response()
-		print(response.status)
+
 		if response.status == 201:
 			transaction = self.market.get_transaction()
 			tradeID = self.market.get_trade_id()
@@ -189,11 +189,6 @@ class Trade():
 
 			last_rate = round(last_rate,2)
 
-			print('delta_total_hours')
-			print(delta_total_hours)
-			print('self.hours')
-			print(self.hours)
-
 			# 3時間経過後 現在値でcloseする
 			if delta_total_hours >= self.hours:
 				self.market_close(trade_id, 'ALL', 99)
@@ -205,6 +200,11 @@ class Trade():
 
 			if history_df.empty:
 				continue
+			print(history_df)
+			print('delta_total_hours')
+			print(delta_total_hours)
+			print('self.hours')
+			print(self.hours)
 
 			upper = caculate_df['upper'][caculate_df.index[0]]
 			lower = caculate_df['lower'][caculate_df.index[0]]

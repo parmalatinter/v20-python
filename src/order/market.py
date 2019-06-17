@@ -68,7 +68,6 @@ class Market():
 
         self.response = response
 
-        print(self.response)
         # orderRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
         # 'orderCreateTransaction', 'orderFillTransaction', 'relatedTransactionIDs', 'lastTransactionID')
         # 'orderCreateTransaction', 'orderCancelTransaction', 'relatedTransactionIDs', 'lastTransactionID')
@@ -83,8 +82,6 @@ class Market():
             self.transaction = self.response.get("orderRejectTransaction", None)
             self.errorCode = self.response.get("errorCode", None)
             self.errorMessage = self.response.get("errorMessage", None)
-
-        print(self.transaction)
 
     def get_response(self):
         return self.response
