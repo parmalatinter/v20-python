@@ -325,7 +325,7 @@ class Trade():
 
 
 
-	def golden_trade(self, df_candles):
+	def analyze_trade(self, df_candles):
 
 		last_df = self.get_caculate_df(df_candles)
 		late = last_df['c'][last_df.index[0]]
@@ -379,6 +379,11 @@ class Trade():
 		else:
 			is_golden = False
 
+		# 新規オーダーする場合
+		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4)
+
+		_event_open_id = 0
+
 		# デッドクロスの場合
 		if is_dead:
 			is_dead = True
@@ -405,34 +410,8 @@ class Trade():
 		else:
 			is_dead = False
 
-
 		# 新規オーダーする場合
-		if _event_open_id > 0:
-			if _units > 0:
-				_stop_rate = round(lower, 2) - 0.05
-			else:
-				_stop_rate = round(upper, 2) + 0.05
-
-			_target_price =  round(_target_price, 2)
-			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
-			self._line.send(_event_open_id, _message)
-
-			if not transaction:
-				return
-
-			trade_history = {
-				'late': round(late, 2),
-				'target_price' : round(_target_price, 2),
-				'units': _units,
-				'event_open_id' : _event_open_id,
-				'is_golden': is_golden,
-				'is_dead' :is_dead,
-				'rule_1' :bool(rule_1),
-				'rule_2' :bool(rule_2),
-				'rule_3' :bool(rule_3),
-				'rule_4' :bool(rule_4)
-			}
-			self.insert_histoy(trade_history,transaction.tradeOpened.tradeID)
+		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4)
 
 		_event_open_id = 0
 		# ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
@@ -443,26 +422,30 @@ class Trade():
 			_target_price = late + 0.1
 
 		# ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
-		if rule_3 and rule_4:
+		elif rule_3 and rule_4:
 			_message = ("sell chance order 8 #", round(late, 2))
 			_units = 0 - (self.units * 2)
 			_event_open_id = 8
 			_target_price = late - 0.1
 		
 		# ルールその5 ボリバン上限突破　且つ　 trendが-5以下の場合
-		if rule_5 and self.trend_usd['res'] < -5:
+		elif rule_5 and self.trend_usd['res'] < -5:
 			_message = ("sell chance order 10 #", round(late, 2))
 			_units = 0 - (self.units * 2)
 			_event_open_id = 9
 			_target_price = late - 0.1
 
 		# ルールその6 ボリバン下限突破　且つ　 trendが5以上の場合
-		if rule_6 and self.trend_usd['res'] > 5:
+		elif rule_6 and self.trend_usd['res'] > 5:
 			_message = ("buy chance order 9 #", round(late, 2))
 			_units = self.units * 2
 			_event_open_id = 10
 			_target_price = late + 0.1
 
+		# 新規オーダーする場合
+		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4)
+
+	def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4):
 		# 新規オーダーする場合
 		if _event_open_id > 0:
 			if _units > 0:
@@ -471,6 +454,7 @@ class Trade():
 				_stop_rate = round(upper, 2) + 0.05
 
 			_target_price =  round(_target_price, 2)
+			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
 			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
 			self._line.send(_event_open_id, _message)
 
@@ -539,7 +523,7 @@ def main():
 
 	trade_history = None
 	if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
-		trade.golden_trade(candles_df)
+		trade.analyze_trade(candles_df)
 
 	transactions = transaction.transactions.Transactions()
 	transactions.get()
