@@ -248,7 +248,8 @@ class Trade():
 			condition_2 = delta_total_minuts >= 90 and event_close_id <= 2
 			# 120分 ~ で以前利益があったの場合
 			condition_3 = delta_total_minuts >= 120 and event_close_id == 3 and event_close_id == 4
-
+			# 90分 ~ 利益なしの場合
+			condition_4 = delta_total_minuts >= 90 and row['unrealizedPL'] < 0
 			if condition_2 or condition_3:
 
 				args = dict()
@@ -316,7 +317,8 @@ class Trade():
 				self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, client_order_comment, event_close_id)
 
 				self.history.update(int(trade_id), last_rate,  float(row['unrealizedPL']), event_close_id, state)
-			else:
+			if condition_4:
+
 				# 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
 				event_close_id = 7
 				self.take_profit(trade_id, round(price, 2), takeProfitOrderID, client_order_comment, event_close_id)
