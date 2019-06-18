@@ -139,7 +139,6 @@ class Trade():
 			else:
 				errors = self._take_profit.get_errors()
 				self._line.send('order profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tradeID)
-				return None
 
 			self._stop_loss.exec( {'tradeID': tradeID, 'price':stop_rate})
 			response2 = self._stop_loss.get_response()
@@ -148,7 +147,6 @@ class Trade():
 			else:
 				errors = self._stop_loss.get_errors()
 				self._line.send('order stop faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tradeID)
-				return None
 
 			return transaction
 
