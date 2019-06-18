@@ -417,30 +417,30 @@ class Trade():
 		# ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
 		if rule_1 and rule_2:
 			_message = ("buy chance order 7 #", round(late, 2))
-			_units = self.units * 2
+			_units = self.units
 			_event_open_id = 7
 			_target_price = late + 0.1
 
 		# ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
 		elif rule_3 and rule_4:
 			_message = ("sell chance order 8 #", round(late, 2))
-			_units = 0 - (self.units * 2)
+			_units = 0 - self.units
 			_event_open_id = 8
 			_target_price = late - 0.1
 		
 		# ルールその5 ボリバン上限突破　且つ　 trendが-5以下の場合
 		elif rule_5 and self.trend_usd['res'] < -5:
-			_message = ("sell chance order 10 #", round(late, 2))
-			_units = 0 - (self.units * 2)
+			_message = ("sell chance order 9 #", round(late, 2))
+			_units = self.units
 			_event_open_id = 9
-			_target_price = late - 0.1
+			_target_price = late + 0.1
 
 		# ルールその6 ボリバン下限突破　且つ　 trendが5以上の場合
 		elif rule_6 and self.trend_usd['res'] > 5:
-			_message = ("buy chance order 9 #", round(late, 2))
-			_units = self.units * 2
+			_message = ("buy chance order 10 #", round(late, 2))
+			_units = 0 - self.units
 			_event_open_id = 10
-			_target_price = late + 0.1
+			_target_price = late - 0.1
 
 		# 新規オーダーする場合
 		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4)
