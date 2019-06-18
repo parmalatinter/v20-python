@@ -335,11 +335,13 @@ class Trade():
 
 		upper = last_df['upper'][last_df.index[0]]
 		lower = last_df['lower'][last_df.index[0]]
+		mean = last_df['mean'][last_df.index[0]]
 
 		_units = 0
 		_event_open_id = 0
 		_message = ''
 		_target_price = 0
+		_stop_rate = 0 
 		# ルールその1 C3 < lower
 		rule_1 = last_df['rule_1'][last_df.index[0]] == 1
 		# ルールその2　3つ陽線
@@ -434,6 +436,7 @@ class Trade():
 			_units = self.units
 			_event_open_id = 9
 			_target_price = late + 0.1
+			_stop_rate = mean
 
 		# ルールその6 ボリバン下限突破　且つ　 trendが20以上の場合
 		elif rule_6 and self.trend_usd['res'] > 20:
@@ -441,13 +444,14 @@ class Trade():
 			_units = 0 - self.units
 			_event_open_id = 10
 			_target_price = late - 0.1
+			_stop_rate = mean
 
 		# 新規オーダーする場合
-		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6)
+		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate)
 
-	def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6):
+	def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate=0):
 		# 新規オーダーする場合
-		if _event_open_id > 0:
+		if _event_open_id > 0 and _stop_rate == 0:
 			if _units > 0:
 				_stop_rate = round(lower, 2) - 0.05
 			else:
