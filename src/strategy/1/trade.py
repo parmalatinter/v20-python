@@ -454,7 +454,7 @@ class Trade():
 			_message = ("sell chance order 10 #", round(late, 2))
 			_units = 0 - (self.units * 2)
 			_event_open_id = 9
-			_target_price = late + 0.1
+			_target_price = late - 0.1
 
 		# ルールその6 ボリバン下限突破　且つ　 trendが5以上の場合
 		if rule_6 and self.trend_usd['res'] > 5:
