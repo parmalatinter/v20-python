@@ -216,7 +216,9 @@ class Trade():
 					'rule_1' :False,
 					'rule_2' :False,
 					'rule_3' :False,
-					'rule_4' :False
+					'rule_4' :False,
+					'rule_5' :False,
+					'rule_6' :False
 				}
 				self.insert_histoy(trade_history,trade_id)
 				continue
