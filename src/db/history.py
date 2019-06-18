@@ -83,7 +83,9 @@ class History():
 
 		cur = conn.cursor()
 
-		rows = self.exec_query_by_panda("SELECT * FROM history ORDER BY trade_id;", 'id')
+		sql_file = open(self.dir_path + '/query/history/select_all.sql','r')
+
+		rows = self.exec_query_by_panda(sql_file.read(), 'id')
 
 		cur.close()
 		conn.close()
@@ -168,9 +170,10 @@ class History():
 
 def main():
 	history = History()
-	history.add_column("trend_3 numeric")
-	history.add_column("trend_4 numeric")
-	history.add_column("trend_cal numeric")
+	print(history.get_all_by_panda())
+	# history.add_column("trend_3 numeric")
+	# history.add_column("trend_4 numeric")
+	# history.add_column("trend_cal numeric")
 	# history.add_column("rule_5 boolean")
 	# history.add_column("rule_6 boolean")
 	# history.drop()
