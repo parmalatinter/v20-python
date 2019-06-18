@@ -455,7 +455,6 @@ class Trade():
 
 			_target_price =  round(_target_price, 2)
 			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
-			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
 			self._line.send(_event_open_id, _message)
 
 			if not transaction:
