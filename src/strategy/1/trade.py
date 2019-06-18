@@ -341,13 +341,17 @@ class Trade():
 		_message = ''
 		_target_price = 0
 		# ルールその1 C3 < lower
-		rule_1 = last_df['rule_1'][last_df.index[0]] == 0
+		rule_1 = last_df['rule_1'][last_df.index[0]] == 1
 		# ルールその2　3つ陽線
-		rule_2 = last_df['rule_2'][last_df.index[0]] == 0
+		rule_2 = last_df['rule_2'][last_df.index[0]] == 1
 		# ルールその3 C3 > upper
-		rule_3 = last_df['rule_3'][last_df.index[0]] == 0
+		rule_3 = last_df['rule_3'][last_df.index[0]] == 1
 		# ルールその4 3つ陰線
-		rule_4 = last_df['rule_4'][last_df.index[0]] == 0
+		rule_4 = last_df['rule_4'][last_df.index[0]] == 1
+		# ルールその5 ボリバン上限突破
+		rule_5 = last_df['rule_5'][last_df.index[0]] == 1
+		# ルールその6 ボリバン下限限突破
+		rule_6 = last_df['rule_6'][last_df.index[0]] == 1
 
 		# ゴールデンクロスの場合
 		if is_golden:
@@ -415,6 +419,20 @@ class Trade():
 			_event_open_id = 8
 			_target_price = late - 0.1
 		
+		# ルールその5 ボリバン上限突破　且つ　 trendが5以上の場合
+		if rule_5 if self.trend_usd['res'] > 5:
+			_message = ("buy chance order 9 #", round(late, 2))
+			_units = self.units * 2
+			_event_open_id = 9
+			_target_price = late + 0.1
+
+		# ルールその6 ボリバン下限突破　且つ　 trendが-5以下の場合
+		if rule_6 if self.trend_usd['res'] < -5:
+			_message = ("sell chance order 10 #", round(late, 2))
+			_units = 0 - (self.units * 2)
+			_event_open_id = 10
+			_target_price = late + 0.1
+
 		# 新規オーダーする場合
 		if _event_open_id > 0:
 			if _units > 0:

@@ -24,7 +24,6 @@ class Draw(object):
         os.chdir(path)
 
     def caculate(self, _df):
-
         pd.options.mode.chained_assignment = None
         df = _df.copy()
 
@@ -76,21 +75,29 @@ class Draw(object):
         df['diff'] = df['sma_5'] - df['sma_15']
 
         # ルールその1 C3 < lower
-        df['rule_1'] = 1
-        df.loc[(df['c3'] < df['lower']),'rule_1']=0
+        df['rule_1'] = 0
+        df.loc[(df['c3'] < df['lower']),'rule_1']=1
 
         # ルールその2　3つ陽線
-        df['rule_2'] = -1
-        df.loc[(df['o'] - df['c'] < 0) & (df['o1'] - df['c1'] < 0) & (df['o2'] - df['c2'] < 0),'rule_2']=0
+        df['rule_2'] = 0
+        df.loc[(df['o'] - df['c'] < 0) & (df['o1'] - df['c1'] < 0) & (df['o2'] - df['c2'] < 0),'rule_2']=1
 
 
         # ルールその3 C3 > upper
-        df['rule_3'] = 1
-        df.loc[(df['c3'] > df['upper']),'rule_3']=0
+        df['rule_3'] = 0
+        df.loc[(df['c3'] > df['upper']),'rule_3']=1
 
         # ルールその4 3つ陰線
-        df['rule_4'] = -1
-        df.loc[(df['o'] - df['c'] > 0) & (df['o1'] - df['c1'] > 0) & (df['o2'] - df['c2'] > 0),'rule_4']=0
+        df['rule_4'] = 0
+        df.loc[(df['o'] - df['c'] > 0) & (df['o1'] - df['c1'] > 0) & (df['o2'] - df['c2'] > 0),'rule_4']=1
+
+        # ルールその5 h > upper
+        df['rule_5'] = 0
+        df.loc[(df['h'] > df['upper']),'rule_5']=1
+
+        # ルールその6 l > lower
+        df['rule_6'] = 0
+        df.loc[(df['l'] < df['lower']),'rule_6']=1
 
         # ゴールデンクロスを検出
         asign = np.sign(df['diff'])
@@ -134,30 +141,31 @@ class Draw(object):
         return candle_temp
 
     def plot(self, df, candle_temp):
-        # ローソク足表示
+        # # ローソク足表示
+        # ax = plt.subplot(2, 1, 1)
+        # ax.plot(candle_temp['mean'])
+        # ax.plot(candle_temp['upper'])
+        # ax.plot(candle_temp['lower'])
+        # ax.plot(candle_temp['upper'])
+        # ax.plot(candle_temp['lower'])
+        # ax.plot(candle_temp['sma_5'])
+        # ax.plot(candle_temp['sma_15'])
+
+
+        # ax = plt.subplot(2, 1, 2)
+        # ax.plot(candle_temp['golden'])
+        # ax.plot(candle_temp['dead'])
+
+
+        # plt.show()
+
         ax = plt.subplot(2, 1, 1)
-        ax.plot(candle_temp['mean'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
-        ax.plot(candle_temp['sma_5'])
-        ax.plot(candle_temp['sma_15'])
-
-
-        ax = plt.subplot(2, 1, 2)
-        ax.plot(candle_temp['golden'])
-        ax.plot(candle_temp['dead'])
-
-
-        plt.show()
-
-        ax = plt.subplot(2, 1, 1)
-        ax.plot(candle_temp['rule_1'])
-        ax.plot(candle_temp['rule_2'])
-        ax.plot(candle_temp['rule_3'])
+        # ax.plot(candle_temp['rule_1'])
+        # ax.plot(candle_temp['rule_2'])
+        # ax.plot(candle_temp['rule_3'])
+        # ax.plot(candle_temp['rule_4'])
         ax.plot(candle_temp['rule_4'])
-
+        ax.plot(candle_temp['rule_5'])
         # ax = plt.subplot(2, 1, 2)
         # ax.plot(candle_temp['g_profit'])
         # ax.plot(candle_temp['d_profit'])
@@ -165,7 +173,8 @@ class Draw(object):
         # print(candle_temp['g_profit'].sum())
         # print(candle_temp['d_profit'].sum())
         # print(candle_temp.tail(1)['t'])
-
+        print(candle_temp['rule_5'])
+        print(candle_temp['rule_6'])
         plt.show()
         
         # ax = plt.subplot(2, 1, 1)
