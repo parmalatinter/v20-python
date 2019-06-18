@@ -433,7 +433,8 @@ class Trade():
 				'rule_4' :bool(rule_4)
 			}
 			self.insert_histoy(trade_history,transaction.tradeOpened.tradeID)
-			
+
+		_event_open_id = 0
 		# ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
 		if rule_1 and rule_2:
 			_message = ("buy chance order 7 #", round(late, 2))
