@@ -378,20 +378,20 @@ class Trade():
 			is_dead = True
 			# trendが-5以下の場合
 			if self.trend_usd['res'] < -5:
-				_message = ("sell order 1 #", round(late, 2))
+				_message = ("sell order 4 #", round(late, 2))
 				_units = 0 - self.units
 				_event_open_id = 4
 				_target_price = late - 0.1
 
 			# trendが5以上の場合
 			elif self.trend_usd['res'] > 5:
-				_message = ("buy order 2 #", round(late, 2))
+				_message = ("buy order 5 #", round(late, 2))
 				_units = self.units
 				_event_open_id = 5
 				_target_price = late + 0.1
 			# その他の場合
 			else:
-				_message = ("sell order 3 #", round(late, 2))
+				_message = ("sell order 6 #", round(late, 2))
 				_units = 0 - self.units
 				_event_open_id = 6
 				_target_price = late - 0.05
@@ -401,14 +401,14 @@ class Trade():
 
 		# ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
 		if rule_1 and rule_2:
-			_message = ("buy chance order #", round(late, 2))
+			_message = ("buy chance order 7 #", round(late, 2))
 			_units = self.units * 2
 			_event_open_id = 7
 			_target_price = late + 0.1
 
 		# ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
 		if rule_3 and rule_4:
-			_message = ("sell chance order #", round(late, 2))
+			_message = ("sell chance order 8 #", round(late, 2))
 			_units = 0 - (self.units * 2)
 			_event_open_id = 8
 			_target_price = late - 0.1
