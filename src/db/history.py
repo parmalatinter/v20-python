@@ -108,7 +108,7 @@ class History():
 
 		return df.to_csv(sep=",", line_terminator='\n', encoding='utf-8')
 
-	def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, memo=''):
+	def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, memo=''):
 		create_time = datetime.datetime.now() 
 		
 		sql_file = open(self.dir_path + '/query/history/insert.sql','r')
@@ -124,12 +124,17 @@ class History():
 			event_open_id,
 			trend_1,
 			trend_2,
+			trend_3,
+			trend_4,
+			trend_cal,
 			judge_1,
 			judge_2,
 			rule_1,
 			rule_2,
 			rule_3,
 			rule_4,
+			rule_5,
+			rule_6,
 			memo
 		)
 		self.exec_query( sql_file.read(), args)
@@ -150,9 +155,12 @@ class History():
 		self.exec_query(sql_file.read(),(update_time, price_close, pl, event_close_id, state, trade_id))
 
 	def create(self):
-
 		sql_file = open(self.dir_path + '/query/history/create.sql','r')
 		self.exec_query(sql_file.read())
+
+	def add_column(self, column_name_type):
+		sql_file = open(self.dir_path + '/query/history/add_column.sql','r')
+		self.exec_query('ALTER TABLE history ADD COLUMN IF NOT EXISTS ' + column_name_type)
 
 	def drop(self):
 
@@ -160,56 +168,62 @@ class History():
 
 def main():
 	history = History()
+	history.add_column("trend_3 numeric")
+	history.add_column("trend_4 numeric")
+	history.add_column("trend_cal numeric")
+	# history.add_column("rule_5 boolean")
+	# history.add_column("rule_6 boolean")
 	# history.drop()
-	history.create()
-	trade_id = 1
-	price = 100.20
-	price_target = 100.30
-	state = 'state 1'
-	instrument = 'USD_JPY'
-	units = 10000
-	unrealized_pl = 10000
-	event_open_id = 1
-	trend_1 = 10 
-	trend_2 = 20 
-	judge_1 = True 
-	judge_2 = False
-	memo = 'test'
-	rule_1 = True
-	rule_2 = True
-	rule_3 = True
-	rule_4 = True
 
-	history.insert(
-		trade_id,
-		price,
-		price_target,
-		state,
-		instrument,
-		units,
-		unrealized_pl,
-		event_open_id,
-		trend_1,
-		trend_2,
-		judge_1,
-		judge_2,
-		rule_1,
-		rule_2,
-		rule_3,
-		rule_4,
-		memo
-	)
+	# history.create()
+	# trade_id = 1
+	# price = 100.20
+	# price_target = 100.30
+	# state = 'state 1'
+	# instrument = 'USD_JPY'
+	# units = 10000
+	# unrealized_pl = 10000
+	# event_open_id = 1
+	# trend_1 = 10 
+	# trend_2 = 20 
+	# judge_1 = True 
+	# judge_2 = False
+	# memo = 'test'
+	# rule_1 = True
+	# rule_2 = True
+	# rule_3 = True
+	# rule_4 = True
 
-	pl = 20000
-	price_close = 100.40
-	event_close_id = 1
-	history.update(trade_id, price_close, pl, event_close_id, state)
+	# history.insert(
+	# 	trade_id,
+	# 	price,
+	# 	price_target,
+	# 	state,
+	# 	instrument,
+	# 	units,
+	# 	unrealized_pl,
+	# 	event_open_id,
+	# 	trend_1,
+	# 	trend_2,
+	# 	judge_1,
+	# 	judge_2,
+	# 	rule_1,
+	# 	rule_2,
+	# 	rule_3,
+	# 	rule_4,
+	# 	memo
+	# )
 
-	# print(history.get_all_by_panda())
-	df = history.get_by_panda(1)
-	# print(df['trade_id'][df.index[0]])
+	# pl = 20000
+	# price_close = 100.40
+	# event_close_id = 1
+	# history.update(trade_id, price_close, pl, event_close_id, state)
 
-	history.delete(1364)
+	# # print(history.get_all_by_panda())
+	# df = history.get_by_panda(1)
+	# # print(df['trade_id'][df.index[0]])
+
+	# history.delete(1364)
 
 	
 if __name__ == "__main__":

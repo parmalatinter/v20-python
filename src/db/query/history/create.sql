@@ -15,11 +15,16 @@ CREATE TABLE IF NOT EXISTS history (
 	event_close_id integer,
 	trend_1 numeric,
 	trend_2 numeric,
+	trend_3 numeric,
+	trend_4 numeric,
+	trend_cal numeric,
 	judge_1 boolean,
 	judge_2 boolean,
 	rule_1 boolean,
 	rule_2 boolean,
 	rule_3 boolean,
 	rule_4 boolean,
+	rule_5 boolean,
+	rule_6 boolean,
 	memo varchar
 )

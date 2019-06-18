@@ -380,7 +380,7 @@ class Trade():
 			is_golden = False
 
 		# 新規オーダーする場合
-		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4)
+		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6)
 
 		_event_open_id = 0
 
@@ -411,7 +411,7 @@ class Trade():
 			is_dead = False
 
 		# 新規オーダーする場合
-		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4)
+		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6)
 
 		_event_open_id = 0
 		# ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
@@ -443,9 +443,9 @@ class Trade():
 			_target_price = late - 0.1
 
 		# 新規オーダーする場合
-		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4)
+		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6)
 
-	def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4):
+	def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6):
 		# 新規オーダーする場合
 		if _event_open_id > 0:
 			if _units > 0:
@@ -470,7 +470,9 @@ class Trade():
 				'rule_1' :bool(rule_1),
 				'rule_2' :bool(rule_2),
 				'rule_3' :bool(rule_3),
-				'rule_4' :bool(rule_4)
+				'rule_4' :bool(rule_4),
+				'rule_5' :bool(rule_5),
+				'rule_6' :bool(rule_6)
 			}
 			self.insert_histoy(trade_history,transaction.tradeOpened.tradeID)
 
@@ -486,13 +488,18 @@ class Trade():
 			trade_history['event_open_id'],
 			round(self.trend_usd['v1_usd'], 2),
 			round(self.trend_usd['v2_usd'], 2),
+			round(self.trend_usd['v1_jpy'], 2),
+			round(self.trend_usd['v2_jpy'], 2),
+			round(self.trend_usd['res'], 2),
 			trade_history['is_golden'],
 			trade_history['is_dead'],
 			trade_history['rule_1'],
 			trade_history['rule_2'],
 			trade_history['rule_3'],
 			trade_history['rule_4'],
-			round(self.trend_usd['res'], 2),
+			trade_history['rule_5'],
+			trade_history['rule_6'],
+			''
 		)
 	
 	def system_update(self, positions_infos):
