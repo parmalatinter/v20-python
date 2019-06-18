@@ -405,6 +405,35 @@ class Trade():
 		else:
 			is_dead = False
 
+
+		# 新規オーダーする場合
+		if _event_open_id > 0:
+			if _units > 0:
+				_stop_rate = round(lower, 2) - 0.05
+			else:
+				_stop_rate = round(upper, 2) + 0.05
+
+			_target_price =  round(_target_price, 2)
+			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
+			self._line.send(_event_open_id, _message)
+
+			if not transaction:
+				return
+
+			trade_history = {
+				'late': round(late, 2),
+				'target_price' : round(_target_price, 2),
+				'units': _units,
+				'event_open_id' : _event_open_id,
+				'is_golden': is_golden,
+				'is_dead' :is_dead,
+				'rule_1' :bool(rule_1),
+				'rule_2' :bool(rule_2),
+				'rule_3' :bool(rule_3),
+				'rule_4' :bool(rule_4)
+			}
+			self.insert_histoy(trade_history,transaction.tradeOpened.tradeID)
+			
 		# ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
 		if rule_1 and rule_2:
 			_message = ("buy chance order 7 #", round(late, 2))
@@ -436,9 +465,9 @@ class Trade():
 		# 新規オーダーする場合
 		if _event_open_id > 0:
 			if _units > 0:
-				_stop_rate = round(lower, 2)
+				_stop_rate = round(lower, 2) - 0.05
 			else:
-				_stop_rate = round(upper, 2)
+				_stop_rate = round(upper, 2) + 0.05
 
 			_target_price =  round(_target_price, 2)
 			transaction = self.order(self.instrument, _units,_target_price, _stop_rate, _event_open_id, _message)
