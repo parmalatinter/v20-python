@@ -96,13 +96,13 @@ class History():
 
 		cur = conn.cursor()
 
-		rows = self.exec_query_by_panda("SELECT state , event_open_id, count(state), max(state) FROM history GROUP BY state , event_open_id", 'state')
+		rows = self.exec_query_by_panda("SELECT state , event_open_id, count(state), max(state) FROM history GROUP BY state, event_open_id ORDER BY state", 'state')
 
 		cur.close()
 		conn.close()
 
 		return rows
-		
+
 	def get_all_by_csv(self):
 		df = self.get_all_by_panda()
 
