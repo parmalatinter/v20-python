@@ -2,15 +2,17 @@ SELECT
 	id,
     trade_id,
 	create_time,
+	update_time,
 	state,
 	instrument,
 	units,
 	pl,
-	unrealized_pl,
 	price,
 	price_target,
 	price_close,
 	event_open_id,
+	event_close_id,
+	memo,
 	judge_1,
 	judge_2,
 	trend_1,
@@ -23,6 +25,5 @@ SELECT
 	rule_3,
 	rule_4,
 	rule_5,
-	rule_6,
-	memo 
+	rule_6
 FROM history ORDER BY trade_id;
