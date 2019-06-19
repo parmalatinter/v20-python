@@ -6,6 +6,7 @@ import common.args
 from datetime import datetime
 import pandas as pd
 import numpy as np
+import math
  
 # ローソク足描写
 import matplotlib.pyplot as plt
@@ -16,6 +17,100 @@ import os
 class Draw(object):
 
     file_name = 'data.csv'
+    df = pd.DataFrame(columns=[])
+
+    def supres(self, low, high, n=28, min_touches=2, stat_likeness_percent=1.5, bounce_percent=5):
+
+        df = pd.concat([high, low], keys = ['high', 'low'], axis=1)
+        df['sup'] = pd.Series(np.zeros(len(low)))
+        df['res'] = pd.Series(np.zeros(len(low)))
+        df['sup_break'] = pd.Series(np.zeros(len(low)))
+        df['sup_break'] = 0
+        df['res_break'] = pd.Series(np.zeros(len(high)))
+        df['res_break'] = 0
+
+        for x in range((n-1)+n, len(df)):
+            tempdf = df[x-n:x+1].copy()
+            sup = None
+            res = None
+            maxima = tempdf.high.max()
+            minima = tempdf.low.min()
+            move_range = maxima - minima
+            move_allowance = move_range * (stat_likeness_percent / 100)
+            bounce_distance = move_range * (bounce_percent / 100)
+            touchdown = 0
+            awaiting_bounce = False
+            for y in range(0, len(tempdf)):
+                if abs(maxima - tempdf.high.iloc[y]) < move_allowance and not awaiting_bounce:
+                    touchdown = touchdown + 1
+                    awaiting_bounce = True
+                elif abs(maxima - tempdf.high.iloc[y]) > bounce_distance:
+                    awaiting_bounce = False
+            if touchdown >= min_touches:
+                res = maxima
+
+            touchdown = 0
+            awaiting_bounce = False
+            for y in range(0, len(tempdf)):
+                if abs(tempdf.low.iloc[y] - minima) < move_allowance and not awaiting_bounce:
+                    touchdown = touchdown + 1
+                    awaiting_bounce = True
+                elif abs(tempdf.low.iloc[y] - minima) > bounce_distance:
+                    awaiting_bounce = False
+            if touchdown >= min_touches:
+                sup = minima
+            if sup:
+                df['sup'].iloc[x] = sup
+            if res:
+                df['res'].iloc[x] = res
+        res_break_indices = list(df[(np.isnan(df['res']) & ~np.isnan(df.shift(1)['res'])) & (df['high'] > df.shift(1)['res'])].index)
+        for index in res_break_indices:
+            df['res_break'].at[index] = 1
+        sup_break_indices = list(df[(np.isnan(df['sup']) & ~np.isnan(df.shift(1)['sup'])) & (df['low'] < df.shift(1)['sup'])].index)
+        for index in sup_break_indices:
+            df['sup_break'].at[index] = 1
+        ret_df = pd.concat([df['sup'], df['res'], df['sup_break'], df['res_break']], keys = ['sup', 'res', 'sup_break', 'res_break'], axis=1)
+        return ret_df
+
+    def candle_supres(self):
+
+        n=30
+        mint=2
+        slp=3.5
+        bp=2
+        df=self.df
+
+        levels = self.supres(df['l'],
+                    df['h'],
+                    n=n,
+                    min_touches=mint,
+                    stat_likeness_percent=slp,
+                    bounce_percent=bp)
+
+        fig = plt.figure(figsize=(18, 9))
+        ax = plt.subplot(1, 1, 1)
+
+        result = {}
+        count = 0
+        res_sum = 0
+        for sup in levels['sup']:
+            if sup != np.nan and sup > 0:
+                res_sum = res_sum + sup 
+                count = count+1
+        print(res_sum)
+        print(count)
+        result['resistance_low'] = res_sum / count
+        count = 0
+        res_sum = 0
+        for res in levels['res']:
+            if res != np.nan and res > 0:
+                res_sum = res_sum + res 
+                count = count+1
+        print(res_sum)
+        print(count)
+        result['resistance_high'] = res_sum / count
+
+        return result
 
     def set_file_name(self, name):
         self.file_name = name
@@ -112,6 +207,8 @@ class Draw(object):
         # デッドクロスを検出
         df['dead'] = ((np.roll(asign, 1) - asign) == 2).astype(int)
 
+        ranges = slice(df['l'],170,None)
+ 
         # 10分間でポジションを決済
         # df['g_returns'] = df['c'] - df['c'].shift(5)
         # df['d_returns'] = df['c'].shift(5) - df['c']
@@ -123,9 +220,11 @@ class Draw(object):
         df = df.reset_index(drop=True)
         df.head()
 
+
         # # ルール1とルール2が該当するレコードを探す
         # df[(df['rule_1'] == 1.0) & (df['rule_2'] == 1.0)][0:5]
 
+        self.df = df
         return df
 
 
@@ -152,12 +251,12 @@ class Draw(object):
         # ax.plot(candle_temp['sma_15'])
 
 
-        # ax = plt.subplot(2, 1, 2)
-        # ax.plot(candle_temp['golden'])
-        # ax.plot(candle_temp['dead'])
+        ax = plt.subplot(2, 1, 2)
+        ax.plot(candle_temp['golden'])
+        ax.plot(candle_temp['dead'])
 
 
-        # plt.show()
+        plt.show()
 
         ax = plt.subplot(2, 1, 1)
         # ax.plot(candle_temp['rule_1'])
@@ -166,6 +265,9 @@ class Draw(object):
         # ax.plot(candle_temp['rule_4'])
         ax.plot(candle_temp['rule_4'])
         ax.plot(candle_temp['rule_5'])
+        plt.show()
+
+        ax = plt.subplot(2, 1, 1)
         # ax = plt.subplot(2, 1, 2)
         # ax.plot(candle_temp['g_profit'])
         # ax.plot(candle_temp['d_profit'])
@@ -191,10 +293,11 @@ def main():
     df = pd.read_csv('usd_10min_api.csv', sep=',', engine='python', skipinitialspace=True)
     draw.set_file_name('usd_10min_api.csv')
     df = draw.caculate(df)
-    candle_temp = draw.caculate_candle(df)
-    # print(df)
-    draw.plot(df, candle_temp)
-    df.to_csv('out.csv')
+    # candle_temp = draw.caculate_candle(df)
+    # # print(df)
+    # draw.plot(df, candle_temp)
+    # df.to_csv('out.csv')
+    print(draw.candle_supres())
 
 if __name__ == "__main__":
     main()
