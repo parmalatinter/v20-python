@@ -173,7 +173,7 @@ class Trade():
 
 
 			unix = row['openTime'].split(".")[0]
-			price = float(row['price'])
+			price = round(float(row['price']), 2)
 
 			try:
 				time = datetime.fromtimestamp(int(unix), pytz.timezone("America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
@@ -293,7 +293,7 @@ class Trade():
 						
 				# 負けの場合
 				else:
-					profit_rate=rate
+					
 					
 					if delta_total_minuts > 90:
 						state = 'lose close 120min'
@@ -302,14 +302,16 @@ class Trade():
 
 					# buyの場合 発注価格でcloseする
 					if row['currentUnits'] > 0:
-						stop_rate = price - 0.5
+						stop_rate = price
+						profit_rate=rate + 0.5
 
 						event_close_id = 5
 						client_order_comment=(state + ' lose ' + str(event_close_id))
 						
 					# sellの場合 発注価格でcloseする
 					else:
-						stop_rate = price + 0.5
+						stop_rate = price
+						profit_rate=rate - 0.5
 
 						event_close_id = 6
 						client_order_comment=(state + ' lose ' + str(event_close_id))
@@ -322,7 +324,7 @@ class Trade():
 
 				# 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
 				event_close_id = 7
-				self.take_profit(trade_id, round(price, 2), takeProfitOrderID, client_order_comment, event_close_id)
+				self.take_profit(trade_id, price, takeProfitOrderID, client_order_comment, event_close_id)
 
 
 
@@ -536,7 +538,7 @@ def main():
 	trade = Trade(_environ)
 	
 	candles = inst.Candles()
-	candles_csv_string= candles.get('USD_JPY', 'M10')
+	candles_csv_string= candles.get('USD_JPY', 'M5')
 	candles_df= trade.get_df_by_string(candles_csv_string)
 
 	trade_history = None
