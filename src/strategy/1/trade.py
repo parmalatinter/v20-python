@@ -255,7 +255,6 @@ class Trade():
 				args = dict()
 				args = dict(trade_id=trade_id)
 				event_close_id = 99
-				rate = round(price,2)
 				state = ''
 				profit_rate = 0
 
@@ -266,7 +265,7 @@ class Trade():
 					else:
 						state = 'profit close 90min'
 
-					stop_rate = rate
+					stop_rate = price
 
 					# buyの場合 現在価格プラス0.1でcloseする
 					if row['currentUnits'] > 0:
@@ -301,16 +300,16 @@ class Trade():
 
 					# buyの場合 発注価格でcloseする
 					if row['currentUnits'] > 0:
-						stop_rate = price
-						profit_rate=rate + 0.5
+						stop_rate = last_rate - 0.5
+						profit_rate=price + 0.01
 
 						event_close_id = 5
 						client_order_comment=(state + ' lose ' + str(event_close_id))
 						
 					# sellの場合 発注価格でcloseする
 					else:
-						stop_rate = price
-						profit_rate=rate - 0.5
+						stop_rate = last_rate + 0.5
+						profit_rate=price - 0.01
 
 						event_close_id = 6
 						client_order_comment=(state + ' lose ' + str(event_close_id))
