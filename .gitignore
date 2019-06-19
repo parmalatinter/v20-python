@@ -5,3 +5,4 @@ build/
 *.sw*
 *.egg-info
 src/drive/mycreds.txt
+.vscode/
