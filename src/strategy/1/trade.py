@@ -510,67 +510,67 @@ class Trade():
 	def system_update(self, positions_infos):
 		self._system.update_profit(positions_infos['pl'], positions_infos['unrealizedPL'])
 		self._system.export_drive()
-
+		
 	def history_fix(self):
 		ids = self.history.get_trade_ids_by_not_update_pl_by_panda()
 		get_by_trade_ids = trade.get_by_trade_ids.Get_by_trade_ids()
 		rows = get_by_trade_ids.get(ids)
 
 		for trade_id, row in rows.items():
-			self.history.fix_update(int(trade_id), row['price'], row['realizedPL'], row['type'])
+			self.history.fix_update(int(trade_id), row['filledTime'], row['price'], row['realizedPL'], row['type'])
 
 def main():
 
-	# condition = market.condition.Market()
-	# if condition.get_is_opening() == False:
-	# 	exit()
+	condition = market.condition.Market()
+	if condition.get_is_opening() == False:
+		exit()
 
 	_environ = strategy.environ.Environ()
-	# reduce_time = float(_environ.get('reduce_time')) if _environ.get('reduce_time') else 5
+	reduce_time = float(_environ.get('reduce_time')) if _environ.get('reduce_time') else 5
 	drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
 
-	# googleDrive = drive.drive.Drive(drive_id)
-	# googleDrive.delete_all()
-	# time.sleep(5)
+	googleDrive = drive.drive.Drive(drive_id)
+	googleDrive.delete_all()
+	time.sleep(5)
 
 	trade = Trade(_environ)
 	
-	# candles = inst.Candles()
-	# candles_csv_string= candles.get('USD_JPY', 'M10')
-	# candles_df= trade.get_df_by_string(candles_csv_string)
+	candles = inst.Candles()
+	candles_csv_string= candles.get('USD_JPY', 'M10')
+	candles_df= trade.get_df_by_string(candles_csv_string)
 
-	# trade_history = None
-	# if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
-	# 	trade.analyze_trade(candles_df)
+	trade_history = None
+	if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
+		trade.analyze_trade(candles_df)
 
-	# transactions = transaction.transactions.Transactions()
-	# transactions.get()
-	# trades_infos = transactions.get_trades()
-	# positions_infos = transactions.get_positions()
-	# trade.system_update(positions_infos)
+	transactions = transaction.transactions.Transactions()
+	transactions.get()
+	trades_infos = transactions.get_trades()
+	positions_infos = transactions.get_positions()
+	trade.system_update(positions_infos)
 
-	# caculate_df = trade.get_caculate_df(candles_df) 
-	# caculate_df_all = trade.get_caculate_df_all(candles_df) 
+	caculate_df = trade.get_caculate_df(candles_df) 
+	caculate_df_all = trade.get_caculate_df_all(candles_df) 
 
-	# if trades_infos:
-	# 	info = trade.get_info(candles_df)
+	if trades_infos:
+		info = trade.get_info(candles_df)
 
-	# 	if info['time']:
-	# 		trade.close(trades_infos, caculate_df, info['time'], info['close'])
+		if info['time']:
+			trade.close(trades_infos, caculate_df, info['time'], info['close'])
 
-	# details = trade.get_account_details()
-	# details_csv = file.file_utility.File_utility('details.csv', drive_id)
-	# details_csv.set_contents(details)
-	# details_csv.export_drive()
+	details = trade.get_account_details()
+	details_csv = file.file_utility.File_utility('details.csv', drive_id)
+	details_csv.set_contents(details)
+	details_csv.export_drive()
 
-	# # if transactions_csv_string: 
-	# # 	transactions_csv = file.file_utility.File_utility( 'transactions.csv', drive_id)
-	# # 	transactions_csv.set_contents(transactions_csv_string)
-	# # 	transactions_csv.export_drive()
+	# if transactions_csv_string: 
+	# 	transactions_csv = file.file_utility.File_utility( 'transactions.csv', drive_id)
+	# 	transactions_csv.set_contents(transactions_csv_string)
+	# 	transactions_csv.export_drive()
 
-	# candles_csv = file.file_utility.File_utility( 'candles.csv', drive_id)
-	# candles_csv.set_contents(caculate_df_all.to_csv())
-	# candles_csv.export_drive()
+	candles_csv = file.file_utility.File_utility( 'candles.csv', drive_id)
+	candles_csv.set_contents(caculate_df_all.to_csv())
+	candles_csv.export_drive()
 
 	trade.history_fix()
 
