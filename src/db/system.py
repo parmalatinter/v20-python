@@ -131,7 +131,6 @@ class System():
         self.exec_query(sql_file.read(), args)
 
     def delete(self, id):
-        create_time = datetime.datetime.now()
 
         query = 'DELETE FROM system where id = %s'
 
