@@ -67,6 +67,7 @@ def main():
             print("-" * 80)
 
         for trade in reversed(response.get("trades", 200)):
+            print(trade)
             if args.summary:
                 print(trade.title())
             else:
@@ -79,7 +80,10 @@ def main():
         response = api.trade.get(account_id, args.trade_id)
 
         trade = response.get("trade", 200)
-
+        if trade.takeProfitOrder.state == 'FILLED':
+            print(trade.takeProfitOrder)
+        if trade.stopLossOrder.state == 'FILLED':
+            print(trade.stopLossOrder)
         if args.summary:
             print(trade.title())
         else:

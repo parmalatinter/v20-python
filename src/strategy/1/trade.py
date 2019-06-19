@@ -29,6 +29,7 @@ import order.market
 import order.take_profit
 import order.stop_loss
 import trade.close
+import trade.get_by_trade_ids
 
 class Trade():
 
@@ -510,6 +511,13 @@ class Trade():
 		self._system.update_profit(positions_infos['pl'], positions_infos['unrealizedPL'])
 		self._system.export_drive()
 
+	def history_fix():
+		ids = self.history.get_trade_ids_by_not_update_pl_by_panda()
+		get_by_trade_ids = trade.get_by_trade_ids.Get_by_trade_ids()
+		rows = get_by_trade_ids.get(ids)
+
+		for trade_id, row in rows.items():
+			self.history.fix_update(int(trade_id), row['price'], row['realizedPL'])
 
 def main():
 
@@ -564,10 +572,13 @@ def main():
 	candles_csv.set_contents(caculate_df_all.to_csv())
 	candles_csv.export_drive()
 
+	trade.history_fix()
+
 	histoy_csv_string = trade.get_histoy_csv()
 	histoy_csv = file.file_utility.File_utility( 'history.csv', drive_id)
 	histoy_csv.set_contents(histoy_csv_string)
 	histoy_csv.export_drive()
+
 
 
 if __name__ == "__main__":

@@ -64,6 +64,20 @@ class History():
 
 		return self.exec_query("SELECT * FROM history ORDER BY trade_id;", None, True)
 
+	def get_trade_ids_by_not_update_pl_by_panda(self):
+
+		conn = self.get_conn()
+
+		cur = conn.cursor()
+
+		query = "SELECT trade_id FROM history where unrealized_pl = 0.0;"
+		rows = self.exec_query_by_panda(query, 'trade_id')
+
+		cur.close()
+		conn.close()
+
+		return rows.index.values
+
 	def get_by_panda(self, trade_id):
 		conn = self.get_conn()
 
@@ -156,6 +170,13 @@ class History():
 		sql_file = open(self.dir_path + '/query/history/update.sql','r')
 		self.exec_query(sql_file.read(),(update_time, price_close, pl, event_close_id, state, trade_id))
 
+	def fix_update(self, trade_id, price_close, pl):
+
+		update_time = datetime.datetime.now() 
+		
+		sql_file = open(self.dir_path + '/query/history/fix_update.sql','r')
+		self.exec_query(sql_file.read(),(update_time, price_close, pl, trade_id))
+
 	def create(self):
 		sql_file = open(self.dir_path + '/query/history/create.sql','r')
 		self.exec_query(sql_file.read())
@@ -170,7 +191,7 @@ class History():
 
 def main():
 	history = History()
-	print(history.get_all_by_panda())
+	print(history.get_trade_ids_by_not_update_pl_by_panda())
 	# history.add_column("trend_3 numeric")
 	# history.add_column("trend_4 numeric")
 	# history.add_column("trend_cal numeric")
