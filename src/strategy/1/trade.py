@@ -436,7 +436,7 @@ class Trade():
 			_units = self.units
 			_event_open_id = 9
 			_target_price = late + 0.1
-			_stop_rate = mean
+			# _stop_rate = mean
 
 		# ルールその6 ボリバン下限突破　且つ　 trendが20以上の場合
 		elif rule_6 and self.trend_usd['res'] > 20:
@@ -444,7 +444,7 @@ class Trade():
 			_units = 0 - self.units
 			_event_open_id = 10
 			_target_price = late - 0.1
-			_stop_rate = mean
+			# _stop_rate = mean
 
 		# 新規オーダーする場合
 		self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate)
