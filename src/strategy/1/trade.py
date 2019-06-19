@@ -130,9 +130,9 @@ class Trade():
 
 		if response.status == 201:
 			transaction = self.market.get_transaction()
-			tradeID = self.market.get_trade_id()
+			tradeID = str(self.market.get_trade_id())
 
-			self._take_profit.exec( {'tradeID': tradeID, 'price':profit_rate})
+			self._take_profit.exec( {'tradeID':  tradeID, 'price':profit_rate})
 			response1 = self._take_profit.get_response()
 			if response1.status == 201:
 				self._line.send('order profit #' + tradeID, str(profit_rate) + ' ' + str(event_open_id) )
@@ -140,7 +140,7 @@ class Trade():
 				errors = self._take_profit.get_errors()
 				self._line.send('order profit faild #', str(errors['errorCode']) + ':'+ errors['errorMessage'] + ' trade_id:' +  tradeID)
 
-			self._stop_loss.exec( {'tradeID': tradeID, 'price':stop_rate})
+			self._stop_loss.exec( {'tradeID':  tradeID, 'price':stop_rate})
 			response2 = self._stop_loss.get_response()
 			if response2.status == 201:
 				self._line.send('order stop #' + tradeID, str(stop_rate) + ' ' + str(event_open_id) )
