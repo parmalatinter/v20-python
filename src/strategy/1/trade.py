@@ -573,7 +573,7 @@ def main():
     trade = Trade(_environ)
 
     candles = inst.Candles()
-    candles_csv_string = candles.get('USD_JPY', 'M5')
+    candles_csv_string = candles.get('USD_JPY', 'M10')
     candles_df = trade.get_df_by_string(candles_csv_string)
 
     if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
