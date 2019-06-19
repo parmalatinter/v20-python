@@ -70,7 +70,7 @@ class History():
 
 		cur = conn.cursor()
 
-		query = "SELECT trade_id FROM history where unrealized_pl = 0.0;"
+		query = "SELECT trade_id FROM history where unrealized_pl = 0.0 OR pl IS NULL ;"
 		rows = self.exec_query_by_panda(query, 'trade_id')
 
 		cur.close()
@@ -170,12 +170,12 @@ class History():
 		sql_file = open(self.dir_path + '/query/history/update.sql','r')
 		self.exec_query(sql_file.read(),(update_time, price_close, pl, event_close_id, state, trade_id))
 
-	def fix_update(self, trade_id, price_close, pl):
+	def fix_update(self, trade_id, price_close, pl, memo=''):
 
 		update_time = datetime.datetime.now() 
 		
 		sql_file = open(self.dir_path + '/query/history/fix_update.sql','r')
-		self.exec_query(sql_file.read(),(update_time, price_close, pl, trade_id))
+		self.exec_query(sql_file.read(),(update_time, price_close, pl, memo, trade_id))
 
 	def create(self):
 		sql_file = open(self.dir_path + '/query/history/create.sql','r')
