@@ -511,7 +511,7 @@ class Trade():
 		self._system.update_profit(positions_infos['pl'], positions_infos['unrealizedPL'])
 		self._system.export_drive()
 
-	def history_fix():
+	def history_fix(self):
 		ids = self.history.get_trade_ids_by_not_update_pl_by_panda()
 		get_by_trade_ids = trade.get_by_trade_ids.Get_by_trade_ids()
 		rows = get_by_trade_ids.get(ids)
