@@ -232,13 +232,12 @@ class Trade():
 			if condition_1:
 				state = 'fix order 30min'
 				if row['currentUnits'] > 0:
-					rate = price - 0.05
+					profit_rate = price + 0.05
 					event_close_id = 1
 				else:
-					rate = price + 0.05
+					profit_rate = price - 0.05
 					event_close_id = 2
 
-				profit_rate = round(rate, 2)
 				client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
 				self.take_profit(trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id)
