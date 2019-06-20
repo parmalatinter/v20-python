@@ -531,14 +531,14 @@ class Trade():
         # 判定基準がなく停滞中
         if not (self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4) and 15 > self.trend_usd['res'] and self.trend_usd['res'] > -15 :
             # 抵抗ライン上限突破
-            if self.resistande_info['resistance_high'] < rate:
+            if self.resistande_info['resistance_high'] < self.late:
                 _message = ("sell chance order 11 #", round(self.late, 2))
                 _units = 0- self.units
                 _event_open_id = 11
                 _target_price = self.mean
 
             # 抵抗ライン下限突破
-            elif self.resistande_info['resistance_low'] > rate:
+            elif self.resistande_info['resistance_low'] > self.late:
                 _message = ("buy chance order 12 #", round(self.late, 2))
                 _units = self.units
                 _event_open_id = 12
