@@ -42,8 +42,6 @@ class Get_by_trade_ids(object):
                 print('info not found trade id ' + str(trade_id))
                 print(response)
                 continue
-
-            print(response)
  
             if trade.state == 'CLOSED':
                 if trade.takeProfitOrder and trade.takeProfitOrder.state == 'FILLED':
@@ -54,7 +52,6 @@ class Get_by_trade_ids(object):
                     res[trade_id] = trade.stopLossOrder.__dict__
                     res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
                     res[trade_id]['realizedPL'] = trade.realizedPL
-
 
         return res
 
