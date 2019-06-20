@@ -562,15 +562,7 @@ class Trade():
                 'late': round(self.late, 2),
                 'target_price': round(target_price, 2),
                 'units':units,
-                'event_open_id':event_open_id,
-                'is_golden': self.is_golden,
-                'is_dead': self.is_dead,
-                'rule_1': self.rule_1,
-                'rule_2': self.rule_2,
-                'rule_3': self.rule_3,
-                'rule_4': self.rule_4,
-                'rule_5': self.rule_5,
-                'rule_6': self.rule_6
+                'event_open_id':event_open_id
             }
             self.insert_histoy(trade_history, transaction.tradeOpened.tradeID)
 
@@ -589,8 +581,8 @@ class Trade():
             trend_3=round(self.trend_usd['v1_jpy'], 2),
             trend_4=round(self.trend_usd['v2_jpy'], 2),
             trend_cal=round(self.trend_usd['res'], 2),
-            judge_1=trade_history['is_golden'],
-            judge_2=trade_history['is_dead'],
+            judge_1=self.is_golden,
+            judge_2=self.is_dead,
             rule_1=bool(self.rule_1),
             rule_2=bool(self.rule_2),
             rule_3=bool(self.rule_3),
