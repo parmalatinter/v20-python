@@ -221,7 +221,7 @@ class Trade():
                 self.market_close(trade_id, 'ALL', 99)
 
                 self.history.update(int(trade_id), last_rate,  float(
-                    row['unrealizedPL']), 99, 'CLOSED')
+                    row['unrealizedPL']), 99, 'close 120min')
                 continue
 
             history_df = self.history.get_by_panda(trade_id)
@@ -549,7 +549,7 @@ class Trade():
             int(trade_id),
             float(trade_history['late']),
             float(trade_history['target_price']),
-            'OPEN',
+            'open',
             self.instrument,
             trade_history['units'],
             0,
