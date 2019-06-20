@@ -35,7 +35,12 @@ class Get_by_trade_ids(object):
 
             response = api.trade.get(account_id, trade_id)
 
-            trade = response.get("trade", 200)
+            trade = None
+            try:
+                trade = response.get("trade", 200)
+            except:
+                continue
+                
             if trade.state == 'CLOSED':
                 if trade.takeProfitOrder and trade.takeProfitOrder.state == 'FILLED':
                     res[trade_id] = trade.takeProfitOrder.__dict__
