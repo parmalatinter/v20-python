@@ -255,8 +255,7 @@ class Trade():
             if delta_total_hours >= self.hours:
                 self.market_close(trade_id, 'ALL', 99)
 
-                self.history.update(int(trade_id), last_rate,  float(
-                    row['unrealizedPL']), 99, 'close 120min')
+                self.history.update(int(trade_id), 99, 'close 120min')
                 continue
 
             history_df = self.history.get_by_panda(trade_id)
@@ -302,8 +301,7 @@ class Trade():
 
                 self.take_profit(
                     trade_id, profit_rate, takeProfitOrderID, _client_order_comment, event_close_id)
-                self.history.update(int(trade_id), last_rate,  float(
-                    row['unrealizedPL']), event_close_id, state)
+                self.history.update(int(trade_id), event_close_id, state)
                 continue
 
             # 90分 ~ でclose処理(id:1,2)の場合
@@ -382,16 +380,14 @@ class Trade():
                 self.stop_loss(trade_id, round(
                     stop_rate, 2), stopLossOrderID, _client_order_comment, event_close_id)
 
-                self.history.update(int(trade_id), last_rate,  float(
-                    row['unrealizedPL']), event_close_id, state)
+                self.history.update(int(trade_id), event_close_id, state)
             if condition_4:
                 state = 'lose proift 90min'
                 # 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
                 event_close_id = 7
 
                 self.take_profit(trade_id, _price, takeProfitOrderID, _client_order_comment, event_close_id)
-                self.history.update(int(trade_id), last_rate,  float(
-                    row['unrealizedPL']), event_close_id, state)                                 
+                self.history.update(int(trade_id), event_close_id, state)                                 
 
     def analyze_trade(self, df_candles, long_units, short_units):
 
@@ -533,7 +529,7 @@ class Trade():
          )
         _event_open_id = 0
         # 判定基準がなく停滞中
-        if not (self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4 or self.rule_5 or self.rule_6) and 10 > self.trend_usd['res'] and self.trend_usd['res'] > -10 :
+        if not (self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4) and 15 > self.trend_usd['res'] and self.trend_usd['res'] > -15 :
             # 抵抗ライン上限突破
             if self.resistande_info['resistance_high'] < rate:
                 _message = ("sell chance order 11 #", round(self.late, 2))
