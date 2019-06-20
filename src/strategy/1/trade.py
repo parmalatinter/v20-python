@@ -591,12 +591,12 @@ class Trade():
             trend_cal=round(self.trend_usd['res'], 2),
             judge_1=trade_history['is_golden'],
             judge_2=trade_history['is_dead'],
-            rule_1=self.rule_1,
-            rule_2=self.rule_2,
-            rule_3=self.rule_3,
-            rule_4=self.rule_4,
-            rule_5=self.rule_5,
-            rule_6=self.rule_6,
+            rule_1=bool(self.rule_1),
+            rule_2=bool(self.rule_2),
+            rule_3=bool(self.rule_3),
+            rule_4=bool(self.rule_4),
+            rule_5=bool(self.rule_5),
+            rule_6=bool(self.rule_6),
             memo=''
         )
 
