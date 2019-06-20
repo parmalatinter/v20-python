@@ -106,9 +106,9 @@ class Trade():
 
         return self.caculate_df_all
 
-    def get_info(self, df):
-        df = self.last_df.tail(1)
-        return {'time': df['t'][df.index[0]], 'close': df['c'][df.index[0]]}
+    def get_info(self, candles_df):
+        df = candles_df.tail(1)
+        return {'time': df['time'][df.index[0]], 'close': df['close'][df.index[0]]}
 
     def get_histoy_csv(self):
         return self.history.get_all_by_csv()
