@@ -355,9 +355,11 @@ class Trade():
 
                 # 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
                 event_close_id = 7
-                self.take_profit(trade_id, price, takeProfitOrderID,
+
+                self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, client_order_comment, event_close_id)
+                self.take_profit(trade_id, price, takeProfitOrderID, client_order_comment, event_close_id)
                 self.history.update(int(trade_id), last_rate,  float(
-                    row['unrealizedPL']), event_close_id, state)                                 client_order_comment, event_close_id)
+                    row['unrealizedPL']), event_close_id, state)                                 
 
     def analyze_trade(self, df_candles, long_units, short_units):
 
