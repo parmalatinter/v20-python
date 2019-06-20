@@ -538,6 +538,26 @@ class Trade():
                 _target_price = self.mean
                 _stop_rate = self.resistande_info['resistance_high'] + 0.1
 
+                self.new_trade(
+                     message=_message,
+                     units=_units,
+                     event_open_id=_event_open_id,
+                     target_price=_target_price,
+                     stop_rate=_stop_rate
+                 )
+
+                _units = self.units
+                _target_price = self.resistande_info['resistance_high'] + 0.2
+                _stop_rate = self.resistande_info['resistance_high'] - 0.1
+
+                self.new_trade(
+                     message=_message,
+                     units=_units,
+                     event_open_id=_event_open_id,
+                     target_price=_target_price,
+                     stop_rate=_stop_rate
+                 )
+
             # 抵抗ライン下限突破
             elif self.resistande_info['resistance_low'] > self.late:
                 _message = ("buy chance order 12 #", round(self.late, 2))
@@ -546,25 +566,38 @@ class Trade():
                 _target_price = self.mean
                 _stop_rate = self.resistande_info['resistance_low'] - 0.1
 
-        # 新規オーダーする場合
-        self.new_trade(
-             message=_message,
-             units=_units,
-             event_open_id=_event_open_id,
-             target_price=_target_price,
-             stop_rate=_stop_rate
-         )
+                self.new_trade(
+                     message=_message,
+                     units=_units,
+                     event_open_id=_event_open_id,
+                     target_price=_target_price,
+                     stop_rate=_stop_rate
+                 )
+
+                _message = ("buy chance order 12 #", round(self.late, 2))
+                _units = 0 - self.units
+                _event_open_id = 12
+                _target_price = self.resistande_info['resistance_low'] - 0.2
+                _stop_rate = self.resistande_info['resistance_low'] + 0.1
+
+                self.new_trade(
+                     message=_message,
+                     units=_units,
+                     event_open_id=_event_open_id,
+                     target_price=_target_price,
+                     stop_rate=_stop_rate
+                 )
 
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0):
         # 新規オーダーする場合
         if event_open_id > 0:
             if units > 0:
-                if (self.long_units / units) > (self.limit_units_count):
+                if (self.long_units / units) >= (self.limit_units_count):
                     return
                 if stop_rate == 0:
                     stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
             else:
-                if (self.short_units / units) < (0 - self.limit_units_count):
+                if (self.short_units / units) <= (0 - self.limit_units_count):
                     return
                 if stop_rate == 0:
                     stop_rate = round(self.mean + ((self.upper - self.mean) / 2), 2)
