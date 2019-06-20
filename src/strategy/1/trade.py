@@ -558,15 +558,17 @@ class Trade():
 
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0):
         # 新規オーダーする場合
-        if event_open_id > 0 and stop_rate == 0:
+        if event_open_id > 0:
             if units > 0:
                 if (self.long_units / units) > (self.limit_units_count):
                     return
-                stop_rate = round(self.lower, 2) - 0.05
+                if stop_rate == 0:
+                    stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
             else:
                 if (self.short_units / units) < (0 - self.limit_units_count):
                     return
-                stop_rate = round(self.upper, 2) + 0.05
+                if stop_rate == 0:
+                    stop_rate = round(self.mean + ((self.upper - self.mean) / 2), 2)
 
             target_price = round(target_price, 2)
             trade_id = self.order(self.instrument, units, target_price, stop_rate, event_open_id, message)
