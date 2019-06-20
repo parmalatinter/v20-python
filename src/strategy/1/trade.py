@@ -193,6 +193,7 @@ class Trade():
 
             unix = row['openTime'].split(".")[0]
             price = round(float(row['price']), 2)
+            client_order_comment = ''
 
             try:
                 time = datetime.fromtimestamp(int(unix), pytz.timezone(
