@@ -279,8 +279,6 @@ class Trade():
             condition_4 = delta_total_minuts >= 90 and row['unrealizedPL'] < 0
             if condition_2 or condition_3:
 
-                args = dict()
-                args = dict(trade_id=trade_id)
                 event_close_id = 99
                 state = ''
                 profit_rate = 0
@@ -545,29 +543,30 @@ class Trade():
             self.insert_histoy(trade_history, transaction.tradeOpened.tradeID)
 
     def insert_histoy(self, trade_history, trade_id):
+        # trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, memo=''
         self.history.insert(
-            int(trade_id),
-            float(trade_history['late']),
-            float(trade_history['target_price']),
-            'open',
-            self.instrument,
-            trade_history['units'],
-            0,
-            trade_history['event_open_id'],
-            round(self.trend_usd['v1_usd'], 2),
-            round(self.trend_usd['v2_usd'], 2),
-            round(self.trend_usd['v1_jpy'], 2),
-            round(self.trend_usd['v2_jpy'], 2),
-            round(self.trend_usd['res'], 2),
-            trade_history['is_golden'],
-            trade_history['is_dead'],
-            trade_history['rule_1'],
-            trade_history['rule_2'],
-            trade_history['rule_3'],
-            trade_history['rule_4'],
-            trade_history['rule_5'],
-            trade_history['rule_6'],
-            ''
+            trade_id=int(trade_id),
+            price=float(trade_history['late']),
+            price_target=float(trade_history['target_price']),
+            state='open',
+            instrument=self.instrument,
+            units=trade_history['units'],
+            unrealized_pl=0,
+            event_open_id=trade_history['event_open_id'],
+            trend_1=round(self.trend_usd['v1_usd'], 2),
+            trend_2=round(self.trend_usd['v2_usd'], 2),
+            trend_3=round(self.trend_usd['v1_jpy'], 2),
+            trend_4=round(self.trend_usd['v2_jpy'], 2),
+            trend_cal=round(self.trend_usd['res'], 2),
+            judge_1=trade_history['is_golden'],
+            judge_2=trade_history['is_dead'],
+            rule_1=trade_history['rule_1'],
+            rule_2=trade_history['rule_2'],
+            rule_3=trade_history['rule_3'],
+            rule_4=trade_history['rule_4'],
+            rule_5=trade_history['rule_5'],
+            rule_6=trade_history['rule_6'],
+            memo=''
         )
 
     def system_update(self, positions_infos):
