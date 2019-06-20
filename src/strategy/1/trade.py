@@ -44,10 +44,12 @@ class Trade():
     _line = line.line.Line()
     instrument = "USD_JPY"
     units = 10
+    limit_units = 2
     hours = 3
     trend_usd = trend.get.Trend().get()
     caculate_df = pd.DataFrame(columns=[])
     caculate_df_all = pd.DataFrame(columns=[])
+    resistande_info = {}
 
     def __init__(self, _environ):
         os.environ['TZ'] = 'America/New_York'
@@ -78,6 +80,7 @@ class Trade():
             draw = golden.draw.Draw()
             self.caculate_df_all = draw.caculate(df_candles)
             self.caculate_df = self.caculate_df_all.tail(1)
+            self.resistande_info = draw.candle_supres()
 
         return self.caculate_df
 
@@ -354,7 +357,12 @@ class Trade():
                 self.take_profit(trade_id, price, takeProfitOrderID,
                                  client_order_comment, event_close_id)
 
-    def analyze_trade(self, df_candles):
+    def analyze_trade(self, df_candles, long_units, short_units):
+
+        if (long_units / self.units) > (self.limit_units):
+            return
+        if (short_units / self.units) < (0 - self.limit_units):
+            return
 
         last_df = self.get_caculate_df(df_candles)
         late = last_df['c'][last_df.index[0]]
@@ -364,7 +372,7 @@ class Trade():
 
         upper = last_df['upper'][last_df.index[0]]
         lower = last_df['lower'][last_df.index[0]]
-        # mean = last_df['mean'][last_df.index[0]]
+        mean = last_df['mean'][last_df.index[0]]
 
         _units = 0
         _event_open_id = 0
@@ -481,6 +489,27 @@ class Trade():
         self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late,
                        is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate)
 
+        _event_open_id = 0
+        # 判定基準がなく停滞中
+        if not (rule_1 or rule_2 or rule_3 or rule_4 or rule_5 or rule_6) and 10 > self.trend_usd['res'] and self.trend_usd['res'] > 10 :
+            # 抵抗ライン上限突破
+            if self.resistande_info['resistance_high'] < rate:
+                _message = ("sell chance order 11 #", round(late, 2))
+                _units = 0- self.units
+                _event_open_id = 11
+                _target_price = mean
+
+            # 抵抗ライン下限突破
+            elif self.resistande_info['resistance_low'] > rate:
+                _message = ("buy chance order 12 #", round(late, 2))
+                _units = self.units
+                _event_open_id = 12
+                _target_price = mean
+
+        # 新規オーダーする場合
+        self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late,
+                       is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate)
+
     def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate=0):
         # 新規オーダーする場合
         if _event_open_id > 0 and _stop_rate == 0:
@@ -576,14 +605,15 @@ def main():
     candles_csv_string = candles.get('USD_JPY', 'M10')
     candles_df = trade.get_df_by_string(candles_csv_string)
 
-    if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
-        trade.analyze_trade(candles_df)
-
     transactions = transaction.transactions.Transactions()
     transactions.get()
     trades_infos = transactions.get_trades()
     positions_infos = transactions.get_positions()
-    trade.system_update(positions_infos)
+    long_units = transactions.get_short_pos_units()
+    short_units = transactions.get_short_pos_units()
+
+    if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
+        trade.analyze_trade(candles_df, long_units, short_units)
 
     caculate_df = trade.get_caculate_df(candles_df)
     caculate_df_all = trade.get_caculate_df_all(candles_df)
@@ -593,6 +623,8 @@ def main():
 
         if info['time']:
             trade.close(trades_infos, caculate_df, info['time'], info['close'])
+
+    trade.system_update(positions_infos)
 
     details = trade.get_account_details()
     details_csv = file.file_utility.File_utility('details.csv', drive_id)

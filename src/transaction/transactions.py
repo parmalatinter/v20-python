@@ -13,6 +13,8 @@ class Transactions(object):
 
     orders = {}
     positions = {}
+    long_pos = {}
+    short_pos = {}
     trades = {}
 
     def get(self):
@@ -49,6 +51,8 @@ class Transactions(object):
 
         for pos in getattr(res, "positions", []):
             self.positions = pos.__dict__
+            self.long_pos = self.positions['long'].__dict__
+            self.short_pos = self.positions['short'].__dict__
 
         for order in getattr(res, "orders", []):
             self.orders[order.id] = order.__dict__
@@ -102,10 +106,18 @@ class Transactions(object):
     def get_positions(self):
         return self.positions
 
+    def get_long_pos_units(self):
+        return int(self.long_pos['units'])
+
+    def get_short_pos_units(self):
+        return int(self.short_pos['units'])
+
 def main():
     transactions = Transactions()
-    print(transactions.get())
-    print(transactions.get_trades())
+    transactions.get()
+    res = transactions.get_positions()
+    print(transactions.get_long_pos_units())
+    print(transactions.get_short_pos_units())
 
 if __name__ == "__main__":
     main()
