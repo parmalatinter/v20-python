@@ -352,7 +352,7 @@ class Trade():
                 self.history.update(int(trade_id), last_rate,  float(
                     row['unrealizedPL']), event_close_id, state)
             if condition_4:
-
+                state = 'lose proift 90min'
                 # 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
                 event_close_id = 7
 
