@@ -533,7 +533,7 @@ class Trade():
          )
         _event_open_id = 0
         # 判定基準がなく停滞中
-        if not (self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4 or self.rule_5 or self.rule_6) and 10 > self.trend_usd['res'] and self.trend_usd['res'] > 10 :
+        if not (self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4 or self.rule_5 or self.rule_6) and 10 > self.trend_usd['res'] and self.trend_usd['res'] > -10 :
             # 抵抗ライン上限突破
             if self.resistande_info['resistance_high'] < rate:
                 _message = ("sell chance order 11 #", round(self.late, 2))
