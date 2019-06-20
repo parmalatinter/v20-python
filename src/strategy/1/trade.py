@@ -600,13 +600,13 @@ class Trade():
             print(self.limit_units_count)
 
             if units > 0:
-                print(self.long_units / units) >= (self.limit_units_count)
+                print((self.long_units / units) >= (self.limit_units_count))
                 if (self.long_units / units) >= (self.limit_units_count):
                     return
                 if stop_rate == 0:
                     stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
             else:
-                print(self.short_units / units) <= (0 - self.limit_units_count)
+                print((self.short_units / units) <= (0 - self.limit_units_count))
                 if (self.short_units / units) <= (0 - self.limit_units_count):
                     return
                 if stop_rate == 0:
