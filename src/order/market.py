@@ -77,7 +77,8 @@ class Market():
                 self.trade_id = self.transaction.tradeOpened.tradeID
             except:
                 self.transaction = self.response.get("orderFillTransaction", None)
-                self.trade_id = self.transaction.id
+                self.trade_id = self.transaction.orderID
+                print(self.transaction.__dict__)
         else:
             self.transaction = self.response.get("orderRejectTransaction", None)
             self.errorCode = self.response.get("errorCode", None)

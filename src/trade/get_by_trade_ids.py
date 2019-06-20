@@ -40,7 +40,10 @@ class Get_by_trade_ids(object):
                 trade = response.get("trade", 200)
             except:
                 print('info not found trade id ' + str(trade_id))
+                print(response)
                 continue
+
+            print(response)
  
             if trade.state == 'CLOSED':
                 if trade.takeProfitOrder and trade.takeProfitOrder.state == 'FILLED':
@@ -57,12 +60,12 @@ class Get_by_trade_ids(object):
 
 def main():
         history = db.history.History()
-        ids = history.get_trade_ids_by_not_update_pl_by_panda()
+        # ids = history.get_trade_ids_by_not_update_pl_by_panda()
         get_by_trade_ids = Get_by_trade_ids()
-        rows = get_by_trade_ids.get(ids)
+        rows = get_by_trade_ids.get([2594])
 
-        for trade_id, row in rows.items():
-            history.fix_update(int(trade_id), row['createTime'], row['filledTime'], row['price'], row['realizedPL'], row['type'])
+        # for trade_id, row in rows.items():
+        #     history.fix_update(int(trade_id), row['createTime'], row['filledTime'], row['price'], row['realizedPL'], row['type'])
 
 if __name__ == "__main__":
     main()
