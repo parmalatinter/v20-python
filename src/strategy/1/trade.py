@@ -168,7 +168,7 @@ class Trade():
             if response1.status == 201:
                 self._line.send('order profit #' + tradeID,
                                 str(profit_rate) + ' ' + str(event_open_id))
-            elif response2.status == 400:
+            elif response1.status == 400:
                 errors = self._take_profit.get_errors()
                 self._line.send('order profit bad request #', str(
                     errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID) 
