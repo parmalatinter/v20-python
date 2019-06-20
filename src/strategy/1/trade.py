@@ -44,7 +44,7 @@ class Trade():
     _line = line.line.Line()
     instrument = "USD_JPY"
     units = 10
-    limit_units = 2
+    limit_units_count = 2
     hours = 3
     trend_usd = trend.get.Trend().get()
     caculate_df = pd.DataFrame(columns=[])
@@ -359,11 +359,6 @@ class Trade():
 
     def analyze_trade(self, df_candles, long_units, short_units):
 
-        if (long_units / self.units) > (self.limit_units):
-            return
-        if (short_units / self.units) < (0 - self.limit_units):
-            return
-
         last_df = self.get_caculate_df(df_candles)
         late = last_df['c'][last_df.index[0]]
 
@@ -420,7 +415,7 @@ class Trade():
 
         # 新規オーダーする場合
         self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper,
-                       late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6)
+                       late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units)
 
         _event_open_id = 0
 
@@ -452,7 +447,7 @@ class Trade():
 
         # 新規オーダーする場合
         self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper,
-                       late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6)
+                       late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units)
 
         _event_open_id = 0
         # ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
@@ -487,7 +482,7 @@ class Trade():
 
         # 新規オーダーする場合
         self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late,
-                       is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate)
+                       is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units, _stop_rate)
 
         _event_open_id = 0
         # 判定基準がなく停滞中
@@ -508,14 +503,18 @@ class Trade():
 
         # 新規オーダーする場合
         self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late,
-                       is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate)
+                       is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units, _stop_rate)
 
-    def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, _stop_rate=0):
+    def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units, _stop_rate=0):
         # 新規オーダーする場合
         if _event_open_id > 0 and _stop_rate == 0:
             if _units > 0:
+                if (long_units / self.units) > (self.limit_units_count):
+                    return
                 _stop_rate = round(lower, 2) - 0.05
             else:
+                if (short_units / self.units) < (0 - self.limit_units_count):
+                    return
                 _stop_rate = round(upper, 2) + 0.05
 
             _target_price = round(_target_price, 2)
