@@ -39,7 +39,7 @@ class Get_by_trade_ids(object):
             try:
                 trade = response.get("trade", 200)
             except:
-                print('error not found trade id ' + str(trade_id))
+                print('info not found trade id ' + str(trade_id))
                 continue
  
             if trade.state == 'CLOSED':
