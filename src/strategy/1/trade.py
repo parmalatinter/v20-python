@@ -533,9 +533,10 @@ class Trade():
             # 抵抗ライン上限突破
             if self.resistande_info['resistance_high'] < self.late:
                 _message = ("sell chance order 11 #", round(self.late, 2))
-                _units = 0- self.units
+                _units = 0 - self.units
                 _event_open_id = 11
                 _target_price = self.mean
+                _stop_rate = self.resistande_info['resistance_high'] + 0.1
 
             # 抵抗ライン下限突破
             elif self.resistande_info['resistance_low'] > self.late:
@@ -543,6 +544,7 @@ class Trade():
                 _units = self.units
                 _event_open_id = 12
                 _target_price = self.mean
+                _stop_rate = self.resistande_info['resistance_low'] - 0.1
 
         # 新規オーダーする場合
         self.new_trade(
@@ -550,6 +552,7 @@ class Trade():
              units=_units,
              event_open_id=_event_open_id,
              target_price=_target_price,
+             stop_rate=_stop_rate
          )
 
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0):
