@@ -168,6 +168,10 @@ class Trade():
             if response1.status == 201:
                 self._line.send('order profit #' + tradeID,
                                 str(profit_rate) + ' ' + str(event_open_id))
+            elif response2.status == 400:
+                errors = self._take_profit.get_errors()
+                self._line.send('order profit bad request #', str(
+                    errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID) 
             else:
                 errors = self._take_profit.get_errors()
                 self._line.send('order profit faild #', str(
@@ -178,12 +182,17 @@ class Trade():
             if response2.status == 201:
                 self._line.send('order stop #' + tradeID,
                                 str(stop_rate) + ' ' + str(event_open_id))
+            elif response2.status == 400:
+                errors = self._stop_loss.get_errors()
+                self._line.send('order stop bad request #', str(
+                    errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID) 
+                # Stop lossが通らないほど逆行した場合は逆にポジションを張る
+                self.market.exec({'instrument': instrument, 'units': 0 - units})   
             else:
                 errors = self._stop_loss.get_errors()
                 self._line.send('order stop faild #', str(
                     errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID)
-
-            return transaction
+            return tradeID
 
         errors = self.market.get_errors()
         self._line.send('order faild #', errors['errorMessage'])
@@ -551,20 +560,15 @@ class Trade():
                 stop_rate = round(self.upper, 2) + 0.05
 
             target_price = round(target_price, 2)
-            transaction = self.order(
-                self.instrument, units, target_price, stop_rate, event_open_id, message)
-            self._line.send(event_open_id, message)
-
-            if not transaction:
-                return
-
+            trade_id = self.order(self.instrument, units, target_price, stop_rate, event_open_id, message)
             trade_history = {
                 'late': round(self.late, 2),
                 'target_price': round(target_price, 2),
                 'units':units,
                 'event_open_id':event_open_id
             }
-            self.insert_histoy(trade_history, transaction.tradeOpened.tradeID)
+            self.insert_histoy(trade_history, trade_id)
+            self._line.send(event_open_id, message)
 
     def insert_histoy(self, trade_history, trade_id):
         self.history.insert(
