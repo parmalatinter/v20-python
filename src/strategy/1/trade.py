@@ -415,8 +415,25 @@ class Trade():
             is_golden = False
 
         # 新規オーダーする場合
-        self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper,
-                       late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units)
+        self.new_trade(
+             message=_message,
+             units=_units,
+             event_open_id=_event_open_id,
+             target_price=_target_price,
+             lower=lower,
+             upper=upper,
+             late=late,
+             is_golden=is_golden,
+             is_dead=is_dead,
+             rule_1=rule_1,
+             rule_2=rule_2,
+             rule_3=rule_3,
+             rule_4=rule_4,
+             rule_5=rule_5,
+             rule_6=rule_6,
+             long_units=long_units,
+             short_units=short_units
+         )
 
         _event_open_id = 0
 
@@ -447,9 +464,25 @@ class Trade():
             is_dead = False
 
         # 新規オーダーする場合
-        self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper,
-                       late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units)
-
+        self.new_trade(
+             message=_message,
+             units=_units,
+             event_open_id=_event_open_id,
+             target_price=_target_price,
+             lower=lower,
+             upper=upper,
+             late=late,
+             is_golden=is_golden,
+             is_dead=is_dead,
+             rule_1=rule_1,
+             rule_2=rule_2,
+             rule_3=rule_3,
+             rule_4=rule_4,
+             rule_5=rule_5,
+             rule_6=rule_6,
+             long_units=long_units,
+             short_units=short_units
+         )
         _event_open_id = 0
         # ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
         if rule_1 and rule_2:
@@ -482,9 +515,26 @@ class Trade():
             # _stop_rate = mean
 
         # 新規オーダーする場合
-        self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late,
-                       is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units, _stop_rate)
-
+        self.new_trade(
+             message=_message,
+             units=_units,
+             event_open_id=_event_open_id,
+             target_price=_target_price,
+             lower=lower,
+             upper=upper,
+             late=late,
+             is_golden=is_golden,
+             is_dead=is_dead,
+             rule_1=rule_1,
+             rule_2=rule_2,
+             rule_3=rule_3,
+             rule_4=rule_4,
+             rule_5=rule_5,
+             rule_6=rule_6,
+             long_units=long_units,
+             short_units=short_units,
+             stop_rate=_stop_rate
+         )
         _event_open_id = 0
         # 判定基準がなく停滞中
         if not (rule_1 or rule_2 or rule_3 or rule_4 or rule_5 or rule_6) and 10 > self.trend_usd['res'] and self.trend_usd['res'] > 10 :
@@ -503,42 +553,59 @@ class Trade():
                 _target_price = mean
 
         # 新規オーダーする場合
-        self.new_trade(_message, _units, _event_open_id, _target_price, lower, upper, late,
-                       is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units, _stop_rate)
+        self.new_trade(
+             message=_message,
+             units=_units,
+             event_open_id=_event_open_id,
+             target_price=_target_price,
+             lower=lower,
+             upper=upper,
+             late=late,
+             is_golden=is_golden,
+             is_dead=is_dead,
+             rule_1=rule_1,
+             rule_2=rule_2,
+             rule_3=rule_3,
+             rule_4=rule_4,
+             rule_5=rule_5,
+             rule_6=rule_6,
+             long_units=long_units,
+             short_units=short_units
+         )
 
-    def new_trade(self,  _message, _units, _event_open_id, _target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units, _stop_rate=0):
+    def new_trade(self,  message, units, event_open_id, target_price, lower, upper, late, is_golden, is_dead, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, long_units, short_units, stop_rate=0):
         # 新規オーダーする場合
-        if _event_open_id > 0 and _stop_rate == 0:
-            if _units > 0:
+        if event_open_id > 0 and stop_rate == 0:
+            ifunits > 0:
                 if (long_units / self.units) > (self.limit_units_count):
                     return
-                _stop_rate = round(lower, 2) - 0.05
+               stop_rate = round(lower, 2) - 0.05
             else:
                 if (short_units / self.units) < (0 - self.limit_units_count):
                     return
-                _stop_rate = round(upper, 2) + 0.05
+               stop_rate = round(upper, 2) + 0.05
 
-            _target_price = round(_target_price, 2)
+            target_price = round(target_price, 2)
             transaction = self.order(
-                self.instrument, _units, _target_price, _stop_rate, _event_open_id, _message)
-            self._line.send(_event_open_id, _message)
+                self.instrument, units, target_price, stop_rate, event_open_id, message)
+            self._line.send(event_open_id, message)
 
             if not transaction:
                 return
 
             trade_history = {
                 'late': round(late, 2),
-                'target_price': round(_target_price, 2),
-                'units': _units,
-                'event_open_id': _event_open_id,
+                'target_price': round(target_price, 2),
+                'units':units,
+                'event_open_id':event_open_id,
                 'is_golden': is_golden,
                 'is_dead': is_dead,
-                'rule_1': bool(rule_1),
-                'rule_2': bool(rule_2),
-                'rule_3': bool(rule_3),
-                'rule_4': bool(rule_4),
-                'rule_5': bool(rule_5),
-                'rule_6': bool(rule_6)
+                'rule_1': rule_1,
+                'rule_2': rule_2,
+                'rule_3': rule_3,
+                'rule_4': rule_4,
+                'rule_5': rule_5,
+                'rule_6': rule_6
             }
             self.insert_histoy(trade_history, transaction.tradeOpened.tradeID)
 
@@ -560,12 +627,12 @@ class Trade():
             trend_cal=round(self.trend_usd['res'], 2),
             judge_1=trade_history['is_golden'],
             judge_2=trade_history['is_dead'],
-            rule_1=trade_history['rule_1'],
-            rule_2=trade_history['rule_2'],
-            rule_3=trade_history['rule_3'],
-            rule_4=trade_history['rule_4'],
-            rule_5=trade_history['rule_5'],
-            rule_6=trade_history['rule_6'],
+            rule_1=bool(trade_history['rule_1']),
+            rule_2=bool(trade_history['rule_2']),
+            rule_3=bool(trade_history['rule_3']),
+            rule_4=bool(trade_history['rule_4']),
+            rule_5=bool(trade_history['rule_5']),
+            rule_6=bool(trade_history['rule_6']),
             memo=''
         )
 
@@ -590,7 +657,7 @@ def main():
     if condition.get_is_opening() == False:
         exit()
 
-    _environ = strategy.environ.Environ()
+    environ = strategy.environ.Environ()
     reduce_time = float(_environ.get('reduce_time')
                         ) if _environ.get('reduce_time') else 5
     drive_id = _environ.get('drive_id') if _environ.get(
