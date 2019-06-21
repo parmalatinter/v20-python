@@ -239,7 +239,7 @@ class Trade():
             _price = round(float(row['price']), 2)
             _client_order_comment = ''
 
-            trade_dt = to_date(row['openTime'])
+            trade_dt = self.to_date(row['openTime'])
 
             delta = now_dt - trade_dt
 
