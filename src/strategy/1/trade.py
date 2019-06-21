@@ -222,8 +222,6 @@ class Trade():
                 trade_id) + ' event:' + str(event_close_id) + ' ' + response.reason)
 
     def to_date(self, time_str):
-        print(time_str)
-        res = None
         unix = time_str.split(".")[0]
         return datetime.fromtimestamp(int(unix))
 
@@ -236,8 +234,7 @@ class Trade():
 
             _price = round(float(row['price']), 2)
             _client_order_comment = ''
-            print(row)
-            unix = time_str.split(".")[0]
+            unix = row['openTime'].split(".")[0]
             trade_dt = datetime.strptime(unix.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
             delta = now_dt - trade_dt
