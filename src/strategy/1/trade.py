@@ -331,10 +331,10 @@ class Trade():
                     # buyの場合 現在価格プラス0.1でcloseする
                     if row['currentUnits'] > 0:
 
-                        if float(self.upper) > float(self.last_rate):
+                        if float(self.upper) > float(last_rate):
                             profit_rate = float(self.upper)
                         else:
-                            profit_rate = float(self.last_rate) + 0.01
+                            profit_rate = float(last_rate) + 0.01
 
                         event_close_id = 3
                         _client_order_comment = (
@@ -343,10 +343,10 @@ class Trade():
                     # sellの場合 現在価格マイナス0.1でcloseする
                     else:
 
-                        if float(self.lower) < float(self.last_rate):
+                        if float(self.lower) < float(last_rate):
                             profit_rate = float(self.lower)
                         else:
-                            profit_rate = float(self.last_rate) - 0.01
+                            profit_rate = float(last_rate) - 0.01
 
                         event_close_id = 4
                         _client_order_comment = (
@@ -362,7 +362,7 @@ class Trade():
 
                     # buyの場合 発注価格でcloseする
                     if row['currentUnits'] > 0:
-                        stop_rate = self.last_rate - 0.5
+                        stop_rate = last_rate - 0.5
                         profit_rate = _price + 0.01
 
                         event_close_id = 5
@@ -371,7 +371,7 @@ class Trade():
 
                     # sellの場合 発注価格でcloseする
                     else:
-                        stop_rate = self.last_rate + 0.5
+                        stop_rate = last_rate + 0.5
                         profit_rate = _price - 0.01
 
                         event_close_id = 6
