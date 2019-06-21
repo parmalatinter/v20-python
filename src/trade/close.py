@@ -61,16 +61,18 @@ class Close():
             units=units
         )
 
+        print(self.response.__dict__)
+
         try:
-            orderFillTransaction = response.get("orderFillTransaction", 200)
-            if orderFillTransaction.tradesClosed:
-                self.res = orderFillTransaction.__dict__
+            raw_body = response.get("raw_body", 200)
+            if raw_body:
+                self.res = raw_body.__dict__
         except:
-            print('orderCreateTransaction not found trade id ' + str(tradeid))
+            print('orderFillTransaction not found trade id ' + str(tradeid))
 
 
 
-    def get_response(self):
+    def get_response(self): 
         return self.response
 
     def get_result(self):

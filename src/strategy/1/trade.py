@@ -208,11 +208,13 @@ class Trade():
 
     def market_close(self, trade_id, units, event_close_id):
         self._close.exec(trade_id, units)
-        response = self._close.get_response()
+        response = self._close.get_res()
 
         if response.status == 201 or response.reason == 'OK':
             res = self._close.get_result()
-            self.history.fix_update(int(trade_id), self.to_date(res['timestamp']), res['price'], res['tradesClosed']['realizedPL'], res['type'])
+            if res:
+                print(res)
+                self.history.fix_update(int(trade_id), self.to_date(res['transaction']['time']), res['transaction']['price'], res['unrealizedPL'], res['transaction']['type'])
             self._line.send('expire close  #', str(
                 trade_id) + ' event:' + str(event_close_id))
         else:
@@ -220,14 +222,17 @@ class Trade():
                 trade_id) + ' event:' + str(event_close_id) + ' ' + response.reason)
 
     def to_date(self, time_str):
-        unix = time_str.split(".")[0]
+        print(time_str)
+        res = None
         try:
+            unix = time_str.split(".")[0]
             time = datetime.fromtimestamp(int(unix), pytz.timezone(
                 "America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
+            res = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
         except:
-            time = time_str.split(".")[0]
-
-        return datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+            unix = time_str.split(".")[0]
+            res = datetime.fromtimestamp(int(unix))
+        return res
 
     def close(self, orders_info, caculate_df, now_dt, last_rate):
 
@@ -238,7 +243,7 @@ class Trade():
 
             _price = round(float(row['price']), 2)
             _client_order_comment = ''
-
+            print(row)
             trade_dt = self.to_date(row['openTime'])
 
             delta = now_dt - trade_dt
@@ -287,7 +292,6 @@ class Trade():
             event_close_id = history_df['event_close_id'][history_df.index[0]
                                                           ] if history_df['event_close_id'][history_df.index[0]] else 0
             # 利益がunitsの0.15倍ある場合は決済
-            100000 / 15000
             if row['unrealizedPL'] / self.units  > 0.15:
                 self.market_close(trade_id, 'ALL', 10)
                 self.history.update(int(trade_id), 10, 'profit max close')
