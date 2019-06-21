@@ -36,19 +36,28 @@ class Get_by_trade_ids(object):
 
         res = {}
         for trade_id in trade_ids:
-
+            trade = None
             response = api.trade.get(account_id, trade_id)
-            try:
-                orderFillTransaction = response.get("orderFillTransaction", 200)
-            except:
+            if response.status == 200:
+                try:
+                    trade = response.get("trade", 200)
+                except Exception as e:
+                    print(e)
+                    print('info not found trade id ' + str(trade_id))
+                    continue
+            else:
                 print('info not found trade id ' + str(trade_id))
                 continue
 
-            print(response.__dict__)
-            res[trade_id]['filledTime'] = orderFillTransaction.time.replace('T', ' ')
-            res[trade_id]['realizedPL'] = orderFillTransaction.pl
-            res[trade_id]['price'] = orderFillTransaction.price
-            res[trade_id]['type'] = orderFillTransaction.type
+            if trade.state == 'CLOSED':
+                if hasattr(trade, 'takeProfitOrder') and trade.takeProfitOrder and trade.takeProfitOrder.state == 'FILLED':
+                    res[trade_id] = trade.takeProfitOrder.__dict__
+                    res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
+                    res[trade_id]['realizedPL'] = trade.realizedPL
+                if hasattr(trade, 'stopLossOrder') and trade.stopLossOrder and trade.stopLossOrder.state == 'FILLED':
+                    res[trade_id] = trade.stopLossOrder.__dict__
+                    res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
+                    res[trade_id]['realizedPL'] = trade.realizedPL
 
 
         return res
