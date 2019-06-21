@@ -211,11 +211,23 @@ class Trade():
         response = self._close.get_response()
 
         if response.status == 201 or response.reason == 'OK':
+            res = self._close.get_result()
+            self.history.fix_update(int(trade_id), self.to_date(res['timestamp']), res['price'], res['tradesClosed']['realizedPL'], res['type'])
             self._line.send('expire close  #', str(
                 trade_id) + ' event:' + str(event_close_id))
         else:
             self._line.send('expire close  faild #', str(
                 trade_id) + ' event:' + str(event_close_id) + ' ' + response.reason)
+
+    def to_date(self, time_str):
+        unix = time_str.split(".")[0]
+        try:
+            time = datetime.fromtimestamp(int(unix), pytz.timezone(
+                "America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
+        except:
+            time = time_str.split(".")[0]
+
+        return datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
     def close(self, orders_info, caculate_df, now_dt, last_rate):
 
@@ -224,19 +236,10 @@ class Trade():
 
         for trade_id, row in orders_info.items():
 
-
             _price = round(float(row['price']), 2)
             _client_order_comment = ''
 
-            unix = row['openTime'].split(".")[0]
-            try:
-                time = datetime.fromtimestamp(int(unix), pytz.timezone(
-                    "America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
-            except:
-                time = row['openTime'].split(".")[0]
-
-            trade_dt = datetime.strptime(
-                time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+            trade_dt = to_date(row['openTime'])
 
             delta = now_dt - trade_dt
 
@@ -662,8 +665,7 @@ class Trade():
         print(rows)
 
         for trade_id, row in rows.items():
-            self.history.fix_update(int(
-                trade_id), row['createTime'], row['filledTime'], row['price'], row['realizedPL'], row['type'])
+            self.history.fix_update(int(trade_id), self.to_date(row['filledTime']), row['price'], row['realizedPL'], row['type'])
 
 
 def main():

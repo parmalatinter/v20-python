@@ -11,7 +11,7 @@ class Close():
     response = None
 
     parser = argparse.ArgumentParser()
-    res = {}
+    res = None
 
     #
     # Add the command line argument to parse to the v20 config
@@ -62,9 +62,9 @@ class Close():
         )
 
         try:
-            orderCreateTransaction = response.get("orderCreateTransaction", 200)
-            if orderCreateTransaction.tradesClosed:
-                self.res = orderCreateTransaction.tradesClosed.__dict__
+            orderFillTransaction = response.get("orderFillTransaction", 200)
+            if orderFillTransaction.tradesClosed:
+                self.res = orderFillTransaction.__dict__
         except:
             print('orderCreateTransaction not found trade id ' + str(tradeid))
 
@@ -86,16 +86,16 @@ class Close():
 
         print_order_create_response_transactions(self.response)
 
-def main():
-    close = Close()
-    close.exec(2973,'ALL')
-    response = close.get_response()
-    print(response.__dict__)
-
 # def main():
 #     close = Close()
-#     close.exec_by_cmd()
-#     close.print_response()
+#     close.exec(2973,'ALL')
+#     response = close.get_response()
+#     print(response.__dict__)
+
+def main():
+    close = Close()
+    close.exec_by_cmd()
+    close.print_response()
 
 if __name__ == "__main__":
     main()

@@ -172,11 +172,10 @@ class History():
         sql_file = open(self.dir_path + '/query/history/update.sql', 'r')
         self.exec_query(sql_file.read(), (update_time, event_close_id, state, trade_id))
 
-    def fix_update(self, trade_id, createTime, filledTime, price_close, pl, memo=''):
+    def fix_update(self, trade_id, filledTime, price_close, pl, memo=''):
 
         sql_file = open(self.dir_path + '/query/history/fix_update.sql', 'r')
-        self.exec_query(sql_file.read(), (createTime,
-                                          filledTime, price_close, pl, memo, trade_id))
+        self.exec_query(sql_file.read(), (filledTime, price_close, pl, memo, trade_id))
 
     def create(self):
         sql_file = open(self.dir_path + '/query/history/create.sql', 'r')
