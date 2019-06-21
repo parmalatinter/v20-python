@@ -74,7 +74,7 @@ class History():
 
         cur = conn.cursor()
 
-        query = "SELECT trade_id FROM history where unrealized_pl = 0.0 OR pl IS NULL ;"
+        query = "SELECT trade_id FROM history where price_close = 0.0 OR pl IS NULL OR memo IS NULL OR update_time IS NULL;"
         rows = self.exec_query_by_panda(query, 'trade_id')
 
         cur.close()
