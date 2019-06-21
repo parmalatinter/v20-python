@@ -66,8 +66,8 @@ class Close():
         except:
             print('orderCreateTransaction not found trade id ' + str(tradeid))
 
-        if orderCreateTransaction.tradesClosed:
-            self.res = orderCreateTransaction.tradesClosed.__dict__
+            if orderCreateTransaction.tradesClosed:
+                self.res = orderCreateTransaction.tradesClosed.__dict__
 
     def get_response(self):
         return self.response
