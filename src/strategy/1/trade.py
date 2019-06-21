@@ -225,16 +225,7 @@ class Trade():
         print(time_str)
         res = None
         unix = time_str.split(".")[0]
-        try:
-            time = datetime.fromtimestamp(int(unix), pytz.timezone(
-                "America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
-        except:
-            try:
-                time = datetime.fromtimestamp(int(unix))
-            except:
-                time = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
-        res = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
-        return res
+        return datetime.fromtimestamp(int(unix))
 
     def close(self, orders_info, caculate_df, now_dt, last_rate):
 
@@ -246,7 +237,8 @@ class Trade():
             _price = round(float(row['price']), 2)
             _client_order_comment = ''
             print(row)
-            trade_dt = self.to_date(row['openTime'])
+            unix = time_str.split(".")[0]
+            trade_dt = datetime.strptime(unix.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
             delta = now_dt - trade_dt
 
