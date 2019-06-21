@@ -68,26 +68,11 @@ class Market():
 
         self.response = response
 
-        # orderRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
-        # 'orderCreateTransaction', 'orderFillTransaction', 'relatedTransactionIDs', 'lastTransactionID')
-        # 'orderCreateTransaction', 'orderCancelTransaction', 'relatedTransactionIDs', 'lastTransactionID')
         if self.response.status == 201 and self.response.reason == "Created":
-            try:
-                self.transaction = self.response.get("orderCreateTransaction", None)
-                self.trade_id = self.transaction.tradeOpened.tradeID
-            except:
-                self.transaction = self.response.get("orderFillTransaction", None)
-                self.trade_id = self.transaction.id
-        else:
-            self.transaction = self.response.get("orderRejectTransaction", None)
-            self.errorCode = self.response.get("errorCode", None)
-            self.errorMessage = self.response.get("errorMessage", None)
+            self.trade_id = self.response.get("lastTransactionID", None)
 
     def get_response(self):
         return self.response
-
-    def get_transaction(self):
-        return self.transaction
 
     def get_trade_id(self):
         return self.trade_id
@@ -104,7 +89,7 @@ class Market():
             print("")
 
             print_order_create_response_transactions(self.response)
-
+            
 # def main():
 #     market = Market()
 #     market.exec({'instrument': 'USD_JPY', 'units':1, 'take-profit-price' : 120, 'client-order-comment' : 'test'})

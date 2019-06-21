@@ -160,7 +160,6 @@ class Trade():
         profit_rate = str(profit_rate)
 
         if response.status == 201:
-            transaction = self.market.get_transaction()
             tradeID = str(self.market.get_trade_id())
 
             self._take_profit.exec({'tradeID':  tradeID, 'price': profit_rate})
