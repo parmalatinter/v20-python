@@ -37,6 +37,7 @@ setup(
             'v20-transaction-get-all = transaction.transactions:main',
             'v20-transaction-range = transaction.range:main',
             'v20-trade-get = trade.get:main',
+            'v20-trade-get-by-trade-ids = trade.get_by_trade_ids:main',
             'v20-trade-close = trade.close:main',
             'v20-trade-set-client-extensions = trade.set_client_extensions:main',
             'v20-position-close = position.close:main',
