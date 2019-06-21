@@ -38,18 +38,17 @@ class Get_by_trade_ids(object):
         for trade_id in trade_ids:
 
             response = api.trade.get(account_id, trade_id)
-            print(response.__dict__)
-            trade = None
             try:
                 orderFillTransaction = response.get("orderFillTransaction", 200)
             except:
                 print('info not found trade id ' + str(trade_id))
-                print(response)
                 continue
 
-            res[trade_id] = trade.takeProfitOrder.__dict__
+            print(response.__dict__)
             res[trade_id]['filledTime'] = orderFillTransaction.time.replace('T', ' ')
-            res[trade_id]['realizedPL'] = self.to_date(orderFillTransaction.pl)
+            res[trade_id]['realizedPL'] = orderFillTransaction.pl
+            res[trade_id]['price'] = orderFillTransaction.price
+            res[trade_id]['type'] = orderFillTransaction.type
 
 
         return res
