@@ -43,16 +43,18 @@ class Get_by_trade_ids(object):
                 print(response)
                 continue
  
+            print(getattr(trade, 'state'))
+
+
             if trade.state == 'CLOSED':
-                if trade.takeProfitOrder and trade.takeProfitOrder.state == 'FILLED':
+                if hasattr(trade, 'takeProfitOrder') and trade.takeProfitOrder and trade.takeProfitOrder.state == 'FILLED':
                     res[trade_id] = trade.takeProfitOrder.__dict__
                     res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
                     res[trade_id]['realizedPL'] = trade.realizedPL
-                if trade.stopLossOrder and trade.stopLossOrder.state == 'FILLED':
+                if hasattr(trade, 'stopLossOrder') and trade.stopLossOrder and trade.stopLossOrder.state == 'FILLED':
                     res[trade_id] = trade.stopLossOrder.__dict__
                     res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
                     res[trade_id]['realizedPL'] = trade.realizedPL
-            print(trade.state)
 
         return res
 
