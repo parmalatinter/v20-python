@@ -224,14 +224,16 @@ class Trade():
     def to_date(self, time_str):
         print(time_str)
         res = None
+        unix = time_str.split(".")[0]
         try:
-            unix = time_str.split(".")[0]
             time = datetime.fromtimestamp(int(unix), pytz.timezone(
                 "America/New_York")).strftime('%Y-%m-%d %H:%M:%S')
-            res = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
         except:
-            unix = time_str.split(".")[0]
-            res = datetime.fromtimestamp(int(unix))
+            try:
+                time = datetime.fromtimestamp(int(unix))
+            except:
+                time = datetime.strptime(time.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+        res = datetime.strptime(time, '%Y-%m-%d %H:%M:%S')
         return res
 
     def close(self, orders_info, caculate_df, now_dt, last_rate):
