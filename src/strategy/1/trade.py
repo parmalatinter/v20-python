@@ -660,6 +660,8 @@ class Trade():
         get_by_trade_ids = trade.get_by_trade_ids.Get_by_trade_ids()
         rows = get_by_trade_ids.get(ids)
 
+        print(rows)
+
         for trade_id, row in rows.items():
             self.history.fix_update(int(
                 trade_id), row['createTime'], row['filledTime'], row['price'], row['realizedPL'], row['type'])
