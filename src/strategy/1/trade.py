@@ -34,19 +34,19 @@ import trade.get_by_trade_ids
 
 class Trade():
 
-    history = db.history.History()
-    _system = db.system.System()
-    market = order.market.Market()
-    _take_profit = order.take_profit.Take_profit()
-    _stop_loss = order.stop_loss.Stop_loss()
-    _close = trade.close.Close()
+    history = None
+    _system = None
+    market = None
+    _take_profit = None
+    _stop_loss = None
+    _close = None
 
-    _line = line.line.Line()
+    _line = None
     instrument = "USD_JPY"
     units = 10
     limit_units_count = 2
     hours = 3
-    trend_usd = trend.get.Trend().get()
+    trend_usd = {}
     last_df = pd.DataFrame(columns=[])
     caculate_df = pd.DataFrame(columns=[])
     caculate_df_all = pd.DataFrame(columns=[])
@@ -68,6 +68,16 @@ class Trade():
 
 
     def __init__(self, _environ):
+        self._line = line.line.Line()
+        self.history = db.history.History()
+        self._system = db.system.System()
+        self.market = order.market.Market()
+        self._take_profit = order.take_profit.Take_profit()
+        self._stop_loss = order.stop_loss.Stop_loss()
+        self._close = trade.close.Close()
+
+        self.trend_usd = trend.get.Trend().get()
+
         os.environ['TZ'] = 'America/New_York'
         self.instrument = _environ.get('instrument') if _environ.get(
             'instrument') else self.instrument
