@@ -30,6 +30,7 @@ import order.take_profit
 import order.stop_loss
 import trade.close
 import trade.get_by_trade_ids
+import account.details
 
 
 class Trade():
@@ -743,6 +744,11 @@ def main():
     histoy_csv.set_contents(histoy_csv_string)
     histoy_csv.export_drive()
 
+    details = account.details.Details()
+    details_dict = details.get_account()
+    get_by_transaction_ids = Get_by_transaction_ids()
+    transaction_id = int(details_dict['Last Transaction ID'])
+    get_by_transaction_ids.main(transaction_id - 100, transaction_id)
 
 if __name__ == "__main__":
 
