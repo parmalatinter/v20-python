@@ -97,7 +97,7 @@ class Draw(object):
             if sup != np.nan and sup > 0:
                 res_sum = res_sum + sup 
                 count = count+1
-        if not count or not res_sum:
+        if count == 0 or res_sum == 0:
             result['resistance_low'] = None
         result['resistance_low'] = res_sum / count
         count = 0
@@ -106,7 +106,7 @@ class Draw(object):
             if res != np.nan and res > 0:
                 res_sum = res_sum + res 
                 count = count+1
-        if not count or not res_sum:
+        if count == 0 or res_sum == 0:
             result['resistance_high'] = None
         result['resistance_high'] = res_sum / count
 
