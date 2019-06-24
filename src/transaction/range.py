@@ -4,7 +4,7 @@ import argparse
 import common.config
 import common.args
 import time
-
+import db.history
 
 def main():
     """
@@ -52,9 +52,23 @@ def main():
         type=filter
     )
 
+    rows = {}
+    history = db.history.History()
     for transaction in response.get("transactions", 200):
-        print(transaction.title())
+        if hasattr(transaction, 'pl'):
+            if transaction.pl:
+                rows[transaction.id] = {
+                    'time' : transaction.time.split(".")[0].replace('T', ' '),
+                    'reason' :  transaction.reason
+                }
+                for closed in transaction.tradesClosed:
+                    if hasattr(closed, 'realizedPL'):
+                        rows[transaction.id]['price'] = closed.price
+                        rows[transaction.id]['realizedPL'] = closed.realizedPL
+                        rows[transaction.id]['tradeID'] = closed.tradeID
 
-    
+    for transaction_id, row in rows.items():
+        history.fix_update(int(row['tradeID']), row['time'], row['price'], row['realizedPL'], row['reason'])
+
 if __name__ == "__main__":
     main()
