@@ -220,7 +220,7 @@ class Trade():
 
     def market_close(self, trade_id, units, event_close_id):
         self._close.exec(trade_id, units)
-        response = self._close.get_res()
+        response = self._close.get_response()
 
         if response.status == 201 or response.reason == 'OK':
             res = self._close.get_result()
