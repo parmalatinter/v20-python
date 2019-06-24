@@ -247,7 +247,13 @@ class Trade():
             _price = round(float(row['price']), 2)
             _client_order_comment = ''
             unix = row['openTime'].split(".")[0]
-            trade_dt = self.to_date(unix)
+            trade_dt = None
+            try:
+                print('self.to_date(unix)')
+                trade_dt = self.to_date(unix)
+            except:
+                print('datetime.strptime')
+                trade_dt = datetime.strptime(unix.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
             delta = now_dt - trade_dt
 
