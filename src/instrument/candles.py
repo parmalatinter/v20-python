@@ -41,8 +41,9 @@ class Candles():
         before_date= datetime.today() + timedelta(hours=-24)
 
         weekday = before_date.weekday()
+
         if(weekday > 5):
-            before_date= datetime.today() + timedelta(hours=-66)
+            before_date= datetime.today() + timedelta(hours=-84)
 
         kwargs = {}
         kwargs["granularity"] =granularity
