@@ -752,7 +752,7 @@ def main():
     candles_csv.set_contents(caculate_df_all.to_csv())
     candles_csv.export_drive()
 
-    trade.history_fix()
+    # trade.history_fix()
 
     histoy_csv_string = trade.get_histoy_csv()
     histoy_csv = file.file_utility.File_utility('history.csv', drive_id)
