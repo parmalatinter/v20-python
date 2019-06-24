@@ -747,7 +747,7 @@ def main():
 
     details = account.details.Details()
     details_dict = details.get_account()
-    get_by_transaction_ids = Get_by_transaction_ids()
+    get_by_transaction_ids = transaction.get_by_transaction_ids.Get_by_transaction_ids()
     transaction_id = int(details_dict['Last Transaction ID'])
     get_by_transaction_ids.main(transaction_id - 100, transaction_id)
 
