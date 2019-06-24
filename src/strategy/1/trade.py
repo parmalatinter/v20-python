@@ -604,24 +604,28 @@ class Trade():
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0):
         # 新規オーダーする場合
         if event_open_id > 0:
-            print(self.long_units)
             print(units)
-            print(self.long_units / units)
             print(self.limit_units_count)
+            print('long_units')
+            print(self.long_units)
+            print(self.long_units / units)
+            print('short_units')
+            print(self.short_units)
+            print(self.short_units / units)
 
             if units > 0:
-                print((self.long_units / units) >= (self.limit_units_count))
-                if (self.long_units / units) >= (self.limit_units_count):
-                    return
+                if self.long_units
+                    if (self.long_units / units) >= (self.limit_units_count):
+                        return
                 if stop_rate == 0:
                     stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
                     # stopが浅いので変更
                     if self.late - stop_rate < 0.05:
                         stop_rate = self.lower
             else:
-                print((self.short_units / units) <= (0 - self.limit_units_count))
-                if (self.short_units / units) <= (0 - self.limit_units_count):
-                    return
+                if self.short_units
+                    if (self.short_units / units) <= (0 - self.limit_units_count):
+                        return
                 if stop_rate == 0:
                     stop_rate = round(self.mean + ((self.upper - self.mean) / 2), 2)
                     # stopが浅いので変更
