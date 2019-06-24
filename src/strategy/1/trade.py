@@ -615,7 +615,7 @@ class Trade():
                     stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
                     # stopが浅いので変更
                     if self.late - stop_rate < 0.05:
-                        stop_rate = self.late - 0.05
+                        stop_rate = self.lower
             else:
                 print((self.short_units / units) <= (0 - self.limit_units_count))
                 if (self.short_units / units) <= (0 - self.limit_units_count):
@@ -624,7 +624,7 @@ class Trade():
                     stop_rate = round(self.mean + ((self.upper - self.mean) / 2), 2)
                     # stopが浅いので変更
                     if stop_rate - self.late < 0.05:
-                        stop_rate = self.late + 0.05
+                        stop_rate = self.upper
 
             target_price = round(target_price, 2)
             trade_id = self.order(self.instrument, units, target_price, stop_rate, event_open_id, message)
