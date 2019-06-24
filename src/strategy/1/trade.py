@@ -550,7 +550,7 @@ class Trade():
                 _message = ("line break chance order 11 #", round(self.late, 2))
                 _units = 0 - self.units
                 _event_open_id = 11
-                _target_price = self.mean
+                _target_price = self.late - 0.2
                 _stop_rate = self.late + 0.05
 
                 self.new_trade(
