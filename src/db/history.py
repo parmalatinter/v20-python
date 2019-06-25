@@ -116,7 +116,7 @@ class History():
         cur = conn.cursor()
 
         rows = self.exec_query_by_panda(
-            "SELECT state , event_open_id, count(state), max(state) FROM history GROUP BY state, event_open_id ORDER BY state", 'state')
+            "SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo')
 
         cur.close()
         conn.close()
@@ -193,7 +193,7 @@ class History():
 
 def main():
     history = History()
-    print(history.get_trade_ids_by_not_update_pl_by_panda())
+    print(history.get_all_by_panda2())
     # history.add_column("trend_3 numeric")
     # history.add_column("trend_4 numeric")
     # history.add_column("trend_cal numeric")

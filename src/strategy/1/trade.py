@@ -512,14 +512,14 @@ class Trade():
         # ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
         if self.rule_1 and self.rule_2:
             _message = ("buy chance order 7 #", round(self.late, 2))
-            _units = self.units
+            _units = self.units/2
             _event_open_id = 7
             _target_price = self.late + 0.1
 
         # ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
         elif self.rule_3 and self.rule_4:
             _message = ("sell chance order 8 #", round(self.late, 2))
-            _units = 0 - self.units
+            _units = 0 - (self.units)/2
             _event_open_id = 8
             _target_price = self.late - 0.1
 
