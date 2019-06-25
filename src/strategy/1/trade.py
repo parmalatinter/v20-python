@@ -317,8 +317,7 @@ class Trade():
                     profit_rate = _price - 0.05
                     event_close_id = 2
 
-                _client_order_comment = state + \
-                    ' profit reduce ' + str(event_close_id)
+                _client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
                 self.take_profit(
                     trade_id, profit_rate, takeProfitOrderID, _client_order_comment, event_close_id)
