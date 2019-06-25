@@ -559,7 +559,7 @@ class Trade():
                 _units = 0 - self.units
                 _event_open_id = 11
                 _target_price = self.late - 0.2
-                _stop_rate = self.late + 0.05
+                _stop_rate = self.late + 0.08
 
                 self.new_trade(
                      message=_message,
@@ -571,7 +571,7 @@ class Trade():
 
                 _units = self.units
                 _target_price = self.late + 0.2
-                _stop_rate = self.late - 0.05
+                _stop_rate = self.late - 0.08
 
                 self.new_trade(
                      message=_message,
@@ -630,7 +630,7 @@ class Trade():
                 if stop_rate == 0:
                     stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
                     # stopが浅いので変更
-                    if self.late - stop_rate < 0.05:
+                    if self.late - stop_rate < 0.08:
                         stop_rate = self.lower
             else:
                 if self.short_units:
@@ -639,7 +639,7 @@ class Trade():
                 if stop_rate == 0:
                     stop_rate = round(self.mean + ((self.upper - self.mean) / 2), 2)
                     # stopが浅いので変更
-                    if stop_rate - self.late < 0.05:
+                    if stop_rate - self.late < 0.08:
                         stop_rate = self.upper
 
             target_price = round(target_price, 2)
