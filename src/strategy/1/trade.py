@@ -197,17 +197,17 @@ class Trade():
                 errors = self._stop_loss.get_errors()
                 self._line.send('order stop bad request #', str(
                     errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID) 
-                # Stop lossが通らないほど逆行した場合は逆にポジションを張る
-                self.market_close(tradeID, 'ALL', 100)
-                self.market.exec({'instrument': instrument, 'units': 0 - units})
-                _tradeID = str(self.market.get_trade_id())
-                trade_history = {
-                    'late': round(self.late, 2),
-                    'target_price': 0,
-                    'units':0 - units,
-                    'event_open_id':100
-                }
-                self.insert_histoy(trade_history, _tradeID)
+                # Stop lossが通らないほど逆行した場合は逆にポジションを張る 成績が割るのでコメントアウト
+                # self.market_close(tradeID, 'ALL', 100)
+                # self.market.exec({'instrument': instrument, 'units': 0 - units})
+                # _tradeID = str(self.market.get_trade_id())
+                # trade_history = {
+                #     'late': round(self.late, 2),
+                #     'target_price': 0,
+                #     'units':0 - units,
+                #     'event_open_id':100
+                # }
+                # self.insert_histoy(trade_history, _tradeID)
             else:
                 errors = self._stop_loss.get_errors()
                 self._line.send('order stop faild #', str(
