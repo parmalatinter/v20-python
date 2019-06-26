@@ -47,6 +47,7 @@ class System():
 
         cur = conn.cursor()
 
+        res = None
         try:
             cur.execute(query, args)
             conn.commit()
