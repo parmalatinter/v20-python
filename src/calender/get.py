@@ -102,14 +102,21 @@ class Calendar(object):
 
     def delete_drive(self):
         self.calendar_csv.delete_drive()
+
+    def delete_all_csv(self):
+        for file1 in self.file_list:
+            if file1['title'] == self.filename:
+                file1.Delete()
+                print('deleted: %s, id: %s' % (file1['title'], file1['id']))
+        self.reset_file_list()
             
 
 def main():
 
     calendar = Calendar()
-    calendar.delete_drive()
     dfs = calendar.dataGet()
     df = calendar.format(dfs)
+    calendar.delete_all_csv()
     text = calendar.set_to_drive(df)
     _line = line.line.Line()
     _line.send("calendar",text)

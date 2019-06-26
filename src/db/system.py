@@ -20,6 +20,7 @@ class System():
     host = "ec2-23-21-148-223.compute-1.amazonaws.com"
     port = "5432"
     dir_path = os.path.dirname(os.path.realpath(__file__))
+    filename ='system.csv'
 
     def __init__(self):
         _environ = strategy.environ.Environ()
@@ -166,10 +167,16 @@ class System():
         _environ = strategy.environ.Environ()
         drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
         csv_string = self.get_all_by_csv()
-        csv = file.file_utility.File_utility('system.csv', drive_id)
+        csv = file.file_utility.File_utility(self.filename, drive_id)
         csv.set_contents(csv_string)
         csv.export_drive()
 
+    def delete_all_csv(self):
+        for file1 in self.file_list:
+            if file1['title'] == self.filename:
+                file1.Delete()
+                print('deleted: %s, id: %s' % (file1['title'], file1['id']))
+        self.reset_file_list()
 
 def main():
     system = System()
@@ -199,6 +206,7 @@ def main():
 
     system.update(balance, pl, unrealized_pl, pl_percent,
                   win_count, lose_count, trade_count)
+    system.delete_all_csv()
     system.export_drive()
 
 
