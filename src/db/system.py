@@ -11,6 +11,7 @@ import account.details
 import strategy.environ
 import file.file_utility
 import line.line
+import common.trace_log
 
 class System():
 
@@ -23,6 +24,7 @@ class System():
     filename ='system.csv'
     drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
     csv = None
+    logger = trace_log.get()
 
     def __init__(self):
         _environ = strategy.environ.Environ()
@@ -62,6 +64,7 @@ class System():
                 print(type(arg))
                 _line = line.line.Line()
                 _line.send(e.message, text)
+                self.logger.debug(e.message + ':' text)
 
         cur.close()
         conn.close()
@@ -80,6 +83,7 @@ class System():
             conn.commit()
         except Exception as e:
             print(e)
+            self.logger.debug(e.message)
 
         cur.close()
         conn.close()

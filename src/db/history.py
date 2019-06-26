@@ -7,6 +7,7 @@ import pandas as pd
 import numpy
 
 import line.line
+import common.trace_log
 
 class History():
 
@@ -16,6 +17,8 @@ class History():
     host = "ec2-23-21-148-223.compute-1.amazonaws.com"
     port = "5432"
     dir_path = os.path.dirname(os.path.realpath(__file__))
+    trace_log = common.trace_log.Trace_log()
+    logger = trace_log.get()
 
     def __init__(self):
         _environ = strategy.environ.Environ()
@@ -55,6 +58,7 @@ class History():
                 print(type(arg))
                 _line = line.line.Line()
                 _line.send(e.message, text)
+                self.logger.debug(e.message + ':' text)
 
         cur.close()
         conn.close()
@@ -73,6 +77,7 @@ class History():
             conn.commit()
         except Exception as e:
             print(e)
+            self.logger.debug(e.message)
 
         cur.close()
         conn.close()
