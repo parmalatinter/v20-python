@@ -61,7 +61,7 @@ class System():
             print(query)
             text = query + ', '
             for arg in args:
-                text = text + type(arg) + ','
+                text = text + str(type(arg)) + ','
                 print(type(arg))
             _line = line.line.Line()
             _line.send(e.message, text)
