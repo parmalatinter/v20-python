@@ -734,6 +734,7 @@ class Trade():
     def system_update(self, positions_infos):
         self._system.update_profit(
             positions_infos['pl'], positions_infos['unrealizedPL'])
+        self._system.delete_all_by_filename()
         self._system.export_drive()
 
     # def history_fix(self):
