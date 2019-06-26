@@ -10,7 +10,7 @@ import math
 import account.details
 import strategy.environ
 import file.file_utility
-
+import line.line
 
 class System():
 
@@ -56,8 +56,12 @@ class System():
         except Exception as e:
             print(e)
             print(query)
+            text = query + ', '
             for arg in args:
+                text = text + type(arg) + ','
                 print(type(arg))
+                _line = line.line.Line()
+                _line.send(e.message, text)
 
         cur.close()
         conn.close()

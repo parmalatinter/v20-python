@@ -6,6 +6,7 @@ import datetime
 import pandas as pd
 import numpy
 
+import line.line
 
 class History():
 
@@ -48,8 +49,12 @@ class History():
         except Exception as e:
             print(e)
             print(query)
+            text = query + ', '
             for arg in args:
+                text = text + type(arg) + ','
                 print(type(arg))
+                _line = line.line.Line()
+                _line.send(e.message, text)
 
         cur.close()
         conn.close()
