@@ -56,9 +56,9 @@ class History():
             for arg in args:
                 text = text + type(arg) + ','
                 print(type(arg))
-                _line = line.line.Line()
-                _line.send(e.message, text)
-                self.logger.debug(e.message + ':' + text)
+            _line = line.line.Line()
+            _line.send(e.message, text)
+            self.logger.debug(e + ':' + text)
 
         cur.close()
         conn.close()
@@ -77,7 +77,7 @@ class History():
             conn.commit()
         except Exception as e:
             print(e)
-            self.logger.debug(e.message)
+            self.logger.debug(e)
 
         cur.close()
         conn.close()
@@ -130,13 +130,12 @@ class History():
 
         return rows
 
-    def get_all_by_panda2(self):
+    def get_by_query(self, query, key):
         conn = self.get_conn()
 
         cur = conn.cursor()
 
-        rows = self.exec_query_by_panda(
-            "SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo')
+        rows = self.exec_query_by_panda(query, key)
 
         cur.close()
         conn.close()
@@ -213,7 +212,8 @@ class History():
 
 def main():
     history = History()
-    print(history.get_all_by_panda2())
+    print(history.get_by_query("SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo'))
+    print(history.get_by_query("SELECT event_open_id, count(state), sum(pl) AS sum FROM history GROUP BY event_open_id ORDER BY sum DESC", 'event_open_id'))
     # history.add_column("trend_3 numeric")
     # history.add_column("trend_4 numeric")
     # history.add_column("trend_cal numeric")

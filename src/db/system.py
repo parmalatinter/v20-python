@@ -62,9 +62,9 @@ class System():
             for arg in args:
                 text = text + type(arg) + ','
                 print(type(arg))
-                _line = line.line.Line()
-                _line.send(e.message, text)
-                self.logger.debug(e.message + ':' + text)
+            _line = line.line.Line()
+            _line.send(e.message, text)
+            self.logger.debug(e + ':' + text)
 
         cur.close()
         conn.close()
@@ -83,7 +83,7 @@ class System():
             conn.commit()
         except Exception as e:
             print(e)
-            self.logger.debug(e.message)
+            self.logger.debug(e)
 
         cur.close()
         conn.close()
