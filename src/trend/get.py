@@ -68,8 +68,8 @@ class Trend():
 
 			USD = (-EURUSD+USDJPY+USDCHF-GBPUSD-AUDUSD+USDCAD-NZDUSD)/Pairs;
 			JPY = (-EURJPY-USDJPY-CHFJPY-GBPJPY-AUDJPY-CADJPY-NZDJPY)/Pairs;
-			res[val+'_usd'] = USD
-			res[val+'_jpy'] = JPY
+			res[val+'_usd'] = float(USD)
+			res[val+'_jpy'] = float(JPY)
 
 		return {
 			'res' : ((res['v1_usd'] + res['v2_usd']) - (res['v1_jpy'] + res['v2_jpy'])) /2 ,
