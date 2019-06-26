@@ -415,12 +415,13 @@ class Trade():
     def analyze_trade(self, df_candles, long_units, short_units):
 
         self.last_df = self.get_caculate_df(df_candles)
-        self.late = self.last_df['c'][self.last_df.index[0]]
-        self.is_golden = self.last_df['golden'][self.last_df.index[0]]
-        self.is_dead = self.last_df['dead'][self.last_df.index[0]]
-        self.upper = self.last_df['upper'][self.last_df.index[0]]
-        self.lower = self.last_df['lower'][self.last_df.index[0]]
-        self.mean = self.last_df['mean'][self.last_df.index[0]]
+        self.late = float(self.last_df['c'][self.last_df.index[0]])
+        self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
+        self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
+        self.upper = float(self.last_df['upper'][self.last_df.index[0]])
+        self.lower = float(self.last_df['lower'][self.last_df.index[0]])
+        self.mean = float(self.last_df['mean'][self.last_df.index[0]])
+        
         self.long_units = long_units
         self.short_units = short_units
         # ルールその1 C3 < lower
@@ -444,7 +445,6 @@ class Trade():
 
         # ゴールデンクロスの場合
         if self.is_golden:
-            self.is_golden = True
             # trendが15以上の場合
             if self.trend_usd['res'] > 15:
                 _message = ("buy golden order trend > 15 1 #", round(self.late, 2))
@@ -478,10 +478,6 @@ class Trade():
                 _target_price = self.late - 0.2
                 _stop_rate = self.late + 0.05
 
-        # ゴールデンクロスではない場合
-        else:
-            self.is_golden = False
-
         # 新規オーダーする場合
         self.new_trade(
              message=_message,
@@ -494,7 +490,6 @@ class Trade():
 
         # デッドクロスの場合
         if self.is_dead:
-            self.is_dead = True
             # trendが-15以下の場合
             if self.trend_usd['res'] < -15:
                 _message = ("sell dead order trend < -15 4 #", round(self.late, 2))
@@ -526,10 +521,6 @@ class Trade():
 
                 _target_price = self.late + 0.2
                 _stop_rate = self.late - 0.05
-
-        # デッドクロスではない場合
-        else:
-            self.is_dead = False
 
         # 新規オーダーする場合
         self.new_trade(
