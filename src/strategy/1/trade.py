@@ -123,7 +123,7 @@ class Trade():
 
     def get_info(self, candles_df):
         df = candles_df.tail(1)
-        return {'time': df['time'][df.index[0]], 'close': df['close'][df.index[0]]}
+        return {'time': df['time'][df.index[0]], 'close': float(df['close'][df.index[0]])}
 
     def get_histoy_csv(self):
         return self.history.get_all_by_csv()
@@ -351,10 +351,10 @@ class Trade():
                     # buyの場合 現在価格プラス0.1でcloseする
                     if row['currentUnits'] > 0:
 
-                        if float(self.upper) > float(last_rate):
-                            profit_rate = float(self.upper)
+                        if self.upper > last_rate:
+                            profit_rate = self.upper
                         else:
-                            profit_rate = float(last_rate) + 0.01
+                            profit_rate = last_rate + 0.01
 
                         event_close_id = 3
                         _client_order_comment = (
@@ -363,10 +363,10 @@ class Trade():
                     # sellの場合 現在価格マイナス0.1でcloseする
                     else:
 
-                        if float(self.lower) < float(last_rate):
-                            profit_rate = float(self.lower)
+                        if self.lower < last_rate:
+                            profit_rate = self.lower
                         else:
-                            profit_rate = float(last_rate) - 0.01
+                            profit_rate = last_rate - 0.01
 
                         event_close_id = 4
                         _client_order_comment = (
@@ -699,8 +699,8 @@ class Trade():
     def insert_histoy(self, trade_history, trade_id):
         self.history.insert(
             trade_id=int(trade_id),
-            price=float(trade_history['late']),
-            price_target=float(trade_history['target_price']),
+            price=trade_history['late'],
+            price_target=trade_history['target_price'],
             state='open',
             instrument=self.instrument,
             units=trade_history['units'],
@@ -713,12 +713,12 @@ class Trade():
             trend_cal=round(self.trend_usd['res'], 2),
             judge_1=self.is_golden,
             judge_2=self.is_dead,
-            rule_1=bool(self.rule_1),
-            rule_2=bool(self.rule_2),
-            rule_3=bool(self.rule_3),
-            rule_4=bool(self.rule_4),
-            rule_5=bool(self.rule_5),
-            rule_6=bool(self.rule_6),
+            rule_1=self.rule_1,
+            rule_2=self.rule_2,
+            rule_3=self.rule_3,
+            rule_4=self.rule_4,
+            rule_5=self.rule_5,
+            rule_6=self.rule_6,
             memo=''
         )
 
