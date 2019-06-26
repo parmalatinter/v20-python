@@ -13,6 +13,7 @@ import time
 import copy
 import math
 
+import common.trace_log
 import market.condition
 import golden.draw
 import line.line
@@ -42,7 +43,7 @@ class Trade():
     _take_profit = None
     _stop_loss = None
     _close = None
-
+    _logger = None
     _line = None
     instrument = "USD_JPY"
     units = 10
@@ -79,6 +80,8 @@ class Trade():
         self._close = trade.close.Close()
 
         self.trend_usd = trend.get.Trend().get()
+        trace_log = common.trace_log.Trace_log()
+        self._logger = trace_log.get()
 
         os.environ['TZ'] = 'America/New_York'
         self.instrument = _environ.get('instrument') if _environ.get(
@@ -225,7 +228,7 @@ class Trade():
         if response.status == 201 or response.reason == 'OK':
             res = self._close.get_result()
             if res:
-                print(res)
+                self._logger.debug(res)
                 self.history.fix_update(int(trade_id), self.to_date(res['transaction']['time']), res['transaction']['price'], res['unrealizedPL'], res['transaction']['type'])
             self._line.send('expire close  #', str(
                 trade_id) + ' event:' + str(event_close_id))
@@ -249,10 +252,10 @@ class Trade():
             unix = row['openTime'].split(".")[0]
             trade_dt = None
             try:
-                print('datetime.strptime')
+                self._logger.debug('datetime.strptime')
                 trade_dt = datetime.strptime(unix.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
             except:
-                print('self.to_date(unix)')
+                self._logger.debug('self.to_date(unix)')
                 trade_dt = self.to_date(unix)
 
             delta = now_dt - trade_dt
@@ -733,15 +736,13 @@ class Trade():
             positions_infos['pl'], positions_infos['unrealizedPL'])
         self._system.export_drive()
 
-    def history_fix(self):
-        ids = self.history.get_trade_ids_by_not_update_pl_by_panda()
-        get_by_trade_ids = trade.get_by_trade_ids.Get_by_trade_ids()
-        rows = get_by_trade_ids.get(ids)
+    # def history_fix(self):
+    #     ids = self.history.get_trade_ids_by_not_update_pl_by_panda()
+    #     get_by_trade_ids = trade.get_by_trade_ids.Get_by_trade_ids()
+    #     rows = get_by_trade_ids.get(ids)
 
-        print(rows)
-
-        for trade_id, row in rows.items():
-            self.history.fix_update(int(trade_id), self.to_date(row['filledTime']), row['price'], row['realizedPL'], row['type'])
+    #     for trade_id, row in rows.items():
+    #         self.history.fix_update(int(trade_id), self.to_date(row['filledTime']), row['price'], row['realizedPL'], row['type'])
 
 
 def main():
@@ -793,9 +794,9 @@ def main():
     details_csv.export_drive()
 
     # if transactions_csv_string:
-    # 	transactions_csv = file.file_utility.File_utility( 'transactions.csv', drive_id)
-    # 	transactions_csv.set_contents(transactions_csv_string)
-    # 	transactions_csv.export_drive()
+    #   transactions_csv = file.file_utility.File_utility( 'transactions.csv', drive_id)
+    #   transactions_csv.set_contents(transactions_csv_string)
+    #   transactions_csv.export_drive()
 
     candles_csv = file.file_utility.File_utility('candles.csv', drive_id)
     candles_csv.set_contents(caculate_df_all.to_csv())
@@ -813,6 +814,7 @@ def main():
     get_by_transaction_ids = transaction.get_by_transaction_ids.Get_by_transaction_ids()
     transaction_id = int(details_dict['Last Transaction ID'])
     get_by_transaction_ids.main(transaction_id - 100, transaction_id)
+
 
 if __name__ == "__main__":
 
