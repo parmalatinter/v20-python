@@ -21,6 +21,8 @@ class System():
     port = "5432"
     dir_path = os.path.dirname(os.path.realpath(__file__))
     filename ='system.csv'
+    drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
+    csv = None
 
     def __init__(self):
         _environ = strategy.environ.Environ()
@@ -31,6 +33,7 @@ class System():
             'password') else self.password
         self.host = _environ.get('host') if _environ.get('host') else self.host
         self.port = _environ.get('port') if _environ.get('port') else self.port
+        self.csv = file.file_utility.File_utility(self.filename, self.drive_id)
 
     def get_conn(self):
         conn = psycopg2.connect("host=" + self.host + " port=" + self.port + " dbname=" +
@@ -164,19 +167,12 @@ class System():
         self.exec_query('DROP TABLE IF EXISTS system')
 
     def export_drive(self):
-        _environ = strategy.environ.Environ()
-        drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
         csv_string = self.get_all_by_csv()
-        csv = file.file_utility.File_utility(self.filename, drive_id)
-        csv.set_contents(csv_string)
-        csv.export_drive()
+        self.csv.set_contents(csv_string)
+        self.csv.export_drive()
 
-    def delete_all_csv(self):
-        for file1 in self.file_list:
-            if file1['title'] == self.filename:
-                file1.Delete()
-                print('deleted: %s, id: %s' % (file1['title'], file1['id']))
-        self.reset_file_list()
+    def delete_all_by_filename(self):
+        self.csv.delete_all_by_filename()
 
 def main():
     system = System()
@@ -206,7 +202,7 @@ def main():
 
     system.update(balance, pl, unrealized_pl, pl_percent,
                   win_count, lose_count, trade_count)
-    system.delete_all_csv()
+    system.delete_all_by_filename()
     system.export_drive()
 
 

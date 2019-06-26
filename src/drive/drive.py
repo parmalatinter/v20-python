@@ -65,6 +65,15 @@ class Drive():
 			print('deleted: %s, id: %s' % (file1['title'], file1['id']))
 		self.reset_file_list()
 
+	def delete_all_by_filename(self, filename):
+		if not self.file_list: 
+			return None
+		for file1 in self.file_list:
+			if file1['title'] == filename:
+				file1.Delete()
+				print('deleted: %s, id: %s' % (file1['title'], file1['id']))
+		self.reset_file_list()
+
 	def get_content_by_filename(self, filename):
 		if not self.file_list: 
 			return None
