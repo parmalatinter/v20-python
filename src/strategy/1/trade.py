@@ -417,17 +417,17 @@ class Trade():
         self.long_units = long_units
         self.short_units = short_units
         # ルールその1 C3 < lower
-        self.rule_1 = self.last_df['rule_1'][self.last_df.index[0]] == 1
+        self.rule_1 = True if self.last_df['rule_1'][self.last_df.index[0]] == 1 else False
         # ルールその2　3つ陽線
-        self.rule_2 = self.last_df['rule_2'][self.last_df.index[0]] == 1
+        self.rule_2 = True if self.last_df['rule_2'][self.last_df.index[0]] == 1 else False
         # ルールその3 C3 > upper
-        self.rule_3 = self.last_df['rule_3'][self.last_df.index[0]] == 1
+        self.rule_3 = True if self.last_df['rule_3'][self.last_df.index[0]] == 1 else False
         # ルールその4 3つ陰線
-        self.rule_4 = self.last_df['rule_4'][self.last_df.index[0]] == 1
+        self.rule_4 = True if self.last_df['rule_4'][self.last_df.index[0]] == 1 else False
         # ルールその5 ボリバン上限突破
-        self.rule_5 = self.last_df['rule_5'][self.last_df.index[0]] == 1
+        self.rule_5 = True if self.last_df['rule_5'][self.last_df.index[0]] == 1 else False
         # ルールその6 ボリバン下限限突破
-        self.rule_6 = self.last_df['rule_6'][self.last_df.index[0]] == 1
+        self.rule_6 = True if self.last_df['rule_6'][self.last_df.index[0]] == 1 else False
 
         _units = 0
         _event_open_id = 0
