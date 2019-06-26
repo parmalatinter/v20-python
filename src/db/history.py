@@ -58,7 +58,7 @@ class History():
                 print(type(arg))
                 _line = line.line.Line()
                 _line.send(e.message, text)
-                self.logger.debug(e.message + ':' text)
+                self.logger.debug(e.message + ':' + text)
 
         cur.close()
         conn.close()
