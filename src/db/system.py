@@ -24,6 +24,7 @@ class System():
     filename ='system.csv'
     drive_id = '1-QJOYv1pJuLN9-SXoDpZoZAtMDlfymWe'
     csv = None
+    trace_log = common.trace_log.Trace_log()
     logger = trace_log.get()
 
     def __init__(self):
