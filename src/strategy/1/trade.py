@@ -245,6 +245,9 @@ class Trade():
         now_dt = datetime.strptime(
             now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
 
+        self.upper = float(caculate_df['lower'][caculate_df.index[0]])
+        self.lower = float(caculate_df['upper'][caculate_df.index[0]])
+            
         for trade_id, row in orders_info.items():
 
             _price = round(float(row['price']), 2)
@@ -297,9 +300,6 @@ class Trade():
                 }
                 self.insert_histoy(trade_history, trade_id)
                 continue
-
-            self.upper = caculate_df['upper'][caculate_df.index[0]]
-            self.lower = caculate_df['lower'][caculate_df.index[0]]
 
             event_close_id = history_df['event_close_id'][history_df.index[0]
                                                           ] if history_df['event_close_id'][history_df.index[0]] else 0
