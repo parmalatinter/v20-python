@@ -64,8 +64,8 @@ class System():
                 text = text + str(type(arg)) + ','
                 print(type(arg))
             _line = line.line.Line()
-            _line.send(e.message, text)
-            self.logger.debug(e + ':' + text)
+            _line.send(str(e), text)
+            self.logger.debug(str(e) + ':' + text)
 
         cur.close()
         conn.close()
