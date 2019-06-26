@@ -442,22 +442,22 @@ class Trade():
         # ゴールデンクロスの場合
         if self.is_golden:
             self.is_golden = True
-            # trendが5以上の場合
+            # trendが15以上の場合
             if self.trend_usd['res'] > 15:
-                _message = ("buy order 1 #", round(self.late, 2))
+                _message = ("buy golden order trend > 15 1 #", round(self.late, 2))
                 _units = self.units
                 _event_open_id = 1
                 _target_price = self.late + 0.1
 
-            # trendが-5以下の場合
+            # trendが-15以下の場合
             elif self.trend_usd['res'] < -15:
-                _message = ("sell order 2 #", round(self.late, 2))
-                _units = 0 - self.units
+                _message = ("buy golden order trend < -15 2 #", round(self.late, 2))
+                _units = self.units
                 _event_open_id = 2
-                _target_price = self.late - 0.1
+                _target_price = self.late + 0.1
             # その他の場合
             else:
-                _message = ("buy order 3 #", round(self.late, 2))
+                _message = ("buy golden order trend other 3 #", round(self.late, 2))
                 _units = self.units/2
                 _event_open_id = 3
                 _target_price = self.late + 0.2
@@ -492,22 +492,22 @@ class Trade():
         # デッドクロスの場合
         if self.is_dead:
             self.is_dead = True
-            # trendが-5以下の場合
+            # trendが-15以下の場合
             if self.trend_usd['res'] < -15:
-                _message = ("sell order 4 #", round(self.late, 2))
+                _message = ("sell dead order trend < -15 4 #", round(self.late, 2))
                 _units = 0 - self.units
                 _event_open_id = 4
                 _target_price = self.late - 0.1
 
-            # trendが5以上の場合
+            # trendが15以上の場合
             elif self.trend_usd['res'] > 15:
-                _message = ("buy order 5 #", round(self.late, 2))
+                _message = ("sell dead order trend > 15 5 #", round(self.late, 2))
                 _units = self.units
                 _event_open_id = 5
                 _target_price = self.late + 0.1
             # その他の場合
             else:
-                _message = ("sell order 6 #", round(self.late, 2))
+                _message = ("sell dead order other 6 #", round(self.late, 2))
                 _units = self.units/2
                 _event_open_id = 6
                 _target_price = self.late - 0.2
