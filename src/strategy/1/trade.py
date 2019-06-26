@@ -544,14 +544,14 @@ class Trade():
             _message = ("buy chance order 7 #", round(self.late, 2))
             _units = self.units/2
             _event_open_id = 7
-            _target_price = self.late + 0.1
+            _target_price = self.late + 0.05
 
         # ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
         elif self.rule_3 and self.rule_4:
             _message = ("sell chance order 8 #", round(self.late, 2))
-            _units = 0 - (self.units)/2
+            _units = 0 - (self.units/2)
             _event_open_id = 8
-            _target_price = self.late - 0.1
+            _target_price = self.late - 0.05
 
         # ルールその5 ボリバン上限突破　且つ　 trendが-20以下の場合
         elif self.rule_5 and self.trend_usd['res'] < -20:
