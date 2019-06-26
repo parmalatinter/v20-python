@@ -247,7 +247,7 @@ class Trade():
 
         self.upper = float(caculate_df['lower'][caculate_df.index[0]])
         self.lower = float(caculate_df['upper'][caculate_df.index[0]])
-            
+
         for trade_id, row in orders_info.items():
 
             _price = round(float(row['price']), 2)
@@ -287,16 +287,8 @@ class Trade():
                 trade_history = {
                     'late': _price,
                     'target_price': 0,
-                    'units':  row['initialUnits'],
+                    'units': row['initialUnits'],
                     'event_open_id': 0,
-                    'is_golden': self.is_golden,
-                    'is_dead': self.is_dead,
-                    'rule_1': self.rule_1,
-                    'rule_2': self.rule_2,
-                    'rule_3': self.rule_3,
-                    'rule_4': self.rule_4,
-                    'rule_5': self.rule_5,
-                    'rule_6': self.rule_6
                 }
                 self.insert_histoy(trade_history, trade_id)
                 continue
