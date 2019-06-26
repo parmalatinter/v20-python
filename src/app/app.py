@@ -6,21 +6,37 @@ import sys
 import pandas as pd
 import datetime
 from flask import Flask, render_template
+from flask_httpauth import HTTPBasicAuth
+
 import file.file_utility
 import strategy.environ
 import calender.get
 
 app = Flask(__name__)
+auth = HTTPBasicAuth()
+
+users = {
+    "xxx": "yyy",
+}
+
 app.debug = True
 os.environ['TZ'] = 'America/New_York'
 environ = strategy.environ.Environ()
 
+@auth.get_password
+def get_pw(username):
+    if username in users:
+        return users.get(username)
+    return None
+
 @app.route('/')
+@auth.login_required
 def index():
     return render_template('index.html')
 
 
 @app.route('/hello/<name>')
+@auth.login_required
 def hello(name='candles'):
 	template_path = os.path.dirname(app.instance_path) + '/src/app/templates/'
 	drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
@@ -45,6 +61,7 @@ def hello(name='candles'):
 
 
 @app.route('/debug')
+@auth.login_required
 def debug():
     return render_template('notemplate.html')
 
