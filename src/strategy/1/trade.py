@@ -674,7 +674,7 @@ class Trade():
 
             if units > 0:
                 if self.long_units:
-                    if (self.long_units / units) >= (self.limit_units_count):
+                    if (self.long_units / units) >= self.limit_units_count:
                         return
                 if stop_rate == 0:
                     stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
@@ -683,7 +683,7 @@ class Trade():
                         stop_rate = self.lower
             else:
                 if self.short_units:
-                    if (self.short_units / units) <= (0 - self.limit_units_count):
+                    if (self.short_units / units) >= self.limit_units_count:
                         return
                 if stop_rate == 0:
                     stop_rate = round(self.mean + ((self.upper - self.mean) / 2), 2)
