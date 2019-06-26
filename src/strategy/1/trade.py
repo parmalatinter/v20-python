@@ -553,18 +553,41 @@ class Trade():
         # ルールその5 ボリバン上限突破　且つ　 trendが-20以下の場合
         elif self.rule_5 and self.trend_usd['res'] < -20:
             _message = ("sell chance order 9 #", round(self.late, 2))
-            _units = self.units
+            _units = self.units/2
             _event_open_id = 9
-            _target_price = self.late + 0.1
-            # _stop_rate = mean
+            _target_price = self.late + 0.2
+            _stop_rate = self.late - 0.05
+
+            self.new_trade(
+                 message=_message,
+                 units=_units,
+                 event_open_id=_event_open_id,
+                 target_price=_target_price,
+                 stop_rate=_stop_rate
+             )
+
+            _units = 0 - _units
+            _target_price = self.late - 0.2
+            _stop_rate = self.late + 0.05
 
         # ルールその6 ボリバン下限突破　且つ　 trendが20以上の場合
         elif self.rule_6 and self.trend_usd['res'] > 20:
             _message = ("buy chance order 10 #", round(self.late, 2))
-            _units = 0 - self.units
+            _units = self.units/2
             _event_open_id = 10
-            _target_price = self.late - 0.1
-            # _stop_rate = mean
+            _target_price = self.late - 0.2
+            _stop_rate = self.late + 0.05
+
+            self.new_trade(
+                 message=_message,
+                 units= 0 - _units,
+                 event_open_id=_event_open_id,
+                 target_price=_target_price,
+                 stop_rate=_stop_rate
+             )
+
+            _target_price = self.late + 0.2
+            _stop_rate = self.late - 0.05
 
         # 新規オーダーする場合
         self.new_trade(
