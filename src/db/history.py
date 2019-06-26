@@ -205,6 +205,15 @@ class History():
         self.exec_query(
             'ALTER TABLE history ADD COLUMN IF NOT EXISTS ' + column_name_type)
 
+    def get_todays_win_count(self):
+        res = self.get_by_query("SELECT count(*) AS count FROM history WHERE pl > 0 AND create_time > now() - interval '1 day'", 'count')
+        return int(res.index[0])
+
+
+    def get_todays_lose_count(self):
+        res = self.get_by_query("SELECT count(*) AS count FROM history WHERE pl < 0 AND create_time > now() - interval '1 day'", 'count')
+        return int(res.index[0])
+
     def drop(self):
 
         self.exec_query('DROP TABLE IF EXISTS history')
@@ -214,6 +223,10 @@ def main():
     history = History()
     print(history.get_by_query("SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo'))
     print(history.get_by_query("SELECT event_open_id, count(state), sum(pl) AS sum FROM history GROUP BY event_open_id ORDER BY sum DESC", 'event_open_id'))
+    print(history.get_todays_win_count())
+    print(history.get_todays_lose_count())
+    
+
     # history.add_column("trend_3 numeric")
     # history.add_column("trend_4 numeric")
     # history.add_column("trend_cal numeric")

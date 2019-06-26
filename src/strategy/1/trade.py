@@ -732,8 +732,10 @@ class Trade():
         )
 
     def system_update(self, positions_infos):
+        win_count = self.history.get_todays_win_count()
+        lose_count = self.history.get_todays_lose_count()
         self._system.update_profit(
-            positions_infos['pl'], positions_infos['unrealizedPL'])
+            positions_infos['pl'], positions_infos['unrealizedPL'], win_count, lose_count)
         self._system.delete_all_by_filename()
         self._system.export_drive()
 

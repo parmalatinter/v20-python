@@ -167,13 +167,13 @@ class System():
         self.exec_query(sql_file.read(), (update_time, balance, pl,
                                           unrealized_pl, pl_percent, win_count, lose_count, trade_count))
 
-    def update_profit(self, pl, unrealized_pl):
+    def update_profit(self, pl, unrealized_pl, win_count, lose_count):
 
         update_time = datetime.datetime.now()
 
         sql_file = open(self.dir_path + '/query/system/update_profit.sql', 'r')
 
-        self.exec_query(sql_file.read(), (update_time, pl, unrealized_pl))
+        self.exec_query(sql_file.read(), (update_time, pl, unrealized_pl, win_count, lose_count))
 
     def create(self):
 
