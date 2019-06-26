@@ -38,14 +38,17 @@ class History():
 
         cur = conn.cursor()
 
-        cur.execute(query, args)
+        try:
+            cur.execute(query, args)
+            conn.commit()
+            if is_get_res:
+                res = cur.fetchall()
+        except Exception as e:
+            print(e)
+            print(query)
+            for arg in args:
+                print(type(arg))
 
-        res = None
-
-        if is_get_res:
-            res = cur.fetchall()
-
-        conn.commit()
         cur.close()
         conn.close()
 
@@ -56,9 +59,14 @@ class History():
 
         cur = conn.cursor()
 
-        res = pd.read_sql(sql=query, con=conn, index_col=index_col)
+        res = None
 
-        conn.commit()
+        try:
+            res = pd.read_sql(sql=query, con=conn, index_col=index_col)
+            conn.commit()
+        except Exception as e:
+            print(e)
+
         cur.close()
         conn.close()
 
