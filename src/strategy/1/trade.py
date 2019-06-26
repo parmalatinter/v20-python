@@ -458,9 +458,23 @@ class Trade():
             # その他の場合
             else:
                 _message = ("buy order 3 #", round(self.late, 2))
-                _units = self.units
+                _units = self.units/2
                 _event_open_id = 3
-                _target_price = self.late + 0.05
+                _target_price = self.late + 0.2
+                _stop_rate = self.late - 0.05
+
+                self.new_trade(
+                     message=_message,
+                     units=_units,
+                     event_open_id=_event_open_id,
+                     target_price=_target_price,
+                     stop_rate=_stop_rate
+                 )
+
+                _units = 0 - _units
+                _target_price = self.late - 0.2
+                _stop_rate = self.late + 0.05
+
         # ゴールデンクロスではない場合
         else:
             self.is_golden = False
@@ -494,9 +508,22 @@ class Trade():
             # その他の場合
             else:
                 _message = ("sell order 6 #", round(self.late, 2))
-                _units = 0 - self.units
+                _units = self.units/2
                 _event_open_id = 6
-                _target_price = self.late - 0.05
+                _target_price = self.late - 0.2
+                _stop_rate = self.late + 0.05
+
+                self.new_trade(
+                     message=_message,
+                     units= 0 - _units,
+                     event_open_id=_event_open_id,
+                     target_price=_target_price,
+                     stop_rate=_stop_rate
+                 )
+
+                _target_price = self.late + 0.2
+                _stop_rate = self.late - 0.05
+
         # デッドクロスではない場合
         else:
             self.is_dead = False
