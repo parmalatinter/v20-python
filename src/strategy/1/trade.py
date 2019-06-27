@@ -543,6 +543,7 @@ class Trade():
              units=_units,
              event_open_id=_event_open_id,
              target_price=_target_price
+             stop_rate=_stop_rate
          )
 
         _event_open_id = 0
