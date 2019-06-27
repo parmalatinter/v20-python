@@ -741,6 +741,8 @@ class Trade():
                 # stopが浅いので変更
                 if self.last_rate - stop_rate < 0.08:
                     stop_rate = self.lower
+                if self.last_rate - stop_rate < 0.08:
+                    stop_rate = self.last_rate - 0.1
             else:
                 if self.short_units:
                     if (self.short_units / units) >= self.limit_units_count:
@@ -750,6 +752,8 @@ class Trade():
                     # stopが浅いので変更
                 if stop_rate - self.last_rate < 0.08:
                     stop_rate = self.upper
+                if stop_rate - self.last_rate  < 0.08:
+                    stop_rate = self.last_rate + 0.1
 
             trade_id = self.order(
                 instrument=self.instrument,
