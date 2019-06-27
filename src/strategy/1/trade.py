@@ -755,7 +755,7 @@ class Trade():
             trade_id = self.order(self.instrument, units, target_price, stop_rate, event_open_id, message)
             if trade_id:
                 trade_history = {
-                    'late': round(self.last_rate, 2),
+                    'rate': round(self.last_rate, 2),
                     'target_price': round(target_price, 2),
                     'units':units,
                     'event_open_id':event_open_id
