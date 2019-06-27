@@ -125,7 +125,6 @@ class Trade():
 
         now_dt = self.candles_df['time'][self.candles_df.index[0]]
         self.now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
-        self.last_rate = float(self.candles_df['close'][self.candles_df.index[0]])
         caculate_df = self.get_caculate_df(self.candles_df)
         self.upper = float(caculate_df['lower'][caculate_df.index[0]])
         self.lower = float(caculate_df['upper'][caculate_df.index[0]])
@@ -738,7 +737,7 @@ class Trade():
                     if (self.long_units / units) >= self.limit_units_count:
                         return
                 if stop_rate == 0:
-                    stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
+                    stop_rate = self.mean - ((self.mean - self.lower) / 2)
                     # stopが浅いので変更
                     if self.last_rate - stop_rate < 0.08:
                         stop_rate = self.lower
@@ -747,17 +746,16 @@ class Trade():
                     if (self.short_units / units) >= self.limit_units_count:
                         return
                 if stop_rate == 0:
-                    stop_rate = round(self.mean + ((self.upper - self.mean) / 2), 2)
+                    stop_rate = self.mean + ((self.upper - self.mean) / 2)
                     # stopが浅いので変更
                     if stop_rate - self.last_rate < 0.08:
                         stop_rate = self.upper
 
-            target_price = round(target_price, 2)
             trade_id = self.order(
                 instrument=self.instrument,
                 units=units,
-                profit_rate=target_price,
-                stop_rate=stop_rate,
+                profit_rate=round(target_price, 2),
+                stop_rate=round(stop_rate, 2),
                 event_open_id=event_open_id,
                 client_order_comment=message
             )
