@@ -104,7 +104,7 @@ class Trade():
         self.long_units = long_units
         self.short_units = short_units
         self.last_df = self.get_caculate_df(self.candles_df)
-        self.last_late = float(self.last_df['c'][self.last_df.index[0]])
+        self.last_rate = float(self.last_df['c'][self.last_df.index[0]])
         self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
         self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
         self.upper = float(self.last_df['upper'][self.last_df.index[0]])
@@ -135,7 +135,7 @@ class Trade():
         self.orders_info = orders_info
         self._candle = inst_one.Candle()
 
-    def update_last_late(self):
+    def update_last_rate(self):
         self._candle.get()
         self.last_rate = round(self._candle.last_rate(), 2)
 
@@ -246,7 +246,7 @@ class Trade():
                 # Stop lossが通らないほど逆行
                 self.market_close(tradeID, 'ALL', 66)
                 trade_history = {
-                    'late': self.last_rate,
+                    'rate': self.last_rate,
                     'target_price': profit_rate,
                     'units': units,
                     'event_open_id': event_open_id,
@@ -300,7 +300,7 @@ class Trade():
 
         for trade_id, row in self.orders_info.items():
 
-            self.update_last_late()
+            self.update_last_rate()
 
             _price = round(float(row['price']), 2)
             _client_order_comment = ''
@@ -337,7 +337,7 @@ class Trade():
             if history_df.empty:
                 # 万が一	hitstoryが存在しない場合は追加する
                 trade_history = {
-                    'late': _price,
+                    'rate': _price,
                     'target_price': 0,
                     'units': row['initialUnits'],
                     'event_open_id': 0,
@@ -509,32 +509,32 @@ class Trade():
         _target_price = 0
         _stop_rate = 0
 
-        self.update_last_late()
+        self.update_last_rate()
 
         # ゴールデンクロスの場合
         if self.is_golden:
             # trendが15以上の場合
             if self.trend_usd['res'] > 15:
-                _message = ("buy golden order trend > 15 1 #", self.last_late)
+                _message = ("buy golden order trend > 15 1 #", self.last_rate)
                 _units = self.units
                 _event_open_id = 1
-                _target_price = self.last_late + 0.1
-                _stop_rate = self.last_late - 0.1
+                _target_price = self.last_rate + 0.1
+                _stop_rate = self.last_rate - 0.1
 
             # trendが-15以下の場合
             elif self.trend_usd['res'] < -15:
-                _message = ("buy golden order trend < -15 2 #", self.last_late)
+                _message = ("buy golden order trend < -15 2 #", self.last_rate)
                 _units = self.units
                 _event_open_id = 2
-                _target_price = self.last_late + 0.1
-                _stop_rate = self.last_late - 0.1
+                _target_price = self.last_rate + 0.1
+                _stop_rate = self.last_rate - 0.1
             # その他の場合
             else:
-                _message = ("buy golden order trend other 3 #", self.last_late)
+                _message = ("buy golden order trend other 3 #", self.last_rate)
                 _units = self.units/2
                 _event_open_id = 3
-                _target_price = self.last_late + 0.2
-                _stop_rate = self.last_late - 0.05
+                _target_price = self.last_rate + 0.2
+                _stop_rate = self.last_rate - 0.05
 
                 self.new_trade(
                      message=_message,
@@ -545,8 +545,8 @@ class Trade():
                  )
 
                 _units = 0 - _units
-                _target_price = self.last_late - 0.2
-                _stop_rate = self.last_late + 0.05
+                _target_price = self.last_rate - 0.2
+                _stop_rate = self.last_rate + 0.05
 
         # 新規オーダーする場合
         self.new_trade(
@@ -563,26 +563,26 @@ class Trade():
         if self.is_dead:
             # trendが-15以下の場合
             if self.trend_usd['res'] < -15:
-                _message = ("sell dead order trend < -15 4 #", self.last_late)
+                _message = ("sell dead order trend < -15 4 #", self.last_rate)
                 _units = 0 - self.units
                 _event_open_id = 4
-                _target_price = self.last_late - 0.1
-                _stop_rate = self.last_late + 0.1
+                _target_price = self.last_rate - 0.1
+                _stop_rate = self.last_rate + 0.1
 
             # trendが15以上の場合
             elif self.trend_usd['res'] > 15:
-                _message = ("sell dead order trend > 15 5 #", self.last_late)
+                _message = ("sell dead order trend > 15 5 #", self.last_rate)
                 _units = 0 - self.units
                 _event_open_id = 5
-                _target_price = self.last_late - 0.1
-                _stop_rate = self.last_late + 0.1
+                _target_price = self.last_rate - 0.1
+                _stop_rate = self.last_rate + 0.1
             # その他の場合
             else:
-                _message = ("sell dead order other 6 #", self.last_late)
+                _message = ("sell dead order other 6 #", self.last_rate)
                 _units = self.units/2
                 _event_open_id = 6
-                _target_price = self.last_late - 0.2
-                _stop_rate = self.last_late + 0.05
+                _target_price = self.last_rate - 0.2
+                _stop_rate = self.last_rate + 0.05
 
                 self.new_trade(
                      message=_message,
@@ -592,8 +592,8 @@ class Trade():
                      stop_rate=_stop_rate
                  )
 
-                _target_price = self.last_late + 0.2
-                _stop_rate = self.last_late - 0.05
+                _target_price = self.last_rate + 0.2
+                _stop_rate = self.last_rate - 0.05
 
         # 新規オーダーする場合
         self.new_trade(
@@ -606,25 +606,25 @@ class Trade():
         _event_open_id = 0
         # ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
         if self.rule_1 and self.rule_2:
-            _message = ("buy chance order 7 #", self.last_late)
+            _message = ("buy chance order 7 #", self.last_rate)
             _units = self.units/2
             _event_open_id = 7
-            _target_price = self.last_late + 0.05
+            _target_price = self.last_rate + 0.05
 
         # ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
         elif self.rule_3 and self.rule_4:
-            _message = ("sell chance order 8 #", self.last_late)
+            _message = ("sell chance order 8 #", self.last_rate)
             _units = 0 - (self.units/2)
             _event_open_id = 8
-            _target_price = self.last_late - 0.05
+            _target_price = self.last_rate - 0.05
 
         # ルールその5 ボリバン上限突破　且つ　 trendが-20以下の場合
         elif self.rule_5 and self.trend_usd['res'] < -20:
-            _message = ("buy chance order 9 #", self.last_late)
+            _message = ("buy chance order 9 #", self.last_rate)
             _units = self.units/2
             _event_open_id = 9
-            _target_price = self.last_late + 0.2
-            _stop_rate = self.last_late - 0.05
+            _target_price = self.last_rate + 0.2
+            _stop_rate = self.last_rate - 0.05
 
             self.new_trade(
                  message=_message,
@@ -635,16 +635,16 @@ class Trade():
              )
 
             _units = 0 - _units
-            _target_price = self.last_late - 0.2
-            _stop_rate = self.last_late + 0.05
+            _target_price = self.last_rate - 0.2
+            _stop_rate = self.last_rate + 0.05
 
         # ルールその6 ボリバン下限突破　且つ　 trendが20以上の場合
         elif self.rule_6 and self.trend_usd['res'] > 20:
-            _message = ("sell chance order 10 #", self.last_late)
+            _message = ("sell chance order 10 #", self.last_rate)
             _units = self.units/2
             _event_open_id = 10
-            _target_price = self.last_late - 0.2
-            _stop_rate = self.last_late + 0.05
+            _target_price = self.last_rate - 0.2
+            _stop_rate = self.last_rate + 0.05
 
             self.new_trade(
                  message=_message,
@@ -654,8 +654,8 @@ class Trade():
                  stop_rate=_stop_rate
              )
 
-            _target_price = self.last_late + 0.2
-            _stop_rate = self.last_late - 0.05
+            _target_price = self.last_rate + 0.2
+            _stop_rate = self.last_rate - 0.05
 
         # 新規オーダーする場合
         self.new_trade(
@@ -671,12 +671,12 @@ class Trade():
             # 抵抗ライン上限突破
             if not self.resistande_info['resistance_high']:
                 return
-            elif self.resistande_info['resistance_high'] < self.last_late:
-                _message = ("line break chance order 11 #", self.last_late)
+            elif self.resistande_info['resistance_high'] < self.last_rate:
+                _message = ("line break chance order 11 #", self.last_rate)
                 _units = 0 - self.units
                 _event_open_id = 11
-                _target_price = self.last_late - 0.2
-                _stop_rate = self.last_late + 0.05
+                _target_price = self.last_rate - 0.2
+                _stop_rate = self.last_rate + 0.05
 
                 self.new_trade(
                      message=_message,
@@ -687,8 +687,8 @@ class Trade():
                  )
 
                 _units = self.units
-                _target_price = self.last_late + 0.2
-                _stop_rate = self.last_late - 0.05
+                _target_price = self.last_rate + 0.2
+                _stop_rate = self.last_rate - 0.05
 
                 self.new_trade(
                      message=_message,
@@ -701,12 +701,12 @@ class Trade():
             # 抵抗ライン下限突破
             if not self.resistande_info['resistance_low']:
                 return
-            elif self.resistande_info['resistance_low'] > self.last_late:
-                _message = ("line break chance order 12 #", self.last_late)
+            elif self.resistande_info['resistance_low'] > self.last_rate:
+                _message = ("line break chance order 12 #", self.last_rate)
                 _units = self.units
                 _event_open_id = 12
-                _target_price = self.last_late + 0.2
-                _stop_rate = self.last_late - 0.05
+                _target_price = self.last_rate + 0.2
+                _stop_rate = self.last_rate - 0.05
 
                 self.new_trade(
                      message=_message,
@@ -717,8 +717,8 @@ class Trade():
                  )
 
                 _units = 0 - self.units
-                _target_price = self.last_late - 0.2
-                _stop_rate = self.last_late + 0.05
+                _target_price = self.last_rate - 0.2
+                _stop_rate = self.last_rate + 0.05
 
                 self.new_trade(
                      message=_message,
@@ -739,7 +739,7 @@ class Trade():
                 if stop_rate == 0:
                     stop_rate = round(self.mean - ((self.mean - self.lower) / 2) , 2)
                     # stopが浅いので変更
-                    if self.late - stop_rate < 0.08:
+                    if self.last_rate - stop_rate < 0.08:
                         stop_rate = self.lower
             else:
                 if self.short_units:
@@ -748,14 +748,14 @@ class Trade():
                 if stop_rate == 0:
                     stop_rate = round(self.mean + ((self.upper - self.mean) / 2), 2)
                     # stopが浅いので変更
-                    if stop_rate - self.late < 0.08:
+                    if stop_rate - self.last_rate < 0.08:
                         stop_rate = self.upper
 
             target_price = round(target_price, 2)
             trade_id = self.order(self.instrument, units, target_price, stop_rate, event_open_id, message)
             if trade_id:
                 trade_history = {
-                    'late': round(self.late, 2),
+                    'late': round(self.last_rate, 2),
                     'target_price': round(target_price, 2),
                     'units':units,
                     'event_open_id':event_open_id
@@ -766,7 +766,7 @@ class Trade():
     def insert_histoy(self, trade_history, trade_id):
         self.history.insert(
             trade_id=int(trade_id),
-            price=trade_history['late'],
+            price=trade_history['rate'],
             price_target=trade_history['target_price'],
             state='open',
             instrument=self.instrument,
