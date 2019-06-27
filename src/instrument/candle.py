@@ -9,9 +9,12 @@ import os
 from pytz import timezone
 
 
-class Candles():
+class Candle():
 
-    def get(self, instrument, granularity='M10'):
+    candles = None
+    last_candle = None
+
+    def get(self, instrument, granularity='M1'):
         """
         Create an API context, and use it to fetch candles for an instrument.
 
@@ -38,12 +41,7 @@ class Candles():
         api = args.config.create_context()
 
         os.environ['TZ'] = 'America/New_York'
-        before_date= datetime.today() + timedelta(hours=-24)
-
-        weekday = before_date.weekday()
-
-        if(weekday > 5):
-            before_date= datetime.today() + timedelta(hours=-84)
+        before_date= datetime.today() + timedelta(hours=-6)
 
         kwargs = {}
         kwargs["granularity"] =granularity
@@ -61,16 +59,18 @@ class Candles():
             print(response.body)
             return
 
-        for candle in response.get("candles", 200):
-            text = printer.get_format_csv(candle,file_name,count)
-            res=res + text
-            count=count+1
+        self.candles = response.get("candles", 200)
+        self.last_candle = self.candles[-1]
 
-        return res
+        return self.last_candle
+
+    def get_last_rate(self):
+        return float(self.last_candle.mid.c)
 
 def main():
-    candles = Candles()
-    print(candles.get('USD_JPY', 'M10'))
+    candle = Candle()
+    candle.get('USD_JPY', 'M10')
+    print(candle.get_last_rate())
 
 if __name__ == "__main__":
     main()
