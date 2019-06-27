@@ -161,10 +161,6 @@ class Trade():
 
         return self.caculate_df_all
 
-    def get_info(self, candles_df):
-        df = self.candles_df.tail(1)
-        return {'time': df['time'][df.index[0]], 'close': float(df['close'][df.index[0]])}
-
     def get_histoy_csv(self):
         return self.history.get_all_by_csv()
 
@@ -799,13 +795,6 @@ def main():
 
     googleDrive = drive.drive.Drive(drive_id)
     googleDrive.delete_all()
-    time.sleep(5)
-
-    trade = Trade(_environ)
-
-    candles = inst.Candles()
-    candles_csv_string = candles.get('USD_JPY', 'M10')
-    candles_df = trade.get_df_by_string(candles_csv_string)
 
     transactions = transaction.transactions.Transactions()
     transactions.get()
@@ -814,12 +803,15 @@ def main():
     long_units = transactions.get_short_pos_units()
     short_units = transactions.get_short_pos_units()
 
+    candles = inst.Candles()
+    candles_csv_string = candles.get('USD_JPY', 'M10')
+    candles_df = trade.get_df_by_string(candles_csv_string)
+
+    trade = Trade(_environ)
     trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info)
 
     if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
         trade.analyze_trade()
-
-    # caculate_df = trade.get_caculate_df(candles_df)
 
     trade.close()
 
