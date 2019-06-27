@@ -51,8 +51,10 @@ class Trade():
     hours = 3
     trend_usd = {}
     last_df = pd.DataFrame(columns=[])
+    candles_df = pd.DataFrame(columns=[])
     caculate_df = pd.DataFrame(columns=[])
     caculate_df_all = pd.DataFrame(columns=[])
+    orders_info = None
     resistande_info = {}
 
     rule_1 = False
@@ -95,6 +97,41 @@ class Trade():
         self.hours = int(_environ.get('hours')) if _environ.get(
             'hours') else self.hours
 
+    def set_property(self, candles_df, long_units, short_units, orders_info):
+        self.candles_df = candles_df
+        self.long_units = long_units
+        self.short_units = short_units
+        self.last_df = self.get_caculate_df(self.candles_df)
+        self.late = float(self.last_df['c'][self.last_df.index[0]])
+        self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
+        self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
+        self.upper = float(self.last_df['upper'][self.last_df.index[0]])
+        self.lower = float(self.last_df['lower'][self.last_df.index[0]])
+        self.mean = float(self.last_df['mean'][self.last_df.index[0]])
+        
+        # ルールその1 C3 < lower
+        self.rule_1 = True if self.last_df['rule_1'][self.last_df.index[0]] == 1 else False
+        # ルールその2　3つ陽線
+        self.rule_2 = True if self.last_df['rule_2'][self.last_df.index[0]] == 1 else False
+        # ルールその3 C3 > upper
+        self.rule_3 = True if self.last_df['rule_3'][self.last_df.index[0]] == 1 else False
+        # ルールその4 3つ陰線
+        self.rule_4 = True if self.last_df['rule_4'][self.last_df.index[0]] == 1 else False
+        # ルールその5 ボリバン上限突破
+        self.rule_5 = True if self.last_df['rule_5'][self.last_df.index[0]] == 1 else False
+        # ルールその6 ボリバン下限限突破
+        self.rule_6 = True if self.last_df['rule_6'][self.last_df.index[0]] == 1 else False
+
+        now_dt = self.candles_df['time'][self.candles_df.index[0]]
+        self.now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+        self.last_rate = float(self.candles_df['close'][self.candles_df.index[0]])
+        caculate_df = self.get_caculate_df(self.candles_df)
+        self.upper = float(caculate_df['lower'][caculate_df.index[0]])
+        self.lower = float(caculate_df['upper'][caculate_df.index[0]])
+        self.upper_high = float(caculate_df['upper_high'][caculate_df.index[0]])
+        self.lower_low = float(caculate_df['lower_low'][caculate_df.index[0]])
+        self.orders_info = orders_info
+
     def get_df(self, csv_string):
         return pd.read_csv(csv_string, sep=',', engine='python', skipinitialspace=True)
 
@@ -125,7 +162,7 @@ class Trade():
         return self.caculate_df_all
 
     def get_info(self, candles_df):
-        df = candles_df.tail(1)
+        df = self.candles_df.tail(1)
         return {'time': df['time'][df.index[0]], 'close': float(df['close'][df.index[0]])}
 
     def get_histoy_csv(self):
@@ -252,18 +289,13 @@ class Trade():
         unix = time_str.split(".")[0]
         return datetime.fromtimestamp(int(unix))
 
-    def close(self, orders_info, caculate_df, now_dt, last_rate):
+    def close(self):
+        if not self.now_dt:
+            return
 
-        now_dt = datetime.strptime(
-            now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+        last_rate = round(self.last_rate, 2)
 
-        self.upper = float(caculate_df['lower'][caculate_df.index[0]])
-        self.lower = float(caculate_df['upper'][caculate_df.index[0]])
-        self.upper_high = float(caculate_df['upper_high'][caculate_df.index[0]])
-        self.lower_low = float(caculate_df['lower_low'][caculate_df.index[0]])
-        self.last_rate = round(last_rate, 2)
-
-        for trade_id, row in orders_info.items():
+        for trade_id, row in self.orders_info.items():
 
             _price = round(float(row['price']), 2)
             _client_order_comment = ''
@@ -276,7 +308,7 @@ class Trade():
                 self._logger.debug('self.to_date(unix)')
                 trade_dt = self.to_date(unix)
 
-            delta = now_dt - trade_dt
+            delta = self.now_dt - trade_dt
 
             takeProfitOrderID = str(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
             stopLossOrderID = str(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
@@ -323,7 +355,7 @@ class Trade():
                  # buyの場合 
                 if row['currentUnits'] > 0:
                     
-                    pips = self.last_rate - _price
+                    pips = last_rate - _price
                     # 利益0.1以上
                     if pips > 0.1:
                         event_close_id = 1.1
@@ -334,14 +366,14 @@ class Trade():
                     # 利益0.5以上
                     elif pips > 0.05:
                         event_close_id = 1.2
-                        profit_rate = self.last_rate + 0.01
+                        profit_rate = last_rate + 0.01
                     # それ以外
                     else:
                         event_close_id = 1.3
                         profit_rate = _price - 0.05
                 # sellの場合 
                 else:
-                    pips = _price - self.last_rate
+                    pips = _price - last_rate
                     # 利益0.1以上
                     if pips > 0.1:
                         event_close_id = 2.1
@@ -352,7 +384,7 @@ class Trade():
                     # 利益0.5以上
                     elif pips > 0.05:
                         event_close_id = 2.2
-                        profit_rate = self.last_rate - 0.01
+                        profit_rate = last_rate - 0.01
                     # それ以外
                     else:
                         event_close_id = 2.3
@@ -392,11 +424,11 @@ class Trade():
                         
                         _client_order_comment = state + ' win 3'
                         # 0.05以上利益の場合closeする
-                        if self.last_rate - _price > 0.05:
+                        if last_rate - _price > 0.05:
                             event_close_id = 3.1
-                            profit_rate = self.last_rate + 0.02
+                            profit_rate = last_rate + 0.02
                         # ボリバン上限突破
-                        elif self.upper_high < self.last_rate:
+                        elif self.upper_high < last_rate:
                             event_close_id = 3.2
                             self.market_close(trade_id, 'ALL', event_close_id)
                             self.history.update(int(trade_id), event_close_id, _client_order_comment)
@@ -404,17 +436,17 @@ class Trade():
                         # それ以外
                         else:
                             event_close_id = 3.3
-                            profit_rate = self.last_rate + 0.01
+                            profit_rate = last_rate + 0.01
 
                     # sellの場合 現在価格マイナス0.1でcloseする
                     else:
                         _client_order_comment = state + ' win 4'
                         # 0.05以上利益の場合closeする
-                        if _price - self.last_rate > 0.05:
+                        if _price - last_rate > 0.05:
                             event_close_id = 4.1
-                            profit_rate = self.last_rate - 0.02
+                            profit_rate = last_rate - 0.02
                         # ボリバン下限突破
-                        elif self.lower_low > self.last_rate:
+                        elif self.lower_low > last_rate:
                             event_close_id = 4.2
                             self.market_close(trade_id, 'ALL', event_close_id)
                             self.history.update(int(trade_id), event_close_id, _client_order_comment)
@@ -422,7 +454,7 @@ class Trade():
                         # それ以外
                         else:
                             event_close_id = 4.3
-                            profit_rate = self.last_rate - 0.01
+                            profit_rate = last_rate - 0.01
 
                 # 負けの場合
                 else:
@@ -434,7 +466,7 @@ class Trade():
 
                     # buyの場合 発注価格でcloseする
                     if row['currentUnits'] > 0:
-                        stop_rate = self.last_rate - 0.5
+                        stop_rate = last_rate - 0.5
                         profit_rate = _price + 0.01
 
                         event_close_id = 5
@@ -443,7 +475,7 @@ class Trade():
 
                     # sellの場合 発注価格でcloseする
                     else:
-                        stop_rate = self.last_rate + 0.5
+                        stop_rate = last_rate + 0.5
                         profit_rate = _price - 0.01
 
                         event_close_id = 6
@@ -464,30 +496,7 @@ class Trade():
                 self.take_profit(trade_id, _price, takeProfitOrderID, _client_order_comment, event_close_id)
                 self.history.update(int(trade_id), event_close_id, state)                                 
 
-    def analyze_trade(self, df_candles, long_units, short_units):
-
-        self.last_df = self.get_caculate_df(df_candles)
-        self.late = float(self.last_df['c'][self.last_df.index[0]])
-        self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
-        self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
-        self.upper = float(self.last_df['upper'][self.last_df.index[0]])
-        self.lower = float(self.last_df['lower'][self.last_df.index[0]])
-        self.mean = float(self.last_df['mean'][self.last_df.index[0]])
-        
-        self.long_units = long_units
-        self.short_units = short_units
-        # ルールその1 C3 < lower
-        self.rule_1 = True if self.last_df['rule_1'][self.last_df.index[0]] == 1 else False
-        # ルールその2　3つ陽線
-        self.rule_2 = True if self.last_df['rule_2'][self.last_df.index[0]] == 1 else False
-        # ルールその3 C3 > upper
-        self.rule_3 = True if self.last_df['rule_3'][self.last_df.index[0]] == 1 else False
-        # ルールその4 3つ陰線
-        self.rule_4 = True if self.last_df['rule_4'][self.last_df.index[0]] == 1 else False
-        # ルールその5 ボリバン上限突破
-        self.rule_5 = True if self.last_df['rule_5'][self.last_df.index[0]] == 1 else False
-        # ルールその6 ボリバン下限限突破
-        self.rule_6 = True if self.last_df['rule_6'][self.last_df.index[0]] == 1 else False
+    def analyze_trade(self):
 
         _units = 0
         _event_open_id = 0
@@ -709,14 +718,6 @@ class Trade():
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0):
         # 新規オーダーする場合
         if event_open_id > 0:
-            print(units)
-            print(self.limit_units_count)
-            print('long_units')
-            print(self.long_units)
-            print(self.long_units / units)
-            print('short_units')
-            print(self.short_units)
-            print(self.short_units / units)
 
             if units > 0:
                 if self.long_units:
@@ -808,22 +809,19 @@ def main():
 
     transactions = transaction.transactions.Transactions()
     transactions.get()
-    trades_infos = transactions.get_trades()
+    orders_info = transactions.get_trades()
     positions_infos = transactions.get_positions()
     long_units = transactions.get_short_pos_units()
     short_units = transactions.get_short_pos_units()
 
+    trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info)
+
     if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
-        trade.analyze_trade(candles_df, long_units, short_units)
+        trade.analyze_trade()
 
-    caculate_df = trade.get_caculate_df(candles_df)
-    caculate_df_all = trade.get_caculate_df_all(candles_df)
+    # caculate_df = trade.get_caculate_df(candles_df)
 
-    if trades_infos:
-        info = trade.get_info(candles_df)
-
-        if info['time']:
-            trade.close(trades_infos, caculate_df, info['time'], info['close'])
+    trade.close()
 
     trade.system_update(positions_infos)
 
@@ -832,6 +830,7 @@ def main():
     details_csv.set_contents(details)
     details_csv.export_drive()
 
+    caculate_df_all = trade.get_caculate_df_all(candles_df)
     candles_csv = file.file_utility.File_utility('candles.csv', drive_id)
     candles_csv.set_contents(caculate_df_all.to_csv())
     candles_csv.export_drive()
