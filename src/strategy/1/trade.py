@@ -66,6 +66,8 @@ class Trade():
 
     upper = 0
     lower = 0
+    upper_high = 0
+    lower_low = 0
     mean = 0
     late = 0
 
@@ -141,10 +143,13 @@ class Trade():
         if response.status == 201:
             self._line.send('fix order take profit #', profit_rate +
                             ' event:' + str(event_close_id) + ' ' + client_order_comment)
+            return True
         else:
             errors = self._take_profit.get_errors()
             self._line.send('fix order take profit faild #', str(
                 errors['errorCode']) + ':' + errors['errorMessage'] + ' event:' + str(event_close_id))
+            return False
+
 
     def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
 
@@ -244,6 +249,8 @@ class Trade():
 
         self.upper = float(caculate_df['lower'][caculate_df.index[0]])
         self.lower = float(caculate_df['upper'][caculate_df.index[0]])
+        self.upper_high = float(caculate_df['upper_high'][caculate_df.index[0]])
+        self.lower_low = float(caculate_df['lower_low'][caculate_df.index[0]])
 
         for trade_id, row in orders_info.items():
 
@@ -302,18 +309,50 @@ class Trade():
             condition_1 = delta_total_minuts > 30 and event_close_id == 0
             if condition_1:
                 state = 'fix order 30min'
+                 # buyの場合 
                 if row['currentUnits'] > 0:
-                    profit_rate = _price + 0.05
-                    event_close_id = 1
+                    
+                    pips = last_rate - _price
+                    # 利益0.1以上
+                    if pips > 0.1:
+                        event_close_id = 1.1
+                        _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
+                        self.market_close(trade_id, 'ALL', event_close_id)
+                        self.history.update(int(trade_id), event_close_id, _client_order_comment)
+                        continue
+                    # 利益0.5以上
+                    elif pips > 0.05:
+                        event_close_id = 1.2
+                        profit_rate = last_rate + 0.01
+                    # それ以外
+                    else:
+                        event_close_id = 1.3
+                        profit_rate = _price - 0.05
+                # sellの場合 
                 else:
-                    profit_rate = _price - 0.05
-                    event_close_id = 2
+                    pips = _price - last_rate
+                    # 利益0.1以上
+                    if pips > 0.1:
+                        event_close_id = 2.1
+                        _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
+                        self.market_close(trade_id, 'ALL', event_close_id)
+                        self.history.update(int(trade_id), event_close_id, _client_order_comment)
+                        continue
+                    # 利益0.5以上
+                    elif pips > 0.05:
+                        event_close_id = 2.2
+                        profit_rate = last_rate - 0.01
+                    # それ以外
+                    else:
+                        event_close_id = 2.3
+                        profit_rate = _price + 0.05
 
                 _client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
-                self.take_profit(
+                res = self.take_profit(
                     trade_id, profit_rate, takeProfitOrderID, _client_order_comment, event_close_id)
-                self.history.update(int(trade_id), event_close_id, state)
+                if res:
+                    self.history.update(int(trade_id), event_close_id, state)
                 continue
 
             # 90分 ~ でclose処理(id:1,2)の場合
@@ -336,30 +375,43 @@ class Trade():
                         state = 'profit close 90min'
 
                     stop_rate = _price
-
+                    
                     # buyの場合 現在価格プラス0.1でcloseする
                     if row['currentUnits'] > 0:
-
-                        if self.upper > last_rate:
-                            profit_rate = self.upper
+                        
+                        _client_order_comment = state + ' win 3'
+                        # 0.05以上利益の場合closeする
+                        if last_rate - _price > 0.05:
+                            event_close_id = 3.1
+                            profit_rate = last_rate + 0.02
+                        # ボリバン上限突破
+                        elif self.upper_high < last_rate:
+                            event_close_id = 3.2
+                            self.market_close(trade_id, 'ALL', event_close_id)
+                            self.history.update(int(trade_id), event_close_id, _client_order_comment)
+                            continue
+                        # それ以外
                         else:
+                            event_close_id = 3.3
                             profit_rate = last_rate + 0.01
-
-                        event_close_id = 3
-                        _client_order_comment = (
-                            state + ' win ' + str(event_close_id))
 
                     # sellの場合 現在価格マイナス0.1でcloseする
                     else:
-
-                        if self.lower < last_rate:
-                            profit_rate = self.lower
+                        _client_order_comment = state + ' win 4'
+                        # 0.05以上利益の場合closeする
+                        if _price - last_rate > 0.05:
+                            event_close_id = 4.1
+                            profit_rate = last_rate - 0.02
+                        # ボリバン下限突破
+                        elif self.lower_low > last_rate:
+                            event_close_id = 4.2
+                            self.market_close(trade_id, 'ALL', event_close_id)
+                            self.history.update(int(trade_id), event_close_id, _client_order_comment)
+                            continue
+                        # それ以外
                         else:
+                            event_close_id = 4.3
                             profit_rate = last_rate - 0.01
-
-                        event_close_id = 4
-                        _client_order_comment = (
-                            state + ' win ' + str(event_close_id))
 
                 # 負けの場合
                 else:

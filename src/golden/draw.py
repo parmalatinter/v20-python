@@ -162,8 +162,8 @@ class Draw(object):
         df['upper'] = df['mean'] + (df['std'] * 2)
         df['lower'] = df['mean'] - (df['std'] * 2)
         # 3σ
-        # df['upper'] = df['mean'] + (df['std'] * 3)
-        # df['lower'] = df['mean'] - (df['std'] * 3)
+        df['upper_high'] = df['mean'] + (df['std'] * 3)
+        df['lower_low'] = df['mean'] - (df['std'] * 3)
 
         # 期間5単純移動平均
         df['sma_5'] = np.round(df['c'].rolling(window=5).mean(), 2)
