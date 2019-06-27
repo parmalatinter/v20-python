@@ -803,11 +803,12 @@ def main():
     long_units = transactions.get_short_pos_units()
     short_units = transactions.get_short_pos_units()
 
+    trade = Trade(_environ)
+
     candles = inst.Candles()
     candles_csv_string = candles.get('USD_JPY', 'M10')
     candles_df = trade.get_df_by_string(candles_csv_string)
 
-    trade = Trade(_environ)
     trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info)
 
     if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
