@@ -542,7 +542,7 @@ class Trade():
              message=_message,
              units=_units,
              event_open_id=_event_open_id,
-             target_price=_target_price
+             target_price=_target_price,
              stop_rate=_stop_rate
          )
 
@@ -589,7 +589,8 @@ class Trade():
              message=_message,
              units=_units,
              event_open_id=_event_open_id,
-             target_price=_target_price
+             target_price=_target_price,
+             stop_rate=_stop_rate
          )
         _event_open_id = 0
         # ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
