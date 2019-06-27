@@ -128,6 +128,13 @@ function csvToHtml($source, $output, options) {
 								}else{
 									$(this).parent().find('.units').addClass('warning')
 								}
+							}else if(className == 'pl'){
+								var pl = parseFloat($(this).parent().find('.pl').text())
+								if(pl > 0){
+									$(this).parent().find('.pl').addClass('success')
+								}else{
+									$(this).parent().find('.pl').addClass('danger')
+								}
 							}
 							if(text == 'True'){
 								$(this).addClass('danger')
