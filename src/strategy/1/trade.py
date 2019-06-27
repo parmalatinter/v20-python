@@ -508,6 +508,7 @@ class Trade():
                 _units = self.units
                 _event_open_id = 1
                 _target_price = self.late + 0.1
+                _stop_rate = self.late - 0.1
 
             # trendが-15以下の場合
             elif self.trend_usd['res'] < -15:
@@ -515,6 +516,7 @@ class Trade():
                 _units = self.units
                 _event_open_id = 2
                 _target_price = self.late + 0.1
+                _stop_rate = self.late - 0.1
             # その他の場合
             else:
                 _message = ("buy golden order trend other 3 #", round(self.late, 2))
@@ -553,13 +555,15 @@ class Trade():
                 _units = 0 - self.units
                 _event_open_id = 4
                 _target_price = self.late - 0.1
+                _stop_rate = self.late + 0.1
 
             # trendが15以上の場合
             elif self.trend_usd['res'] > 15:
                 _message = ("sell dead order trend > 15 5 #", round(self.late, 2))
-                _units = self.units
+                _units = 0 - self.units
                 _event_open_id = 5
-                _target_price = self.late + 0.1
+                _target_price = self.late - 0.1
+                _stop_rate = self.late + 0.1
             # その他の場合
             else:
                 _message = ("sell dead order other 6 #", round(self.late, 2))
