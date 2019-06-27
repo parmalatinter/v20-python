@@ -104,7 +104,6 @@ class Trade():
         self.long_units = long_units
         self.short_units = short_units
         self.last_df = self.get_caculate_df(self.candles_df)
-        self.last_rate = float(self.last_df['c'][self.last_df.index[0]])
         self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
         self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
         self.upper = float(self.last_df['upper'][self.last_df.index[0]])
@@ -134,6 +133,7 @@ class Trade():
         self.lower_low = float(caculate_df['lower_low'][caculate_df.index[0]])
         self.orders_info = orders_info
         self._candle = inst_one.Candle()
+        self.update_last_rate()
 
     def update_last_rate(self):
         self._candle.get()
@@ -755,7 +755,7 @@ class Trade():
             trade_id = self.order(self.instrument, units, target_price, stop_rate, event_open_id, message)
             if trade_id:
                 trade_history = {
-                    'rate': round(self.last_rate, 2),
+                    'rate': self.last_rate,
                     'target_price': round(target_price, 2),
                     'units':units,
                     'event_open_id':event_open_id
