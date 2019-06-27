@@ -136,7 +136,7 @@ class Trade():
         self.update_last_rate()
 
     def update_last_rate(self):
-        self._candle.get()
+        self._candle.get(self.instrument)
         self.last_rate = round(self._candle.get_last_rate(), 2)
 
     def get_df(self, csv_string):
