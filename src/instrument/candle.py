@@ -41,7 +41,12 @@ class Candle():
         api = args.config.create_context()
 
         os.environ['TZ'] = 'America/New_York'
-        before_date= datetime.today() + timedelta(hours=-6)
+        before_date= datetime.today() + timedelta(hours=-24)
+
+        weekday = before_date.weekday()
+
+        if(weekday > 5):
+            before_date= datetime.today() + timedelta(hours=-84)
 
         kwargs = {}
         kwargs["granularity"] =granularity
