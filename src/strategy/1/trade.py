@@ -254,8 +254,9 @@ class Trade():
                 self.insert_histoy(trade_history, tradeID)
                 self.history.update(int(tradeID), 999, 'close order stop bad request')
                 errors = self._stop_loss.get_errors()
+                args_str = ' instrument:{}, units:{}, profit_rate:{}, stop_rate:{}, event_open_id:{}, client_order_comment:{}\n'.format(instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment)
                 self._line.send('order stop bad request #', str(
-                    errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID) 
+                    errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID + args_str) 
                 return 0
             else:
                 errors = self._stop_loss.get_errors()
@@ -752,7 +753,14 @@ class Trade():
                         stop_rate = self.upper
 
             target_price = round(target_price, 2)
-            trade_id = self.order(self.instrument, units, target_price, stop_rate, event_open_id, message)
+            trade_id = self.order(
+                instrument=self.instrument,
+                units=units,
+                profit_rate=target_price,
+                stop_rate=stop_rate,
+                event_open_id=event_open_id,
+                client_order_comment=message
+            )
             if trade_id:
                 trade_history = {
                     'rate': self.last_rate,
