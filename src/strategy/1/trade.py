@@ -246,7 +246,7 @@ class Trade():
                 }
                 self.insert_histoy(trade_history, tradeID)
                 self.history.update(int(tradeID), 999, 'close order stop bad request')
-                rrors = self._stop_loss.get_errors()
+                errors = self._stop_loss.get_errors()
                 self._line.send('order stop bad request #', str(
                     errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID) 
                 return 0
