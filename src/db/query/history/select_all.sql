@@ -1,5 +1,4 @@
 SELECT
-	id,
     trade_id,
 	create_time,
 	update_time,
