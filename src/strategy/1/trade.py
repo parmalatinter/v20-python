@@ -314,7 +314,7 @@ class Trade():
                 self._logger.debug('self.to_date(unix)')
                 trade_dt = self.to_date(unix)
 
-            delta = self.now_dt - trade_dt
+            delta =  trade_dt - self.now_dt
 
             takeProfitOrderID = str(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
             stopLossOrderID = str(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
