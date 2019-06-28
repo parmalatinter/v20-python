@@ -296,6 +296,7 @@ class Trade():
         if not self.now_dt:
             return
 
+        win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
 
 
         for trade_id, row in self.orders_info.items():
@@ -352,8 +353,9 @@ class Trade():
                 self.history.update(int(trade_id), 10, 'profit max close')
                 continue
 
+            pips = 0
             # 30分 ~ close処理無しの場合
-            condition_1 = delta_total_minuts > 30 and event_close_id == 0
+            condition_1 = delta_total_minuts > 30 and event_close_id <= 0
             if condition_1:
                 state = 'fix order 30min'
                  # buyの場合 
@@ -403,9 +405,9 @@ class Trade():
                 continue
 
             # 90分 ~ でclose処理(id:1,2)の場合
-            condition_2 = delta_total_minuts >= 90 and event_close_id <= 2
+            condition_2 = delta_total_minuts >= 90 and event_close_id in [1, 2]
             # 120分 ~ で以前利益があったの場合
-            condition_3 = delta_total_minuts >= 120 and event_close_id == 3 and event_close_id == 4
+            condition_3 = delta_total_minuts >= 120 and event_close_id in win_event_close_ids:
             # 90分 ~ 利益なしの場合
             condition_4 = delta_total_minuts >= 90 and row['unrealizedPL'] < 0
             if condition_2 or condition_3:
