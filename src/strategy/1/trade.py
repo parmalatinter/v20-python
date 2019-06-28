@@ -344,9 +344,8 @@ class Trade():
                 }
                 self.insert_histoy(trade_history, trade_id)
                 continue
-
-            event_close_id = history_df['event_close_id'][history_df.index[0]
-                                                          ] if history_df['event_close_id'][history_df.index[0]] else 0
+            _event_close_id = float(history_df['event_close_id'][history_df.index[0]])
+            event_close_id = _event_close_id if _event_close_id > 0 else 0
             # 利益がunitsの0.15倍ある場合は決済
             if row['unrealizedPL'] / self.units  > 0.15:
                 self.market_close(trade_id, 'ALL', 10)
