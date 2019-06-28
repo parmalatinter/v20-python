@@ -21,7 +21,8 @@ INSERT INTO history (
 	rule_4,
 	rule_5,
 	rule_6,
-	memo
+	memo,
+	event_close_id
 ) VALUES (
 	%s,
 	%s,
@@ -45,5 +46,6 @@ INSERT INTO history (
 	%s,
 	%s,
 	%s,
-	%s
+	%s,
+	0
 )
