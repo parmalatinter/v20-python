@@ -21,7 +21,7 @@ SELECT
 	rule_5,
 	rule_6,
 	resistance_high,
-	resistance_low
+	resistance_low,
 	trend_1,
 	trend_2,
 	trend_3,
