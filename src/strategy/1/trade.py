@@ -320,11 +320,12 @@ class Trade():
             stopLossOrderID = str(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
             # trailingStopLossOrderID = str(row['trailingStopLossOrderID']) if row['trailingStopLossOrderID'] else ''
 
-            delta_total_minuts = delta.total_seconds()/60
+            # fix it time bug (8.6 * 60)
+            delta_total_minuts = delta.total_seconds()/60 - (8.6 * 60)
             delta_total_hours = delta_total_minuts/60
             event_close_id = 0
 
-            self._logger.debug('delta_total_minuts' + str(delta_total_hours))
+            self._logger.debug('delta_total_minuts' + str(delta_total_minuts))
             self._logger.debug('delta_total_hours' + str(delta_total_hours))
 
             # 3時間経過後 現在値でcloseする
