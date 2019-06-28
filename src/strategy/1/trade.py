@@ -321,7 +321,7 @@ class Trade():
             # trailingStopLossOrderID = str(row['trailingStopLossOrderID']) if row['trailingStopLossOrderID'] else ''
 
             # fix it time bug (8.6 * 60)
-            delta_total_minuts = delta.total_seconds()/60 - (8.6 * 60)
+            delta_total_minuts = delta.total_seconds()/60 + (8.6 * 60)
             delta_total_hours = delta_total_minuts/60
             event_close_id = 0
 
