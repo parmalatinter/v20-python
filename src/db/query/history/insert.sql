@@ -21,8 +21,10 @@ INSERT INTO history (
 	rule_4,
 	rule_5,
 	rule_6,
-	memo,
-	event_close_id
+	event_close_id,
+	resistance_high,
+	resistance_low,
+	memo
 ) VALUES (
 	%s,
 	%s,

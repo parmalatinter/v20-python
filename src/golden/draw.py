@@ -98,7 +98,7 @@ class Draw(object):
                 res_sum = res_sum + sup 
                 count = count+1
         if count == 0 or res_sum == 0:
-            result['resistance_low'] = None
+            result['resistance_low'] = 0
         else:
             result['resistance_low'] = res_sum / count
         count = 0
@@ -108,7 +108,7 @@ class Draw(object):
                 res_sum = res_sum + res 
                 count = count+1
         if count == 0 or res_sum == 0:
-            result['resistance_high'] = None
+            result['resistance_high'] = 0
         else:
             result['resistance_high'] = res_sum / count
 

@@ -147,7 +147,7 @@ class History():
 
         return df.to_csv(sep=",", line_terminator='\n', encoding='utf-8')
 
-    def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, memo=''):
+    def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, resistance_high, resistance_low, memo=''):
         create_time = datetime.datetime.now()
 
         sql_file = open(self.dir_path + '/query/history/insert.sql', 'r')
@@ -174,6 +174,8 @@ class History():
             rule_4,
             rule_5,
             rule_6,
+            resistance_high,
+            resistance_low,
             memo
         )
         self.exec_query(sql_file.read(), args)
@@ -201,7 +203,6 @@ class History():
         self.exec_query(sql_file.read())
 
     def add_column(self, column_name_type):
-        sql_file = open(self.dir_path + '/query/history/add_column.sql', 'r')
         self.exec_query(
             'ALTER TABLE history ADD COLUMN IF NOT EXISTS ' + column_name_type)
 
@@ -221,14 +222,14 @@ class History():
 
 def main():
     history = History()
-    print(history.get_by_query("SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo'))
-    print(history.get_by_query("SELECT event_open_id, count(state), sum(pl) AS sum FROM history GROUP BY event_open_id ORDER BY sum DESC", 'event_open_id'))
-    print(history.get_todays_win_count())
-    print(history.get_todays_lose_count())
+    # print(history.get_by_query("SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo'))
+    # print(history.get_by_query("SELECT event_open_id, count(state), sum(pl) AS sum FROM history GROUP BY event_open_id ORDER BY sum DESC", 'event_open_id'))
+    # print(history.get_todays_win_count())
+    # print(history.get_todays_lose_count())
     
 
-    # history.add_column("trend_3 numeric")
-    # history.add_column("trend_4 numeric")
+    history.add_column("resistance_high numeric")
+    history.add_column("resistance_low numeric")
     # history.add_column("trend_cal numeric")
     # history.add_column("rule_5 boolean")
     # history.add_column("rule_6 boolean")

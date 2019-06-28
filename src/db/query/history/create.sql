@@ -26,5 +26,7 @@ CREATE TABLE IF NOT EXISTS history (
 	rule_4 boolean,
 	rule_5 boolean,
 	rule_6 boolean,
-	memo varchar
+	memo varchar,
+	resistance_high numeric,
+	resistance_low numeric
 )

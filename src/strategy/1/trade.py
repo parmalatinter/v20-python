@@ -57,7 +57,7 @@ class Trade():
     caculate_df = pd.DataFrame(columns=[])
     caculate_df_all = pd.DataFrame(columns=[])
     orders_info = None
-    resistande_info = {}
+    resistande_info = {'resistance_high' : 0, 'resistance_low' : 0}
 
     rule_1 = False
     rule_2 = False
@@ -665,7 +665,7 @@ class Trade():
         # 判定基準がなく停滞中
         if not (self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4) and 15 > self.trend_usd['res'] and self.trend_usd['res'] > -15 :
             # 抵抗ライン上限突破
-            if not self.resistande_info['resistance_high']:
+            if self.resistande_info['resistance_high'] == 0:
                 return
             elif self.resistande_info['resistance_high'] < self.last_rate:
                 _message = ("line break chance order 11 #", self.last_rate)
@@ -695,7 +695,7 @@ class Trade():
                  )
 
             # 抵抗ライン下限突破
-            if not self.resistande_info['resistance_low']:
+            if self.resistande_info['resistance_low'] == 0:
                 return
             elif self.resistande_info['resistance_low'] > self.last_rate:
                 _message = ("line break chance order 12 #", self.last_rate)
@@ -792,6 +792,8 @@ class Trade():
             rule_4=self.rule_4,
             rule_5=self.rule_5,
             rule_6=self.rule_6,
+            resistance_high=self.resistande_info['resistance_high'],
+            resistance_low=self.resistande_info['resistance_low'],
             memo=''
         )
 
