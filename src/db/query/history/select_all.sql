@@ -15,15 +15,17 @@ SELECT
 	memo,
 	judge_1,
 	judge_2,
-	trend_1,
-	trend_2,
-	trend_3,
-	trend_4,
-	trend_cal,
 	rule_1,
 	rule_2,
 	rule_3,
 	rule_4,
 	rule_5,
-	rule_6
+	rule_6,
+	resistance_high,
+	resistance_low
+	trend_1,
+	trend_2,
+	trend_3,
+	trend_4,
+	trend_cal
 FROM history ORDER BY trade_id;
