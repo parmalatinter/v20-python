@@ -407,7 +407,7 @@ class Trade():
             # 90分 ~ でclose処理(id:1,2)の場合
             condition_2 = delta_total_minuts >= 90 and event_close_id in [1, 2]
             # 120分 ~ で以前利益があったの場合
-            condition_3 = delta_total_minuts >= 120 and event_close_id in win_event_close_ids:
+            condition_3 = delta_total_minuts >= 120 and event_close_id in win_event_close_ids
             # 90分 ~ 利益なしの場合
             condition_4 = delta_total_minuts >= 90 and row['unrealizedPL'] < 0
             if condition_2 or condition_3:
