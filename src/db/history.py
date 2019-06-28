@@ -123,7 +123,7 @@ class History():
 
         sql_file = open(self.dir_path + '/query/history/select_all.sql', 'r')
 
-        rows = self.exec_query_by_panda(sql_file.read(), 'id')
+        rows = self.exec_query_by_panda(sql_file.read(), 'trade_id')
 
         cur.close()
         conn.close()
