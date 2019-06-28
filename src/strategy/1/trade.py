@@ -287,6 +287,7 @@ class Trade():
         if not self.now_dt:
             return
 
+        first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
         win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
 
 
@@ -399,7 +400,7 @@ class Trade():
                 continue
 
             # 90分 ~ でclose処理(id:1,2)の場合
-            condition_2 = delta_total_minuts >= 90 and event_close_id in [1, 2]
+            condition_2 = delta_total_minuts >= 90 and event_close_id in first_event_close_ids
             # 120分 ~ で以前利益があったの場合
             condition_3 = delta_total_minuts >= 120 and event_close_id in win_event_close_ids
             # 90分 ~ 利益なしの場合
