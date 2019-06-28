@@ -64,9 +64,9 @@ class Close():
         print(self.response.__dict__)
 
         try:
-            raw_body = response.get("raw_body", 200)
-            if raw_body:
-                self.res = raw_body.__dict__
+            orderFillTransaction = response.get("orderFillTransaction", 200)
+            if orderFillTransaction:
+                self.res = orderFillTransaction.__dict__
         except:
             print('orderFillTransaction not found trade id ' + str(tradeid))
 

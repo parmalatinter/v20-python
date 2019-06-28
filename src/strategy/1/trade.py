@@ -273,16 +273,6 @@ class Trade():
         response = self._close.get_response()
 
         if response.status == 201 or response.reason == 'OK':
-            res = self._close.get_result()
-            if res:
-                self._logger.debug(res)
-                self.history.fix_update(
-                    int(trade_id),
-                    self.to_date(res['transaction']['time']),
-                    res['transaction']['price'],
-                    res['unrealizedPL'],
-                    res['transaction']['type']
-                )
             self._line.send('expire close  #', str(
                 trade_id) + ' event:' + str(event_close_id))
         else:
