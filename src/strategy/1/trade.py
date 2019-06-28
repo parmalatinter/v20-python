@@ -123,9 +123,8 @@ class Trade():
         # ルールその6 ボリバン下限限突破
         self.rule_6 = True if self.last_df['rule_6'][self.last_df.index[0]] == 1 else False
 
-        now_dt = self.last_df['time'][self.last_df.index[0]]
+        now_dt = self.last_df['t'][self.last_df.index[0]]
         self.now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
-        self._logger.debug(self.now_dt)
 
         caculate_df = self.get_caculate_df(self.candles_df)
         self.upper = float(caculate_df['lower'][caculate_df.index[0]])
@@ -316,6 +315,8 @@ class Trade():
                 self._logger.debug('self.to_date(unix)')
                 trade_dt = self.to_date(unix)
 
+            self._logger.debug('self.now_dt' + str(self.now_dt))
+            self._logger.debug('trade_dt' + str(trade_dt))
             delta = self.now_dt - trade_dt
 
             takeProfitOrderID = str(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
