@@ -5,4 +5,4 @@ SET
 	pl = %(pl)s,
 	memo = %(memo)s
 WHERE
-	trade_id = %(trade_idpdate_time)s;
+	trade_id = %(trade_id)s;
