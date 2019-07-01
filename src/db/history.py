@@ -150,34 +150,33 @@ class History():
     def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, resistance_high, resistance_low, memo=''):
         create_time = datetime.datetime.now()
 
+        args = dict(trade_id=trade_id,
+                price=price,
+                price_target=price_target,
+                state=state,
+                instrument=instrument,
+                units=units,
+                unrealized_pl=unrealized_pl,
+                event_open_id=event_open_id,
+                trend_1=trend_1,
+                trend_2=trend_1,
+                trend_3=trend_1,
+                trend_4=trend_1,
+                trend_cal=trend_1,
+                judge_1=judge_1,
+                judge_2=judge_2,
+                rule_1=rule_1,
+                rule_2=rule_2,
+                rule_3=rule_3,
+                rule_4=rule_4,
+                rule_5=rule_5,
+                rule_6=rule_6,
+                resistance_high=resistance_high,
+                resistance_low=resistance_low,
+                create_time=create_time
+            )
         sql_file = open(self.dir_path + '/query/history/insert.sql', 'r')
-        args = (
-            trade_id,
-            create_time,
-            price,
-            price_target,
-            state,
-            instrument,
-            units,
-            unrealized_pl,
-            event_open_id,
-            trend_1,
-            trend_2,
-            trend_3,
-            trend_4,
-            trend_cal,
-            judge_1,
-            judge_2,
-            rule_1,
-            rule_2,
-            rule_3,
-            rule_4,
-            rule_5,
-            rule_6,
-            resistance_high,
-            resistance_low
-        )
-        self.exec_query(sql_file.read(), args)
+        self.exec_query(sql_file.read() % args)
 
     def delete(self, trade_id):
 
@@ -227,51 +226,44 @@ def main():
     # print(history.get_todays_lose_count())
     
 
-    history.add_column("resistance_high numeric")
-    history.add_column("resistance_low numeric")
+    # history.add_column("resistance_high numeric")
+    # history.add_column("resistance_low numeric")
     # history.add_column("trend_cal numeric")
     # history.add_column("rule_5 boolean")
     # history.add_column("rule_6 boolean")
     # history.drop()
 
     # history.create()
-    # trade_id = 1
-    # price = 100.20
-    # price_target = 100.30
-    # state = 'state 1'
-    # instrument = 'USD_JPY'
-    # units = 10000
-    # unrealized_pl = 10000
-    # event_open_id = 1
-    # trend_1 = 10
-    # trend_2 = 20
-    # judge_1 = True
-    # judge_2 = False
+    trade_id = 1
+    price = 100.20
+    price_target = 100.30
+    state = 'state 1'
+    instrument = 'USD_JPY'
+    units = 10000
+    unrealized_pl = 10000
+    event_open_id = 1
+    trend_1 = 10
+    trend_2 = 20
+    trend_3 = 30
+    trend_4 = 40
+    trend_5 = 50
+    trend_6 = 60
+    trend_cal = 100
+    judge_1 = True
+    judge_2 = False
     # memo = 'test'
-    # rule_1 = True
-    # rule_2 = True
-    # rule_3 = True
-    # rule_4 = True
+    rule_1 = True
+    rule_2 = True
+    rule_3 = True
+    rule_4 = True
+    rule_5 = True
+    rule_6 = True
+    resistance_high = 100
+    resistance_low = 100
 
-    # history.insert(
-    # 	trade_id,
-    # 	price,
-    # 	price_target,
-    # 	state,
-    # 	instrument,
-    # 	units,
-    # 	unrealized_pl,
-    # 	event_open_id,
-    # 	trend_1,
-    # 	trend_2,
-    # 	judge_1,
-    # 	judge_2,
-    # 	rule_1,
-    # 	rule_2,
-    # 	rule_3,
-    # 	rule_4,
-    # 	memo
-    # )
+    history.insert(
+        trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, resistance_high, resistance_low
+    )
 
     # pl = 20000
     # price_close = 100.40
@@ -279,10 +271,10 @@ def main():
     # history.update(trade_id, price_close, pl, event_close_id, state)
 
     # # print(history.get_all_by_panda())
-    # df = history.get_by_panda(1)
-    # # print(df['trade_id'][df.index[0]])
+    df = history.get_by_panda(1)
+    print(df['trade_id'][df.index[0]])
 
-    # history.delete(1364)
+    history.delete(1)
 
 
 if __name__ == "__main__":
