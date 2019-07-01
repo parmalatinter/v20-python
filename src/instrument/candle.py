@@ -41,7 +41,7 @@ class Candle():
         api = args.config.create_context()
 
         os.environ['TZ'] = 'America/New_York'
-        before_date= datetime.today() + timedelta(hours=-3)
+        before_date= datetime.today() + timedelta(hours=-8)
 
         weekday = before_date.weekday()
 
