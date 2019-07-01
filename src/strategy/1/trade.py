@@ -50,7 +50,7 @@ class Trade():
     instrument = "USD_JPY"
     units = 10
     limit_units_count = 2
-    hours = 3
+
     trend_usd = {}
     last_df = pd.DataFrame(columns=[])
     candles_df = pd.DataFrame(columns=[])
@@ -75,6 +75,16 @@ class Trade():
     mean = 0
     late = 0
     last_rate = 0
+    normal_pips_range = 15
+    normal_trend_range = 15
+    close_limit_minutes_1 = 30
+    close_limit_minutes_2 = 90
+    close_limit_minutes_3 = 150
+    close_limit_hours = 3.5
+
+    first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
+    win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
+
 
 
     def __init__(self, _environ):
@@ -96,8 +106,18 @@ class Trade():
         units = int(_environ.get('units')) if _environ.get(
             'units') else self.units
         self.units = math.floor(units * self._system.get_last_pl_percent())
-        self.hours = int(_environ.get('hours')) if _environ.get(
-            'hours') else self.hours
+        self.close_limit_hours = int(_environ.get('close_limit_hours')) if _environ.get(
+            'close_limit_hours') else self.close_limit_hours
+        self.close_limit_minutes_1 = int(_environ.get('close_limit_minutes_1')) if _environ.get(
+            'close_limit_minutes_1') else self.close_limit_minutes_1
+        self.close_limit_minutes_2 = int(_environ.get('close_limit_minutes_2')) if _environ.get(
+            'close_limit_minutes_2') else self.close_limit_minutes_2
+        self.close_limit_minutes_3 = int(_environ.get('close_limit_minutes_3')) if _environ.get(
+            'close_limit_minutes_3') else self.close_limit_minutes_3
+        self.normal_pips_range = int(_environ.get('normal_pips_range')) if _environ.get(
+            'normal_pips_range') else self.normal_pips_range
+        self.normal_trend_range = int(_environ.get('normal_trend_range')) if _environ.get(
+            'normal_trend_range') else self.normal_trend_range
 
     def set_property(self, candles_df, long_units, short_units, orders_info):
         self.candles_df = candles_df
@@ -122,6 +142,8 @@ class Trade():
         self.rule_5 = True if self.last_df['rule_5'][self.last_df.index[0]] == 1 else False
         # ルールその6 ボリバン下限限突破
         self.rule_6 = True if self.last_df['rule_6'][self.last_df.index[0]] == 1 else False
+        # ルールその7 判定基準外
+        self.rule_7 = True if self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4 else False
 
         now_dt = self.last_df['t'][self.last_df.index[0]]
         self.now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
@@ -288,10 +310,6 @@ class Trade():
         if not self.now_dt:
             return
 
-        first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
-        win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
-
-
         for trade_id, row in self.orders_info.items():
 
             self.update_last_rate()
@@ -313,9 +331,7 @@ class Trade():
 
             takeProfitOrderID = str(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
             stopLossOrderID = str(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
-            # trailingStopLossOrderID = str(row['trailingStopLossOrderID']) if row['trailingStopLossOrderID'] else ''
 
-            # fix it time bug (8.6 * 60)
             delta_total_minuts = delta.total_seconds()/60
             delta_total_hours = delta_total_minuts/60
             event_close_id = 0
@@ -324,7 +340,7 @@ class Trade():
             self._logger.debug('delta_total_hours' + str(delta_total_hours))
 
             # 3時間経過後 現在値でcloseする
-            if delta_total_hours >= self.hours:
+            if delta_total_hours >= self.close_limit_hours:
                 self.market_close(trade_id, 'ALL', 99)
 
                 self.history.update(int(trade_id), 99, 'close 120min')
@@ -351,7 +367,7 @@ class Trade():
 
             pips = 0
             # 30分 ~ close処理無しの場合
-            condition_1 = delta_total_minuts > 30 and event_close_id <= 0
+            condition_1 = delta_total_minuts > self.close_limit_minutes_1 and event_close_id <= 0
             if condition_1:
                 state = 'fix order 30min'
                  # buyの場合 
@@ -401,11 +417,11 @@ class Trade():
                 continue
 
             # 90分 ~ でclose処理(id:1,2)の場合
-            condition_2 = delta_total_minuts >= 90 and event_close_id in first_event_close_ids
+            condition_2 = delta_total_minuts >= self.close_limit_minutes_2 and event_close_id in self.first_event_close_ids
             # 120分 ~ で以前利益があったの場合
-            condition_3 = delta_total_minuts >= 120 and event_close_id in win_event_close_ids
+            condition_3 = delta_total_minuts >= self.close_limit_minutes_3 and event_close_id in self.win_event_close_ids
             # 90分 ~ 利益なしの場合
-            condition_4 = delta_total_minuts >= 90 and row['unrealizedPL'] < 0
+            condition_4 = delta_total_minuts >= self.close_limit_minutes_2 and row['unrealizedPL'] < 0
             if condition_2 or condition_3:
 
                 event_close_id = 99
@@ -510,17 +526,17 @@ class Trade():
 
         # ゴールデンクロスの場合
         if self.is_golden:
-            # trendが15以上の場合
-            if self.trend_usd['res'] > 15:
-                _message = ("buy golden order trend > 15 1 #", self.last_rate)
+            # trendがnormal_trend_range以上の場合
+            if self.trend_usd['res'] > self.normal_trend_range:
+                _message = ("buy golden order trend > normal_trend_range 1 #", self.last_rate)
                 _units = self.units
                 _event_open_id = 1
                 _target_price = self.last_rate + 0.1
                 _stop_rate = self.last_rate - 0.1
 
-            # trendが-15以下の場合
-            elif self.trend_usd['res'] < -15:
-                _message = ("buy golden order trend < -15 2 #", self.last_rate)
+            # trendが-normal_trend_range以下の場合
+            elif self.trend_usd['res'] < 0-self.normal_trend_range:
+                _message = ("buy golden order trend < -normal_trend_range 2 #", self.last_rate)
                 _units = self.units
                 _event_open_id = 2
                 _target_price = self.last_rate + 0.1
@@ -558,17 +574,17 @@ class Trade():
 
         # デッドクロスの場合
         if self.is_dead:
-            # trendが-15以下の場合
-            if self.trend_usd['res'] < -15:
-                _message = ("sell dead order trend < -15 4 #", self.last_rate)
+            # trendが-normal_trend_range以下の場合
+            if self.trend_usd['res'] < 0 - self.normal_trend_range:
+                _message = ("sell dead order trend < -normal_trend_range 4 #", self.last_rate)
                 _units = 0 - self.units
                 _event_open_id = 4
                 _target_price = self.last_rate - 0.1
                 _stop_rate = self.last_rate + 0.1
 
-            # trendが15以上の場合
-            elif self.trend_usd['res'] > 15:
-                _message = ("sell dead order trend > 15 5 #", self.last_rate)
+            # trendがnormal_trend_range以上の場合
+            elif self.trend_usd['res'] > self.normal_trend_range:
+                _message = ("sell dead order trend > normal_trend_range 5 #", self.last_rate)
                 _units = 0 - self.units
                 _event_open_id = 5
                 _target_price = self.last_rate - 0.1
@@ -664,7 +680,7 @@ class Trade():
          )
         _event_open_id = 0
         # 判定基準がなく停滞中
-        if not (self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4) and 15 > self.trend_usd['res'] and self.trend_usd['res'] > -15 :
+        if not self.rule_7 and self.normal_trend_range > self.trend_usd['res'] and self.trend_usd['res'] > 0 - self.normal_trend_range :
             # 抵抗ライン上限突破
             if self.resistande_info['resistance_high'] == 0:
                 return
