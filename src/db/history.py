@@ -175,8 +175,7 @@ class History():
             rule_5,
             rule_6,
             resistance_high,
-            resistance_low,
-            memo
+            resistance_low
         )
         self.exec_query(sql_file.read(), args)
 
