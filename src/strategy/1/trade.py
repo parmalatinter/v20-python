@@ -220,6 +220,8 @@ class Trade():
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
 
+        tradeID = 0
+
         if response.status == 201:
             tradeID = str(self.market.get_trade_id())
 
@@ -232,10 +234,12 @@ class Trade():
                 errors = self._take_profit.get_errors()
                 self._line.send('order profit bad request #', str(
                     errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID) 
+                return int(tradeID)
             else:
                 errors = self._take_profit.get_errors()
                 self._line.send('order profit faild #', str(
                     errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID)
+                return int(tradeID)
 
             self._stop_loss.exec({'tradeID':  tradeID, 'price': stop_rate})
             response2 = self._stop_loss.get_response()
@@ -262,11 +266,8 @@ class Trade():
                 errors = self._stop_loss.get_errors()
                 self._line.send('order stop faild #', str(
                     errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID)
-            return tradeID
-
-        errors = self.market.get_errors()
-        self._line.send('order faild #', errors['errorMessage'])
-        return None
+            
+            return int(tradeID)
 
     def market_close(self, trade_id, units, event_close_id):
         self._close.exec(trade_id, units)
@@ -759,15 +760,18 @@ class Trade():
                 event_open_id=event_open_id,
                 client_order_comment=message
             )
-            if trade_id:
-                trade_history = {
-                    'rate': self.last_rate,
-                    'target_price': round(target_price, 2),
-                    'units':units,
-                    'event_open_id':event_open_id
-                }
-                self.insert_histoy(trade_history, trade_id)
-                self._line.send(event_open_id, message)
+            
+            if trade_id <= 0:
+                return
+
+            trade_history = {
+                'rate': self.last_rate,
+                'target_price': round(target_price, 2),
+                'units':units,
+                'event_open_id':event_open_id
+            }
+            self.insert_histoy(trade_history, trade_id)
+            self._line.send(event_open_id, message)
 
     def insert_histoy(self, trade_history, trade_id):
         self.history.insert(
