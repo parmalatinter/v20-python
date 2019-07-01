@@ -361,7 +361,7 @@ class Trade():
             # 30分 ~ close処理無しの場合
             condition_1 = delta_total_minuts > self.close_limit_minutes_1 and event_close_id <= 0
             if condition_1:
-                state = 'fix order 30min'
+                state = 'fix order {} min'.format(str(self.close_limit_minutes_1))
                  # buyの場合 
                 if row['currentUnits'] > 0:
                     
@@ -422,12 +422,13 @@ class Trade():
                 state = ''
                 profit_rate = 0
 
+                if delta_total_minuts >= self.close_limit_minutes_2:
+                    state = 'fix order {} min'.format(str(self.close_limit_minutes_2))
+                else:
+                    state = 'fix order {} min'.format(str(self.close_limit_minutes_3))
+
                 # 勝ちの場合
                 if row['unrealizedPL'] > 0:
-                    if delta_total_minuts > 90:
-                        state = 'profit close 120min'
-                    else:
-                        state = 'profit close 90min'
 
                     stop_rate = _price
                     
@@ -471,11 +472,6 @@ class Trade():
                 # 負けの場合
                 else:
 
-                    if delta_total_minuts > 90:
-                        state = 'lose close 120min'
-                    else:
-                        state = 'lose close 90min'
-
                     # buyの場合 発注価格でcloseする
                     if row['currentUnits'] > 0:
                         stop_rate = self.last_rate - 0.5
@@ -500,8 +496,13 @@ class Trade():
                     stop_rate, 2), stopLossOrderID, _client_order_comment, event_close_id)
 
                 self.history.update(int(trade_id), event_close_id, state)
+                
             if condition_4:
-                state = 'lose proift 90min'
+                if delta_total_minuts >= self.close_limit_minutes_2:
+                    state = 'lose proift 0 order {} min'.format(str(self.close_limit_minutes_2))
+                else:
+                    state = 'lose proift 0 order {} min'.format(str(self.close_limit_minutes_3))
+
                 # 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
                 event_close_id = 7
 
