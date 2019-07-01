@@ -318,10 +318,8 @@ class Trade():
             unix = row['openTime'].split(".")[0]
             trade_dt = None
             try:
-                self._logger.debug('datetime.strptime')
                 trade_dt = datetime.strptime(unix.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
             except:
-                self._logger.debug('self.to_date(unix)')
                 trade_dt = self.to_date(unix)
 
             delta = self.now_dt - trade_dt
