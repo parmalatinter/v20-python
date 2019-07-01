@@ -1,6 +1,6 @@
 UPDATE system 
 SET 
-	update_time = %(update_time)s,
+	update_time = '%(update_time)s',
 	pl =%(pl)s,
 	unrealized_pl = %(unrealized_pl)s,
 	win_count = %(win_count)s,

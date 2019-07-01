@@ -1,6 +1,6 @@
 UPDATE system 
 SET 
-	update_time = %(update_time)s,
+	update_time = '%(update_time)s',
 	balance = %(balance)s,
 	pl = %(pl)s,
 	unrealized_pl = %(unrealized_pl)s,

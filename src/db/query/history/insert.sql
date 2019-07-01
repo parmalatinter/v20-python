@@ -26,11 +26,11 @@ INSERT INTO history (
 	memo
 ) VALUES (
 	%(trade_id)s,
-	%(create_time)s,
+	'%(create_time)s',
 	%(price)s,
 	%(price_target)s,
-	%(state)s,
-	%(instrument)s,
+	'%(state)s',
+	'%(instrument)s',
 	%(units)s,
 	%(unrealized_pl)s,
 	%(event_open_id)s,
