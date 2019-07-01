@@ -744,11 +744,12 @@ class Trade():
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0):
         # 新規オーダーする場合
         if event_open_id > 0:
-
-            print('self.last_rate')
-            print(self.last_rate)
+            print('target_price')
+            print(target_price)
             print('stop_rate')
             print(stop_rate)
+            print('self.last_rate')
+            print(self.last_rate)
             print('self.lower')
             print(self.lower)
 
@@ -767,6 +768,10 @@ class Trade():
                 if self.last_rate - stop_rate < 0.08:
                     stop_rate = self.last_rate - 0.1
                     print('degbug13')
+                # targetが浅いので変更
+                if target_price - self.last_rate < 0.08:
+                    target_price = self.last_rate + 0.1
+                    print('degbug14')
             else:
                 if self.short_units:
                     if (self.short_units / units) >= self.limit_units_count:
@@ -782,10 +787,16 @@ class Trade():
                 if stop_rate - self.last_rate  < 0.08:
                     stop_rate = self.last_rate + 0.1
                     print('degbug23')
+                # targetが浅いので変更
+                if self.last_rate - target_price < 0.08:
+                    target_price = self.last_rate - 0.1
+                    print('degbug24')
 
             print('stop_rate')
             print(stop_rate)
-
+            print('target_price')
+            print(target_price)
+            
             trade_id = self.order(
                 instrument=self.instrument,
                 units=units,
