@@ -380,7 +380,8 @@ class Trade():
                     # それ以外
                     else:
                         event_close_id = 1.3
-                        profit_rate = _price - 0.08
+                        # spred分の損を回収
+                        profit_rate = _price + 0.02
                 # sellの場合 
                 else:
                     pips = _price - self.last_rate
@@ -398,7 +399,8 @@ class Trade():
                     # それ以外
                     else:
                         event_close_id = 2.3
-                        profit_rate = _price + 0.08
+                        # spred分の損を回収
+                        profit_rate = _price - 0.02
 
                 _client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
