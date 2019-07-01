@@ -3,7 +3,6 @@
 import argparse
 import common.config
 import common.args
-from instrument.view import CandlePrinter
 from datetime import datetime, timedelta
 import os 
 from pytz import timezone
@@ -13,6 +12,7 @@ class Candle():
 
     candles = None
     last_candle = None
+    time = None
 
     def get(self, instrument, granularity='M1'):
         """
@@ -49,11 +49,6 @@ class Candle():
         kwargs["granularity"] =granularity
         kwargs["fromTime"] = api.datetime_to_str(before_date)
 
-        printer = CandlePrinter()
-        file_name = 'candles.csv'
-
-        res = '{},{},{},{},{},{},{}\n'.format("index", "time", "close", "open", "high", "low", "volume")
-
         response = api.instrument.candles(instrument, **kwargs)
         count = 0 
         if response.status != 200:
@@ -63,18 +58,25 @@ class Candle():
 
         self.candles = response.get("candles", 200)
         self.last_candle = self.candles[-1]
-        print(self.candles[0])
-        print(self.candles[-1])
+        unix = self.last_candle.time.split(".")[0]
+        try:
+            self.time = datetime.strptime(unix.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+        except:
+            self.time = datetime.fromtimestamp(int(unix))
 
         return self.last_candle
 
     def get_last_rate(self):
         return float(self.last_candle.mid.c)
 
+    def get_last_date(self):
+        return self.time
+
 def main():
     candle = Candle()
     candle.get('USD_JPY', 'M10')
     print(candle.get_last_rate())
+    print(candle.get_last_date())
 
 if __name__ == "__main__":
     main()

@@ -58,6 +58,7 @@ class Trade():
     caculate_df_all = pd.DataFrame(columns=[])
     orders_info = None
     resistande_info = {'resistance_high' : 0, 'resistance_low' : 0}
+    now_dt = None
 
     rule_1 = False
     rule_2 = False
@@ -145,9 +146,6 @@ class Trade():
         # ルールその7 判定基準外
         self.rule_7 = True if self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4 else False
 
-        now_dt = self.last_df['t'][self.last_df.index[0]]
-        self.now_dt = datetime.strptime(now_dt.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
-
         caculate_df = self.get_caculate_df(self.candles_df)
         self.upper = float(caculate_df['lower'][caculate_df.index[0]])
         self.lower = float(caculate_df['upper'][caculate_df.index[0]])
@@ -160,6 +158,7 @@ class Trade():
     def update_last_rate(self):
         self._candle.get(self.instrument)
         self.last_rate = round(self._candle.get_last_rate(), 2)
+        self.now_dt = self._candle.get_last_date()
 
     def get_df(self, csv_string):
         return pd.read_csv(csv_string, sep=',', engine='python', skipinitialspace=True)
@@ -325,8 +324,6 @@ class Trade():
                 self._logger.debug('self.to_date(unix)')
                 trade_dt = self.to_date(unix)
 
-            self._logger.debug('self.now_dt' + str(self.now_dt))
-            self._logger.debug('trade_dt' + str(trade_dt))
             delta = self.now_dt - trade_dt
 
             takeProfitOrderID = str(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
@@ -335,9 +332,6 @@ class Trade():
             delta_total_minuts = delta.total_seconds()/60
             delta_total_hours = delta_total_minuts/60
             event_close_id = 0
-
-            self._logger.debug('delta_total_minuts' + str(delta_total_minuts))
-            self._logger.debug('delta_total_hours' + str(delta_total_hours))
 
             # 3時間経過後 現在値でcloseする
             if delta_total_hours >= self.close_limit_hours:
@@ -744,58 +738,35 @@ class Trade():
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0):
         # 新規オーダーする場合
         if event_open_id > 0:
-            print('target_price')
-            print(target_price)
-            print('stop_rate')
-            print(stop_rate)
-            print('self.last_rate')
-            print(self.last_rate)
-            print('self.lower')
-            print(self.lower)
 
             if units > 0:
                 if self.long_units:
                     if (self.long_units / units) >= self.limit_units_count:
-                        print('degbug10')
                         return
                 if stop_rate == 0:
                     stop_rate = self.mean - ((self.mean - self.lower) / 2)
-                    print('degbug11')
                 # stopが浅いので変更
                 if self.last_rate - stop_rate < 0.08:
                     stop_rate = self.lower
-                    print('degbug12')
                 if self.last_rate - stop_rate < 0.08:
                     stop_rate = self.last_rate - 0.1
-                    print('degbug13')
                 # targetが浅いので変更
                 if target_price - self.last_rate < 0.08:
                     target_price = self.last_rate + 0.1
-                    print('degbug14')
             else:
                 if self.short_units:
                     if (self.short_units / units) >= self.limit_units_count:
-                        print('degbug20')
                         return
                 if stop_rate == 0:
                     stop_rate = self.mean + ((self.upper - self.mean) / 2)
-                    print('degbug21')
                     # stopが浅いので変更
                 if stop_rate - self.last_rate < 0.08:
                     stop_rate = self.upper
-                    print('degbug22')
                 if stop_rate - self.last_rate  < 0.08:
                     stop_rate = self.last_rate + 0.1
-                    print('degbug23')
                 # targetが浅いので変更
                 if self.last_rate - target_price < 0.08:
-                    target_price = self.last_rate - 0.1
-                    print('degbug24')
-
-            print('stop_rate')
-            print(stop_rate)
-            print('target_price')
-            print(target_price)
+                    target_price = self.last_rate - 0.1f
 
             trade_id = self.order(
                 instrument=self.instrument,
