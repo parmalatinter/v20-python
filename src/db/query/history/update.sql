@@ -1,7 +1,7 @@
 UPDATE history 
 SET 
-	update_time = %s,
-	event_close_id = %s,
-	state = %s
+	update_time = %(update_time)s,
+	event_close_id = %(event_close_id)s,
+	state = %(state)s
 WHERE
-	trade_id = %s;
+	trade_id = %(trade_id)s;

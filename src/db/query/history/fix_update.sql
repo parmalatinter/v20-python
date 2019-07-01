@@ -1,8 +1,8 @@
 UPDATE history 
 SET 
-	update_time = %s,
-	price_close = %s,
-	pl = %s,
-	memo = %s 
+	update_time = %(update_time)s,
+	price_close = %(price_close)s,
+	pl = %(pl)s,
+	memo = %(memo)s
 WHERE
-	trade_id = %s;
+	trade_id = %(trade_idpdate_time)s;

@@ -188,8 +188,14 @@ class History():
 
         update_time = datetime.datetime.now()
 
+        args = dict(
+                update_time=update_time,
+                event_close_id=event_close_id,
+                state=state,
+                trade_id=trade_id
+            )
         sql_file = open(self.dir_path + '/query/history/update.sql', 'r')
-        self.exec_query(sql_file.read(), (update_time, event_close_id, state, trade_id))
+        self.exec_query(sql_file.read() % args)
 
     def fix_update(self, trade_id, filledTime, price_close, pl, memo=''):
 
