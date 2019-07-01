@@ -191,7 +191,7 @@ class System():
             lose_count=lose_count,
         )
 
-        self.exec_query(sql_file.read(), (update_time, pl, unrealized_pl, win_count, lose_count))
+        self.exec_query(sql_file.read() % args)
 
     def create(self):
 
