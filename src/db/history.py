@@ -204,7 +204,8 @@ class History():
                 update_time=update_time,
                 price_close=price_close,
                 pl=pl,
-                memo=memo
+                memo=memo,
+                trade_id=trade_id
             )
 
         sql_file = open(self.dir_path + '/query/history/fix_update.sql', 'r')
