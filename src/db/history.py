@@ -235,10 +235,10 @@ class History():
 
 def main():
     history = History()
-    # print(history.get_by_query("SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo'))
-    # print(history.get_by_query("SELECT event_open_id, count(state), sum(pl) AS sum FROM history GROUP BY event_open_id ORDER BY sum DESC", 'event_open_id'))
-    # print(history.get_todays_win_count())
-    # print(history.get_todays_lose_count())
+    print(history.get_by_query("SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo'))
+    print(history.get_by_query("SELECT event_open_id, count(state), sum(pl) AS sum FROM history GROUP BY event_open_id ORDER BY sum DESC", 'event_open_id'))
+    print(history.get_todays_win_count())
+    print(history.get_todays_lose_count())
     
 
     # history.add_column("resistance_high numeric")
@@ -249,36 +249,36 @@ def main():
     # history.drop()
 
     # history.create()
-    trade_id = 1
-    price = 100.20
-    price_target = 100.30
-    state = 'state 1'
-    instrument = 'USD_JPY'
-    units = 10000
-    unrealized_pl = 10000
-    event_open_id = 1
-    trend_1 = 10
-    trend_2 = 20
-    trend_3 = 30
-    trend_4 = 40
-    trend_5 = 50
-    trend_6 = 60
-    trend_cal = 100
-    judge_1 = True
-    judge_2 = False
-    # memo = 'test'
-    rule_1 = True
-    rule_2 = True
-    rule_3 = True
-    rule_4 = True
-    rule_5 = True
-    rule_6 = True
-    resistance_high = 100
-    resistance_low = 100
+    # trade_id = 1
+    # price = 100.20
+    # price_target = 100.30
+    # state = 'state 1'
+    # instrument = 'USD_JPY'
+    # units = 10000
+    # unrealized_pl = 10000
+    # event_open_id = 1
+    # trend_1 = 10
+    # trend_2 = 20
+    # trend_3 = 30
+    # trend_4 = 40
+    # trend_5 = 50
+    # trend_6 = 60
+    # trend_cal = 100
+    # judge_1 = True
+    # judge_2 = False
+    # # memo = 'test'
+    # rule_1 = True
+    # rule_2 = True
+    # rule_3 = True
+    # rule_4 = True
+    # rule_5 = True
+    # rule_6 = True
+    # resistance_high = 100
+    # resistance_low = 100
 
-    history.insert(
-        trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, resistance_high, resistance_low
-    )
+    # history.insert(
+    #     trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, resistance_high, resistance_low
+    # )
 
     # pl = 20000
     # price_close = 100.40
