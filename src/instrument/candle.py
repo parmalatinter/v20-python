@@ -66,7 +66,7 @@ class Candle():
 
         self.candles = response.get("candles", 200)
         self.last_candle = self.candles[0]
-        print(self.candles)
+        print(self.candles.__dict__)
 
         return self.last_candle
 
