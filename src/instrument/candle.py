@@ -65,7 +65,7 @@ class Candle():
             return
 
         self.candles = response.get("candles", 200)
-        self.last_candle = self.candles[-1]
+        self.last_candle = self.candles[0]
 
         return self.last_candle
 
