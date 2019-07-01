@@ -49,5 +49,5 @@ INSERT INTO history (
 	%s,
 	%s,
 	%s,
-	0
+	""
 )
