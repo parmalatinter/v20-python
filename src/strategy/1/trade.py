@@ -830,8 +830,8 @@ class Trade():
             rule_4=self.rule_4,
             rule_5=self.rule_5,
             rule_6=self.rule_6,
-            resistance_high=self.resistande_info['resistance_high'],
-            resistance_low=self.resistande_info['resistance_low'],
+            resistance_high=round(self.resistande_info['resistance_high'], 2),
+            resistance_low=round(self.resistande_info['resistance_low'], 2),
             memo=''
         )
 
