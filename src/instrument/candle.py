@@ -14,7 +14,7 @@ class Candle():
     candles = None
     last_candle = None
 
-    def get(self, instrument, granularity='M5'):
+    def get(self, instrument, granularity='M1'):
         """
         Create an API context, and use it to fetch candles for an instrument.
 
