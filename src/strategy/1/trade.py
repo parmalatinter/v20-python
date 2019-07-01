@@ -766,7 +766,7 @@ class Trade():
                     stop_rate = self.last_rate + 0.1
                 # targetが浅いので変更
                 if self.last_rate - target_price < 0.08:
-                    target_price = self.last_rate - 0.1f
+                    target_price = self.last_rate - 0.1
 
             trade_id = self.order(
                 instrument=self.instrument,
