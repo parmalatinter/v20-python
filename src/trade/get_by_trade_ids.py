@@ -71,7 +71,7 @@ def main():
         print(rows)
 
         for trade_id, row in rows.items():
-            history.fix_update(int(trade_id), row['filledTime'], row['price'], row['realizedPL'], row['type'])
+            history.fix_update(int(trade_id), row['price'], row['realizedPL'], row['type'])
 
 if __name__ == "__main__":
     main()

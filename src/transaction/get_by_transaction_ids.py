@@ -55,7 +55,7 @@ class Get_by_transaction_ids(object):
                             rows[transaction.id]['tradeID'] = closed.tradeID
 
         for transaction_id, row in rows.items():
-            history.fix_update(int(row['tradeID']), row['time'], row['price'], row['realizedPL'], row['reason'])
+            history.fix_update(int(row['tradeID']), row['price'], row['realizedPL'], row['reason'])
 
 def main():
     details = account.details.Details()
