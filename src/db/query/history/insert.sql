@@ -22,8 +22,7 @@ INSERT INTO history (
 	rule_5,
 	rule_6,
 	resistance_high,
-	resistance_low,
-	memo
+	resistance_low
 ) VALUES (
 	%(trade_id)s,
 	'%(create_time)s',
@@ -48,6 +47,5 @@ INSERT INTO history (
 	%(rule_5)s,
 	%(rule_6)s,
 	%(resistance_high)s,
-	%(resistance_low)s,
-	""
+	%(resistance_low)s
 )
