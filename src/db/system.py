@@ -141,16 +141,16 @@ class System():
         create_time = datetime.datetime.now()
 
         sql_file = open(self.dir_path + '/query/system/insert.sql', 'r')
-        args = (
-            balance,
-            pl,
-            pl_percent,
-            win_count,
-            lose_count,
-            trade_count,
-            create_time
+        args = dict(
+            balance=balance,
+            pl=pl,
+            pl_percent=pl_percent,
+            win_count=win_count,
+            lose_count=lose_count,
+            trade_count=trade_count,
+            create_time=create_time
         )
-        self.exec_query(sql_file.read(), args)
+        self.exec_query(sql_file.read() % args)
 
     def delete(self, id):
 
@@ -164,14 +164,32 @@ class System():
 
         sql_file = open(self.dir_path + '/query/system/update.sql', 'r')
 
-        self.exec_query(sql_file.read(), (update_time, balance, pl,
-                                          unrealized_pl, pl_percent, win_count, lose_count, trade_count))
+        args = dict(
+            update_time=update_time,
+            balance=balance,
+            pl=pl,
+            unrealized_pl=unrealized_pl,
+            pl_percent=pl_percent,
+            win_count=win_count,
+            lose_count=lose_count,
+            trade_count=trade_count,
+        )
+
+        self.exec_query(sql_file.read() % args)
 
     def update_profit(self, pl, unrealized_pl, win_count, lose_count):
 
         update_time = datetime.datetime.now()
 
         sql_file = open(self.dir_path + '/query/system/update_profit.sql', 'r')
+
+        args = dict(
+            update_time=update_time,
+            pl=pl,
+            unrealized_pl=unrealized_pl,
+            win_count=win_count,
+            lose_count=lose_count,
+        )
 
         self.exec_query(sql_file.read(), (update_time, pl, unrealized_pl, win_count, lose_count))
 
