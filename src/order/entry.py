@@ -4,6 +4,7 @@ import argparse
 import common.config
 from .args import OrderArguments, add_replace_order_id_argument
 from .view import print_order_create_response_transactions
+import v20.transaction
 
 class Entry():
 
@@ -25,7 +26,6 @@ class Entry():
         #
         # Add the command line argument to parse to the v20 config
         #
-        common.config.add_argument(self.parser)
 
         #
         # Add the argument to support replacing an existing argument
@@ -36,7 +36,7 @@ class Entry():
         #
         # Add the command line arguments required for an Entry Order
         #
-        orderArgs = OrderArguments(parser)
+        orderArgs = OrderArguments(self.parser)
         orderArgs.add_instrument()
         orderArgs.add_units()
         orderArgs.add_price()
@@ -55,7 +55,7 @@ class Entry():
         #
         orderArgs.parse_arguments(self.args)
 
-        self.exec(marketOrderArgs.parsed_args)
+        self.exec(orderArgs.parsed_args)
 
     def exec(self, arguments):
 
@@ -79,6 +79,15 @@ class Entry():
                 arguments['replace_order_id'] = self.args.replace_order_id
         except:
             arguments
+
+        if 'take_profit_price' in arguments:
+            print(arguments['take_profit_price'])
+            kwargs = {'price': arguments['take_profit_price']}
+            arguments['takeProfitOnFill'] = v20.transaction.TakeProfitDetails(**kwargs)
+        if 'stop_loss_price' in arguments:
+            kwargs = {'price': arguments['stop_loss_price']}
+            arguments['stopLossOnFill'] = v20.transaction.StopLossDetails(**kwargs)
+
 
         if 'replace_order_id' in arguments:
             #
@@ -124,11 +133,11 @@ class Entry():
 
 def main():
     entry = Entry()
-    entry.exec({'instrument': 'USD_JPY', 'units':1, 'price' : 120})
+    entry.exec({'instrument': 'USD_JPY', 'units':1, 'price' : 120, 'take_profit_price' : 121 , 'stop_loss_price' : 119})
     response = entry.get_response()
     print(response.__dict__)
 
-# def Entry():
+# def main():
 #     entry = Entry()
 #     entry.exec_by_cmd()
 #     entry.print_response()

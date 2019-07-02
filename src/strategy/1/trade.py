@@ -242,7 +242,7 @@ class Trade():
     def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
         # self.market.exec({'instrument': self.instrument, 'units': units})
         target_rate = self.last_rate - 0.01 if units > 0 else self.last_rate + 0.01
-        self.entry.exec({'instrument': self.instrument, 'units':units, 'price' : target_rate})
+        self.entry.exec({'instrument': 'self.instrument', 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
         response = self.entry.get_response()
 
         stop_rate = str(stop_rate)
@@ -252,50 +252,13 @@ class Trade():
 
         if response.status == 201:
             tradeID = str(self.entry.get_trade_id())
-
-            self._take_profit.exec({'tradeID':  tradeID, 'price': profit_rate})
-            response1 = self._take_profit.get_response()
-            if response1.status == 201:
-                self._line.send('order profit #' + tradeID,
-                                str(profit_rate) + ' ' + str(event_open_id))
-            elif response1.status == 400:
-                errors = self._take_profit.get_errors()
-                self._line.send('order profit bad request #', str(
-                    errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID) 
-                return int(tradeID)
-            else:
-                errors = self._take_profit.get_errors()
-                self._line.send('order profit faild #', str(
-                    errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID)
-                return int(tradeID)
-
-            self._stop_loss.exec({'tradeID':  tradeID, 'price': stop_rate})
-            response2 = self._stop_loss.get_response()
-            if response2.status == 201:
-                self._line.send('order stop #' + tradeID,
-                                str(stop_rate) + ' ' + str(event_open_id))
-            elif response2.status == 400:
-                # Stop lossが通らないほど逆行
-                self.market_close(tradeID, 'ALL', 66)
-                trade_history = {
-                    'rate': self.last_rate,
-                    'target_price': profit_rate,
-                    'units': units,
-                    'event_open_id': event_open_id,
-                }
-                self.insert_histoy(trade_history, tradeID)
-                self.history.update(int(tradeID), 999, 'close order stop bad request')
-                errors = self._stop_loss.get_errors()
-                args_str = ' instrument:{}, units:{}, profit_rate:{}, stop_rate:{}, event_open_id:{}, client_order_comment:{}\n'.format(instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment)
-                self._line.send('order stop bad request #', str(
-                    errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID + args_str) 
-                return 0
-            else:
-                errors = self._stop_loss.get_errors()
-                self._line.send('order stop faild #', str(
-                    errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + tradeID)
-            
-            return int(tradeID)
+            message = 'new order event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}'.format(str(event_open_id), srt(units), srt(target_rate), srt(profit_rate) , srt(stop_rate))
+            self._line.send('order profit #' + tradeID, str(profit_rate) + ' ' + str(event_open_id))
+        else:
+            errors = self.entry.get_errors()
+            self._line.send('order stop faild #', str(errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + str(tradeID))
+        
+        return int(tradeID)
 
     def market_close(self, trade_id, units, event_close_id):
         self._close.exec(trade_id, units)
@@ -862,7 +825,7 @@ def main():
     candles_df = trade.get_df_by_string(candles_csv_string)
 
     trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info)
-
+            
     if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
         trade.analyze_trade()
 
