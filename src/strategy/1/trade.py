@@ -287,7 +287,6 @@ class Trade():
             return False
 
     def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
-        # self.market.exec({'instrument': self.instrument, 'units': units})
         target_rate = self.last_rate - 0.01 if units > 0 else self.last_rate + 0.01
         target_rate = round(target_rate,2)
         profit_rate = round(profit_rate,2)
@@ -325,6 +324,43 @@ class Trade():
                 str(tradeID)
             )
             self._line.send('new order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
+        
+        return int(tradeID)
+
+    def order_market(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
+        profit_rate = round(profit_rate,2)
+        stop_rate = round(stop_rate,2)
+        self.market.exec({'instrument': self.instrument, 'units': units, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
+        response = self.market.get_response()
+
+        target_rate = str(target_rate)
+        stop_rate = str(stop_rate)
+        profit_rate = str(profit_rate)
+
+        tradeID = 0
+
+        if response.status == 201:
+            tradeID = str(self.market.get_trade_id())
+            message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
+                str(event_open_id),
+                str(units),
+                str(profit_rate) ,
+                str(stop_rate),
+                str(self.last_rate),
+                str(tradeID)
+            )
+            self._line.send('new marlet order', message)
+        else:
+            errors = self.market.get_errors()
+            message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
+                str(event_open_id),
+                str(units),
+                str(profit_rate) ,
+                str(stop_rate),
+                str(self.last_rate),
+                str(tradeID)
+            )
+            self._line.send('new market order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
         
         return int(tradeID)
 
@@ -597,7 +633,8 @@ class Trade():
                      units=_units,
                      event_open_id=_event_open_id,
                      target_price=_target_price,
-                     stop_rate=_stop_rate
+                     stop_rate=_stop_rate,
+                     is_market=False
                  )
 
                 _units = 0 - _units
@@ -610,7 +647,8 @@ class Trade():
              units=_units,
              event_open_id=_event_open_id,
              target_price=_target_price,
-             stop_rate=_stop_rate
+             stop_rate=_stop_rate,
+             is_market=False
          )
 
         _event_open_id = 0
@@ -645,7 +683,8 @@ class Trade():
                      units= 0 - _units,
                      event_open_id=_event_open_id,
                      target_price=_target_price,
-                     stop_rate=_stop_rate
+                     stop_rate=_stop_rate,
+                     is_market=False
                  )
 
                 _target_price = self.last_rate + self.min_profit_pips
@@ -657,7 +696,8 @@ class Trade():
              units=_units,
              event_open_id=_event_open_id,
              target_price=_target_price,
-             stop_rate=_stop_rate
+             stop_rate=_stop_rate,
+             is_market=False
          )
         _event_open_id = 0
         # ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
@@ -674,7 +714,7 @@ class Trade():
             _event_open_id = 8
             _target_price = self.last_rate - self.regular_profit_pips
 
-        # ルールその5 ボリバン上限突破　且つ　 trendが-20以下の場合
+        # ルールその5 ボリバン上限突破　且つ　trendが-20以下の場合
         elif self.rule_5 and self.trend_usd['res'] < -20:
             _message = 'buy chance order 9 # {}'.format(str(self.last_rate))
             _units = self.units/2
@@ -687,7 +727,8 @@ class Trade():
                  units=_units,
                  event_open_id=_event_open_id,
                  target_price=_target_price,
-                 stop_rate=_stop_rate
+                 stop_rate=_stop_rate,
+                 is_market=True
              )
 
             _units = 0 - _units
@@ -707,7 +748,8 @@ class Trade():
                  units= 0 - _units,
                  event_open_id=_event_open_id,
                  target_price=_target_price,
-                 stop_rate=_stop_rate
+                 stop_rate=_stop_rate,
+                 is_market=True
              )
 
             _target_price = self.last_rate + self.min_profit_pips
@@ -719,7 +761,8 @@ class Trade():
              units=_units,
              event_open_id=_event_open_id,
              target_price=_target_price,
-             stop_rate=_stop_rate
+             stop_rate=_stop_rate,
+             is_market=True
          )
         _event_open_id = 0
         # 判定基準がなく停滞中
@@ -739,7 +782,8 @@ class Trade():
                      units=_units,
                      event_open_id=_event_open_id,
                      target_price=_target_price,
-                     stop_rate=_stop_rate
+                     stop_rate=_stop_rate,
+                     is_market=True
                  )
 
                 _units = self.units
@@ -751,7 +795,8 @@ class Trade():
                      units=_units,
                      event_open_id=_event_open_id,
                      target_price=_target_price,
-                     stop_rate=_stop_rate
+                     stop_rate=_stop_rate,
+                     is_market=True
                  )
 
             # 抵抗ライン下限突破
@@ -769,7 +814,8 @@ class Trade():
                      units=_units,
                      event_open_id=_event_open_id,
                      target_price=_target_price,
-                     stop_rate=_stop_rate
+                     stop_rate=_stop_rate,
+                     is_market=True
                  )
 
                 _units = 0 - self.units
@@ -781,10 +827,11 @@ class Trade():
                      units=_units,
                      event_open_id=_event_open_id,
                      target_price=_target_price,
-                     stop_rate=_stop_rate
-                 )
+                     stop_rate=_stop_rate,
+                     is_market=True
+                )
 
-    def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0):
+    def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0, is_market=False):
         # 新規オーダーする場合
         if event_open_id > 0:
 
@@ -817,13 +864,23 @@ class Trade():
                 if self.last_rate - target_price < self.regular_profit_pips:
                     target_price = self.last_rate - 0.1
 
-            trade_id = self.order(
-                units=units,
-                profit_rate=round(target_price, 2),
-                stop_rate=round(stop_rate, 2),
-                event_open_id=event_open_id,
-                client_order_comment=message
-            )
+            trade_id = 0
+            if is_market:
+                trade_id = self.order(
+                    units=units,
+                    profit_rate=round(target_price, 2),
+                    stop_rate=round(stop_rate, 2),
+                    event_open_id=event_open_id,
+                    client_order_comment=message
+                )
+            else:
+                trade_id = self.order_market(
+                    units=units,
+                    profit_rate=round(target_price, 2),
+                    stop_rate=round(stop_rate, 2),
+                    event_open_id=event_open_id,
+                    client_order_comment=message
+                )
             
             if trade_id <= 0:
                 return
