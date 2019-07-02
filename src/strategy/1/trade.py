@@ -419,7 +419,7 @@ class Trade():
             if delta_total_hours >= self.close_limit_hours:
                 self.market_close(trade_id, 'ALL', 99)
 
-                self.history.update(int(trade_id), 99, 'close 120min')
+                self.history.update(int(trade_id), 99, 'delta_total_hours >= self.close_limit_hours')
                 continue
 
             history_df = self.history.get_by_panda(trade_id)
