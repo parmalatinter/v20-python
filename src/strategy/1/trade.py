@@ -245,7 +245,7 @@ class Trade():
         target_rate = round(target_rate,2)
         profit_rate = round(profit_rate,2)
         stop_rate = round(stop_rate,2)
-        self.entry.exec({'instrument': 'self.instrument', 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
+        self.entry.exec({'instrument': self.instrument, 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
         response = self.entry.get_response()
 
         target_rate = str(target_rate)
