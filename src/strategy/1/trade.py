@@ -29,6 +29,7 @@ import instrument.candle as inst_one
 import transaction.transactions
 import transaction.get_by_transaction_ids
 import order.market
+import order.entry
 import order.take_profit
 import order.stop_loss
 import trade.close
@@ -41,6 +42,7 @@ class Trade():
     history = None
     _system = None
     market = None
+    entry = None
     _take_profit = None
     _stop_loss = None
     _close = None
@@ -94,7 +96,8 @@ class Trade():
         self._line = line.line.Line()
         self.history = db.history.History()
         self._system = db.system.System()
-        self.market = order.market.Market()
+        # self.market = order.market.Market()
+        self.entry = order.entry.Entry()
         self._take_profit = order.take_profit.Take_profit()
         self._stop_loss = order.stop_loss.Stop_loss()
         self._close = trade.close.Close()
@@ -236,9 +239,11 @@ class Trade():
             self._line.send('fix order stop loss faild #', str(
                 errors['errorCode']) + ':' + errors['errorMessage'] + ' event:' + str(event_close_id))
 
-    def order(self, instrument, units, profit_rate, stop_rate, event_open_id, client_order_comment):
-        self.market.exec({'instrument': instrument, 'units': units})
-        response = self.market.get_response()
+    def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
+        # self.market.exec({'instrument': self.instrument, 'units': units})
+        target_rate = self.last_rate - 0.01 if units > 0 else self.instrument + 0.01
+        self.entry.exec({'instrument': self.instrument, 'units':units, 'price' : target_rate})
+        response = self.entry.get_response()
 
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
@@ -246,7 +251,7 @@ class Trade():
         tradeID = 0
 
         if response.status == 201:
-            tradeID = str(self.market.get_trade_id())
+            tradeID = str(self.entry.get_trade_id())
 
             self._take_profit.exec({'tradeID':  tradeID, 'price': profit_rate})
             response1 = self._take_profit.get_response()
@@ -772,7 +777,6 @@ class Trade():
                     target_price = self.last_rate - 0.1
 
             trade_id = self.order(
-                instrument=self.instrument,
                 units=units,
                 profit_rate=round(target_price, 2),
                 stop_rate=round(stop_rate, 2),
