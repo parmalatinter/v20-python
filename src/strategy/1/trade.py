@@ -494,7 +494,7 @@ class Trade():
         if self.is_golden:
             # trendがnormal_trend_range以上の場合
             if self.trend_usd['res'] > self.normal_trend_range:
-                _message = ("buy golden order trend > normal_trend_range 1 #", self.last_rate)
+                _message = 'buy golden order trend > normal_trend_range 1 # {}'.format(str(self.last_rate))
                 _units = self.units
                 _event_open_id = 1
                 _target_price = self.last_rate + 0.1
@@ -502,14 +502,14 @@ class Trade():
 
             # trendが-normal_trend_range以下の場合
             elif self.trend_usd['res'] < 0-self.normal_trend_range:
-                _message = ("buy golden order trend < -normal_trend_range 2 #", self.last_rate)
+                _message = 'buy golden order trend < -normal_trend_range 2  # {}'.format(str(self.last_rate))
                 _units = self.units
                 _event_open_id = 2
                 _target_price = self.last_rate + 0.1
                 _stop_rate = self.last_rate - 0.1
             # その他の場合
             else:
-                _message = ("buy golden order trend other 3 #", self.last_rate)
+                _message = 'buy golden order trend other 3 # {}'.format(str(self.last_rate))
                 _units = self.units/2
                 _event_open_id = 3
                 _target_price = self.last_rate + self.min_profit_pips
@@ -542,7 +542,7 @@ class Trade():
         if self.is_dead:
             # trendが-normal_trend_range以下の場合
             if self.trend_usd['res'] < 0 - self.normal_trend_range:
-                _message = ("sell dead order trend < -normal_trend_range 4 #", self.last_rate)
+                _message = 'sell dead order trend < -normal_trend_range 4 # {}'.format(str(self.last_rate))
                 _units = 0 - self.units
                 _event_open_id = 4
                 _target_price = self.last_rate - 0.1
@@ -550,14 +550,14 @@ class Trade():
 
             # trendがnormal_trend_range以上の場合
             elif self.trend_usd['res'] > self.normal_trend_range:
-                _message = ("sell dead order trend > normal_trend_range 5 #", self.last_rate)
+                _message = 'sell dead order trend > normal_trend_range 5 # {}'.format(str(self.last_rate))
                 _units = 0 - self.units
                 _event_open_id = 5
                 _target_price = self.last_rate - 0.1
                 _stop_rate = self.last_rate + 0.1
             # その他の場合
             else:
-                _message = ("sell dead order other 6 #", self.last_rate)
+                _message = 'sell dead order other 6 # {}'.format(str(self.last_rate))
                 _units = self.units/2
                 _event_open_id = 6
                 _target_price = self.last_rate - self.min_profit_pips
@@ -585,21 +585,21 @@ class Trade():
         _event_open_id = 0
         # ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
         if self.rule_1 and self.rule_2:
-            _message = ("buy chance order 7 #", self.last_rate)
+            _message = 'buy chance order 7 # {}'.format(str(self.last_rate))
             _units = self.units/2
             _event_open_id = 7
             _target_price = self.last_rate + self.regular_profit_pips
 
         # ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
         elif self.rule_3 and self.rule_4:
-            _message = ("sell chance order 8 #", self.last_rate)
+            _message = 'sell chance order 8 # {}'.format(str(self.last_rate))
             _units = 0 - (self.units/2)
             _event_open_id = 8
             _target_price = self.last_rate - self.regular_profit_pips
 
         # ルールその5 ボリバン上限突破　且つ　 trendが-20以下の場合
         elif self.rule_5 and self.trend_usd['res'] < -20:
-            _message = ("buy chance order 9 #", self.last_rate)
+            _message = 'buy chance order 9 # {}'.format(str(self.last_rate))
             _units = self.units/2
             _event_open_id = 9
             _target_price = self.last_rate + self.min_profit_pips
@@ -619,7 +619,7 @@ class Trade():
 
         # ルールその6 ボリバン下限突破　且つ　 trendが20以上の場合
         elif self.rule_6 and self.trend_usd['res'] > 20:
-            _message = ("sell chance order 10 #", self.last_rate)
+            _message = 'sell chance order 10 # {}'.format(str(self.last_rate))
             _units = self.units/2
             _event_open_id = 10
             _target_price = self.last_rate - self.min_profit_pips
@@ -651,7 +651,7 @@ class Trade():
             if self.resistande_info['resistance_high'] == 0:
                 return
             elif self.resistande_info['resistance_high'] < self.last_rate:
-                _message = ("line break chance order 11 #", self.last_rate)
+                _message = 'line break chance order 11 # {}'.format(str(self.last_rate))
                 _units = 0 - self.units
                 _event_open_id = 11
                 _target_price = self.last_rate - self.min_profit_pips
@@ -681,7 +681,7 @@ class Trade():
             if self.resistande_info['resistance_low'] == 0:
                 return
             elif self.resistande_info['resistance_low'] > self.last_rate:
-                _message = ("line break chance order 12 #", self.last_rate)
+                _message = 'line break chance order 12 # {}'.format(str(self.last_rate))
                 _units = self.units
                 _event_open_id = 12
                 _target_price = self.last_rate + self.min_profit_pips
