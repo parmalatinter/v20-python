@@ -113,8 +113,7 @@ class Trend():
 
 def main():
 	trend = Trend()
-	trend.get()
-	# print(trend.get())
+	print(trend.get())
 
 
 	# # 各通貨の値の計算
