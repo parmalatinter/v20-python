@@ -5,6 +5,7 @@ import common.config
 from .args import OrderArguments
 from v20.order import MarketOrderRequest
 from .view import print_order_create_response_transactions
+import v20.transaction
 
 class Market():
 
@@ -61,6 +62,15 @@ class Market():
         #
         # Submit the request to create the Market Order
         #
+
+        if 'take_profit_price' in arguments:
+            print(arguments['take_profit_price'])
+            kwargs = {'price': arguments['take_profit_price']}
+            arguments['takeProfitOnFill'] = v20.transaction.TakeProfitDetails(**kwargs)
+        if 'stop_loss_price' in arguments:
+            kwargs = {'price': arguments['stop_loss_price']}
+            arguments['stopLossOnFill'] = v20.transaction.StopLossDetails(**kwargs)
+
         response = api.order.market(
             self.args.config.active_account,
             **arguments
@@ -70,7 +80,9 @@ class Market():
 
         if self.response.status == 201 and self.response.reason == "Created":
             self.trade_id = self.response.get("lastTransactionID", None)
-
+        else:
+            self.errorMessage = response.get("errorMessage", None)
+            
     def get_response(self):
         return self.response
 
