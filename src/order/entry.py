@@ -111,7 +111,9 @@ class Entry():
 
         if self.response.status == 201 and self.response.reason == "Created":
             self.trade_id = self.response.get("lastTransactionID", None)
-            
+        else:
+            self.errorMessage = response.get("errorMessage", None)
+        
     def get_response(self):
         return self.response
 
