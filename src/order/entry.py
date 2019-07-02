@@ -15,7 +15,7 @@ class Entry():
     common.config.add_argument(parser)
     errorCode = '' 
     errorMessage = ''
-    trade_id = ''
+    trade_id = 0
     
     def exec_by_cmd(self):
         """

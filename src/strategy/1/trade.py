@@ -297,31 +297,21 @@ class Trade():
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
 
-        tradeID = 0
+        tradeID = str(self._entry.get_trade_id())
+        message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
+            str(event_open_id),
+            str(units),
+            str(target_rate),
+            str(profit_rate) ,
+            str(stop_rate),
+            str(self.last_rate),
+            str(tradeID)
+        )
 
         if response.status == 201:
-            tradeID = str(self._entry.get_trade_id())
-            message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
-                str(event_open_id),
-                str(units),
-                str(target_rate),
-                str(profit_rate) ,
-                str(stop_rate),
-                str(self.last_rate),
-                str(tradeID)
-            )
             self._line.send('new order', message)
         else:
             errors = self._entry.get_errors()
-            message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
-                str(event_open_id),
-                str(units),
-                str(target_rate),
-                str(profit_rate) ,
-                str(stop_rate),
-                str(self.last_rate),
-                str(tradeID)
-            )
             self._line.send('new order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
         
         return int(tradeID)
@@ -336,29 +326,20 @@ class Trade():
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
 
-        tradeID = 0
+        tradeID = str(self._market.get_trade_id())
+        message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
+            str(event_open_id),
+            str(units),
+            str(profit_rate) ,
+            str(stop_rate),
+            str(self.last_rate),
+            str(tradeID)
+        )
 
         if response.status == 201:
-            tradeID = str(self._market.get_trade_id())
-            message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
-                str(event_open_id),
-                str(units),
-                str(profit_rate) ,
-                str(stop_rate),
-                str(self.last_rate),
-                str(tradeID)
-            )
             self._line.send('new marlet order', message)
         else:
             errors = self._market.get_errors()
-            message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
-                str(event_open_id),
-                str(units),
-                str(profit_rate) ,
-                str(stop_rate),
-                str(self.last_rate),
-                str(tradeID)
-            )
             self._line.send('new market order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
         
         return int(tradeID)
@@ -367,22 +348,17 @@ class Trade():
         self._close.exec(trade_id, units)
         response = self._close.get_response()
 
+        message = 'event_open_id: {}, units : {}, now_rate : {}, trade_id : {}'.format(
+            str(event_open_id),
+            str(units),
+            str(self.last_rate),
+            str(trade_id)
+        )
+        
         if response.status == 201 or response.reason == 'OK':
-            message = 'event_open_id: {}, units : {}, now_rate : {}, trade_id : {}'.format(
-                str(event_open_id),
-                str(units),
-                str(self.last_rate),
-                str(trade_id)
-            )
             self._line.send('expire close', message)
         else:
-            message = 'event_open_id: {}, units : {}, now_rate : {}, trade_id : {}'.format(
-                str(event_open_id),
-                str(units),
-                str(self.last_rate),
-                str(trade_id)
-            )
-            self._line.send('expire close failed ' + esponse.reason, message)
+            self._line.send('expire close failed ' + response.reason, message)
 
     def to_date(self, time_str):
         unix = time_str.split(".")[0]

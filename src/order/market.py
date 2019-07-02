@@ -16,7 +16,7 @@ class Market():
     common.config.add_argument(parser)
     errorCode = '' 
     errorMessage = ''
-    trade_id = ''
+    trade_id = 0
 
     def exec_by_cmd(self):
 
@@ -82,7 +82,7 @@ class Market():
             self.trade_id = self.response.get("lastTransactionID", None)
         else:
             self.errorMessage = response.get("errorMessage", None)
-            
+
     def get_response(self):
         return self.response
 
