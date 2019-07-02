@@ -286,7 +286,7 @@ class Trade():
             return False
 
     def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
-        target_rate = self.last_rate - 0.01 if units > 0 else self.last_rate + 0.01
+        target_rate = self.last_rate - 0.03 if units > 0 else self.last_rate + 0.03
         target_rate = round(target_rate,2)
         profit_rate = round(profit_rate,2)
         stop_rate = round(stop_rate,2)
@@ -459,7 +459,7 @@ class Trade():
                     # 利益0.5以上
                     elif pips > self.regular_profit_pips:
                         event_close_id = 1.2
-                        profit_rate = self.last_rate + 0.01
+                        profit_rate = self.last_rate + 0.03
                     # それ以外
                     else:
                         event_close_id = 1.3
@@ -478,7 +478,7 @@ class Trade():
                     # 利益0.5以上
                     elif pips > self.regular_profit_pips:
                         event_close_id = 2.2
-                        profit_rate = self.last_rate - 0.01
+                        profit_rate = self.last_rate - 0.03
                     # それ以外
                     else:
                         event_close_id = 2.3
@@ -532,7 +532,7 @@ class Trade():
                         # それ以外
                         else:
                             event_close_id = 3.3
-                            profit_rate = self.last_rate + 0.01
+                            profit_rate = self.last_rate + 0.03
 
                     # sellの場合 現在価格マイナス0.1でcloseする
                     else:
@@ -550,7 +550,7 @@ class Trade():
                         # それ以外
                         else:
                             event_close_id = 4.3
-                            profit_rate = self.last_rate - 0.01
+                            profit_rate = self.last_rate - 0.03
 
                 # 負けの場合
                 else:
@@ -558,7 +558,7 @@ class Trade():
                     # buyの場合 発注価格でcloseする
                     if row['currentUnits'] > 0:
                         stop_rate = self.last_rate - 0.5
-                        profit_rate = _price + 0.01
+                        profit_rate = _price + 0.03
 
                         event_close_id = 5
                         _client_order_comment = (
@@ -567,7 +567,7 @@ class Trade():
                     # sellの場合 発注価格でcloseする
                     else:
                         stop_rate = self.last_rate + 0.5
-                        profit_rate = _price - 0.01
+                        profit_rate = _price - 0.03
 
                         event_close_id = 6
                         _client_order_comment = (
