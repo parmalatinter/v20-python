@@ -169,7 +169,7 @@ class Draw(object):
         df['sma_4'] = np.round(df['c'].rolling(window=5).mean(), 2)
         # 期間14単純移動平均
         df['sma_14'] = np.round(df['c'].rolling(window=15).mean(), 2)
-        df['diff'] = df['sma_5'] - df['sma_14']
+        df['diff'] = df['sma_4'] - df['sma_14']
 
         # ルールその1 C3 < lower
         df['rule_1'] = 0
