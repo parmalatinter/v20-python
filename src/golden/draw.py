@@ -209,7 +209,7 @@ class Draw(object):
         # デッドクロスを検出
         df['dead'] = ((np.roll(asign, 1) - asign) == 2).astype(int)
 
-        ranges = slice(df['l'],170,None)
+        # ranges = slice(df['l'],170,None)
  
         # 10分間でポジションを決済
         # df['g_returns'] = df['c'] - df['c'].shift(5)
