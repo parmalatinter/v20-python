@@ -39,16 +39,17 @@ import account.details
 
 class Trade():
 
-    history = None
+    _history = None
     _system = None
-    market = None
-    entry = None
+    _market = None
+    _entry = None
     _take_profit = None
     _stop_loss = None
     _close = None
     _logger = None
     _line = None
     _candle = None
+    _trend = None
     instrument = "USD_JPY"
     units = 10
     limit_units_count = 2
@@ -94,15 +95,16 @@ class Trade():
 
     def __init__(self, _environ):
         self._line = line.line.Line()
-        self.history = db.history.History()
+        self._history = db.history.History()
         self._system = db.system.System()
-        # self.market = order.market.Market()
-        self.entry = order.entry.Entry()
+        self._market = order.market.Market()
+        self._entry = order.entry.Entry()
         self._take_profit = order.take_profit.Take_profit()
         self._stop_loss = order.stop_loss.Stop_loss()
         self._close = trade.close.Close()
+        self._candle = inst_one.Candle()
 
-        self.trend_usd = trend.get.Trend().get()
+        self._trend = trend.get.Trend()
         trace_log = common.trace_log.Trace_log()
         self._logger = trace_log.get()
 
@@ -129,13 +131,17 @@ class Trade():
         self.candles_df = candles_df
         self.long_units = long_units
         self.short_units = short_units
+        self.trend_usd = self._trend.get()
+        self.orders_info = orders_info
         self.last_df = self.get_caculate_df(self.candles_df)
         self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
         self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
         self.upper = float(self.last_df['upper'][self.last_df.index[0]])
         self.lower = float(self.last_df['lower'][self.last_df.index[0]])
         self.mean = float(self.last_df['mean'][self.last_df.index[0]])
-        
+        self.upper_high = float(self.last_df['upper_high'][self.last_df.index[0]])
+        self.lower_low = float(self.last_df['lower_low'][self.last_df.index[0]])
+
         # ルールその1 C3 < lower
         self.rule_1 = True if self.last_df['rule_1'][self.last_df.index[0]] == 1 else False
         # ルールその2　3つ陽線
@@ -151,13 +157,6 @@ class Trade():
         # ルールその7 判定基準外
         self.rule_7 = True if self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4 else False
 
-        caculate_df = self.get_caculate_df(self.candles_df)
-        self.upper = float(caculate_df['lower'][caculate_df.index[0]])
-        self.lower = float(caculate_df['upper'][caculate_df.index[0]])
-        self.upper_high = float(caculate_df['upper_high'][caculate_df.index[0]])
-        self.lower_low = float(caculate_df['lower_low'][caculate_df.index[0]])
-        self.orders_info = orders_info
-        self._candle = inst_one.Candle()
         self.update_last_rate()
 
     def update_last_rate(self):
@@ -195,7 +194,7 @@ class Trade():
         return self.caculate_df_all
 
     def get_histoy_csv(self):
-        return self.history.get_all_by_csv()
+        return self._history.get_all_by_csv()
 
     def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 
@@ -291,8 +290,8 @@ class Trade():
         target_rate = round(target_rate,2)
         profit_rate = round(profit_rate,2)
         stop_rate = round(stop_rate,2)
-        self.entry.exec({'instrument': self.instrument, 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
-        response = self.entry.get_response()
+        self._entry.exec({'instrument': self.instrument, 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
+        response = self._entry.get_response()
 
         target_rate = str(target_rate)
         stop_rate = str(stop_rate)
@@ -301,7 +300,7 @@ class Trade():
         tradeID = 0
 
         if response.status == 201:
-            tradeID = str(self.entry.get_trade_id())
+            tradeID = str(self._entry.get_trade_id())
             message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
                 str(event_open_id),
                 str(units),
@@ -313,7 +312,7 @@ class Trade():
             )
             self._line.send('new order', message)
         else:
-            errors = self.entry.get_errors()
+            errors = self._entry.get_errors()
             message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
                 str(event_open_id),
                 str(units),
@@ -330,8 +329,8 @@ class Trade():
     def order_market(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
         profit_rate = round(profit_rate,2)
         stop_rate = round(stop_rate,2)
-        self.market.exec({'instrument': self.instrument, 'units': units, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
-        response = self.market.get_response()
+        self._market.exec({'instrument': self.instrument, 'units': units, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
+        response = self._market.get_response()
 
         target_rate = str(target_rate)
         stop_rate = str(stop_rate)
@@ -340,7 +339,7 @@ class Trade():
         tradeID = 0
 
         if response.status == 201:
-            tradeID = str(self.market.get_trade_id())
+            tradeID = str(self._market.get_trade_id())
             message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
                 str(event_open_id),
                 str(units),
@@ -351,7 +350,7 @@ class Trade():
             )
             self._line.send('new marlet order', message)
         else:
-            errors = self.market.get_errors()
+            errors = self._market.get_errors()
             message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
                 str(event_open_id),
                 str(units),
@@ -419,10 +418,10 @@ class Trade():
             if delta_total_hours >= self.close_limit_hours:
                 self.market_close(trade_id, 'ALL', 99)
 
-                self.history.update(int(trade_id), 99, 'delta_total_hours >= self.close_limit_hours')
+                self._history.update(int(trade_id), 99, 'delta_total_hours >= self.close_limit_hours')
                 continue
 
-            history_df = self.history.get_by_panda(trade_id)
+            history_df = self._history.get_by_panda(trade_id)
 
             if history_df.empty:
                 # 万が一	hitstoryが存在しない場合は追加する
@@ -438,7 +437,7 @@ class Trade():
             # 利益がunitsの0.15倍ある場合は決済
             if row['unrealizedPL'] / self.units  > 0.15:
                 self.market_close(trade_id, 'ALL', 10)
-                self.history.update(int(trade_id), 10, 'profit max close')
+                self._history.update(int(trade_id), 10, 'profit max close')
                 continue
 
             pips = 0
@@ -455,7 +454,7 @@ class Trade():
                         event_close_id = 1.1
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
                         self.market_close(trade_id, 'ALL', event_close_id)
-                        self.history.update(int(trade_id), event_close_id, _client_order_comment)
+                        self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
                     elif pips > self.regular_profit_pips:
@@ -474,7 +473,7 @@ class Trade():
                         event_close_id = 2.1
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
                         self.market_close(trade_id, 'ALL', event_close_id)
-                        self.history.update(int(trade_id), event_close_id, _client_order_comment)
+                        self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
                     elif pips > self.regular_profit_pips:
@@ -491,7 +490,7 @@ class Trade():
                 res = self.take_profit(
                     trade_id, profit_rate, takeProfitOrderID, _client_order_comment, event_close_id)
                 if res:
-                    self.history.update(int(trade_id), event_close_id, state)
+                    self._history.update(int(trade_id), event_close_id, state)
                 continue
 
             # 90分 ~ でclose処理(id:1,2)の場合
@@ -528,7 +527,7 @@ class Trade():
                         elif self.upper_high < self.last_rate:
                             event_close_id = 3.2
                             self.market_close(trade_id, 'ALL', event_close_id)
-                            self.history.update(int(trade_id), event_close_id, _client_order_comment)
+                            self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
                         # それ以外
                         else:
@@ -546,7 +545,7 @@ class Trade():
                         elif self.lower_low > self.last_rate:
                             event_close_id = 4.2
                             self.market_close(trade_id, 'ALL', event_close_id)
-                            self.history.update(int(trade_id), event_close_id, _client_order_comment)
+                            self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
                         # それ以外
                         else:
@@ -579,7 +578,7 @@ class Trade():
                 self.stop_loss(trade_id, round(
                     stop_rate, 2), stopLossOrderID, _client_order_comment, event_close_id)
 
-                self.history.update(int(trade_id), event_close_id, state)
+                self._history.update(int(trade_id), event_close_id, state)
 
             if condition_4:
                 if delta_total_minuts >= self.close_limit_minutes_2:
@@ -591,7 +590,7 @@ class Trade():
                 event_close_id = 7
 
                 self.take_profit(trade_id, _price, takeProfitOrderID, _client_order_comment, event_close_id)
-                self.history.update(int(trade_id), event_close_id, state)                                 
+                self._history.update(int(trade_id), event_close_id, state)                                 
 
     def analyze_trade(self):
 
@@ -895,7 +894,7 @@ class Trade():
             self._line.send(event_open_id, message)
 
     def insert_histoy(self, trade_history, trade_id):
-        self.history.insert(
+        self._history.insert(
             trade_id=int(trade_id),
             price=trade_history['rate'],
             price_target=trade_history['target_price'],
@@ -923,8 +922,8 @@ class Trade():
         )
 
     def system_update(self, positions_infos):
-        win_count = self.history.get_todays_win_count()
-        lose_count = self.history.get_todays_lose_count()
+        win_count = self._history.get_todays_win_count()
+        lose_count = self._history.get_todays_lose_count()
         self._system.update_profit(
             positions_infos['pl'], positions_infos['unrealizedPL'], win_count, lose_count)
         self._system.delete_all_by_filename()
