@@ -151,9 +151,9 @@ class Draw(object):
         df.head()
 
         # 平均
-        df['mean'] = df['c'].rolling(window=20).mean()
+        df['mean'] = df['c'].rolling(window=14).mean()
         # 標準偏差
-        df['std'] = df['c'].rolling(window=20).std()
+        df['std'] = df['c'].rolling(window=14).std()
 
         # 1σ
         # df['upper'] = df['mean'] + (df['std'] * 1)
@@ -162,8 +162,8 @@ class Draw(object):
         df['upper'] = df['mean'] + (df['std'] * 2)
         df['lower'] = df['mean'] - (df['std'] * 2)
         # 3σ
-        df['upper_high'] = df['mean'] + (df['std'] * 3)
-        df['lower_low'] = df['mean'] - (df['std'] * 3)
+        df['upper_high'] = df['mean'] + (df['std'] * 2)
+        df['lower_low'] = df['mean'] - (df['std'] * 2)
 
         # 期間5単純移動平均
         df['sma_5'] = np.round(df['c'].rolling(window=5).mean(), 2)
