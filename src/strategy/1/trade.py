@@ -201,20 +201,44 @@ class Trade():
 
         profit_rate = str(profit_rate)
         if takeProfitOrderID:
-            self._take_profit.exec({'tradeID': str(trade_id), 'price': profit_rate,
-                                    'replace_order_id': takeProfitOrderID, 'client_order_comment': client_order_comment})
+            self._take_profit.exec({
+                'tradeID': str(trade_id),
+                'price': profit_rate,
+                'replace_order_id': takeProfitOrderID,
+                'client_order_comment': client_order_comment
+            })
         else:
-            self._take_profit.exec({'tradeID': str(
-                trade_id), 'price': profit_rate, 'client_order_comment': client_order_comment})
+            self._take_profit.exec({
+                'tradeID': str(trade_id),
+                'price': profit_rate,
+                'client_order_comment': client_order_comment
+            })
+
         response = self._take_profit.get_response()
         if response.status == 201:
             self._line.send('fix order take profit #', profit_rate +
                             ' event:' + str(event_close_id) + ' ' + client_order_comment)
+            message = 'event_open_id: {}, now_rate : {}, trade_id : {}, profit_rate : {}, stop_loss_order_id : {}, comment : {}'.format(
+                str(event_close_id),
+                str(self.last_rate),
+                str(trade_id),
+                str(profit_rate),
+                str(takeProfitOrderID),
+                client_order_comment
+            )
+            self._line.send('fix order profit', message)
             return True
         else:
             errors = self._take_profit.get_errors()
-            self._line.send('fix order take profit faild #', str(
-                errors['errorCode']) + ':' + errors['errorMessage'] + ' event:' + str(event_close_id))
+            message = 'event_open_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, comment : {}'.format(
+                str(event_close_id),
+                str(self.last_rate),
+                str(trade_id),
+                str(stop_rate),
+                str(stopLossOrderID),
+                client_order_comment
+            )
+            self._line.send('fix order profit failed', message)
             return False
 
 
@@ -223,21 +247,44 @@ class Trade():
         stop_rate = str(stop_rate)
 
         if stopLossOrderID:
-            self._stop_loss.exec({'tradeID': str(trade_id),  'price': stop_rate,
-                                  'replace_order_id': stopLossOrderID, 'client_order_comment': client_order_comment})
+            self._stop_loss.exec({
+                'tradeID': str(trade_id),
+                'price': stop_rate,
+                'replace_order_id': stopLossOrderID,
+                'client_order_comment': client_order_comment
+            })
         else:
-            self._stop_loss.exec({'tradeID': str(
-                trade_id),  'price': stop_rate, 'client_order_comment': client_order_comment})
+            self._stop_loss.exec({
+                'tradeID': str(trade_id),
+                'price': stop_rate,
+                'client_order_comment': client_order_comment
+            })
 
         response = self._stop_loss.get_response()
 
         if response.status == 201:
-            self._line.send('fix order stop loss #', stop_rate + ' event:' +
-                            str(event_close_id) + ' ' + client_order_comment)
+            message = 'event_open_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, comment : {}'.format(
+                str(event_close_id),
+                str(self.last_rate),
+                str(trade_id),
+                str(stop_rate),
+                str(stopLossOrderID),
+                client_order_comment
+            )
+            self._line.send('fix order stop loss', message)
+            return True
         else:
             errors = self._stop_loss.get_errors()
-            self._line.send('fix order stop loss faild #', str(
-                errors['errorCode']) + ':' + errors['errorMessage'] + ' event:' + str(event_close_id))
+            message = 'event_open_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, comment : {}'.format(
+                str(event_close_id),
+                str(self.last_rate),
+                str(trade_id),
+                str(stop_rate),
+                str(stopLossOrderID),
+                client_order_comment
+            )
+            self._line.send('fix order stop failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
+            return False
 
     def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
         # self.market.exec({'instrument': self.instrument, 'units': units})
@@ -256,12 +303,28 @@ class Trade():
 
         if response.status == 201:
             tradeID = str(self.entry.get_trade_id())
-            message = 'new order event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}'.format(str(event_open_id), str(units), str(target_rate), str(profit_rate) , str(stop_rate))
-            self._line.send('order profit #' + tradeID, message)
+            message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
+                str(event_open_id),
+                str(units),
+                str(target_rate),
+                str(profit_rate) ,
+                str(stop_rate),
+                str(self.last_rate),
+                str(tradeID)
+            )
+            self._line.send('new order', message)
         else:
             errors = self.entry.get_errors()
-            message = 'new order faild event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}'.format(str(event_open_id), str(units), str(target_rate), str(profit_rate) , str(stop_rate))
-            self._line.send(message, str(errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + str(tradeID))
+            message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
+                str(event_open_id),
+                str(units),
+                str(target_rate),
+                str(profit_rate) ,
+                str(stop_rate),
+                str(self.last_rate),
+                str(tradeID)
+            )
+            self._line.send('new order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
         
         return int(tradeID)
 
@@ -270,11 +333,21 @@ class Trade():
         response = self._close.get_response()
 
         if response.status == 201 or response.reason == 'OK':
-            self._line.send('expire close  #', str(
-                trade_id) + ' event:' + str(event_close_id))
+            message = 'event_open_id: {}, units : {}, now_rate : {}, trade_id : {}'.format(
+                str(event_open_id),
+                str(units),
+                str(self.last_rate),
+                str(trade_id)
+            )
+            self._line.send('expire close', message)
         else:
-            self._line.send('expire close  faild #', str(
-                trade_id) + ' event:' + str(event_close_id) + ' ' + response.reason)
+            message = 'event_open_id: {}, units : {}, now_rate : {}, trade_id : {}'.format(
+                str(event_open_id),
+                str(units),
+                str(self.last_rate),
+                str(trade_id)
+            )
+            self._line.send('expire close failed ' + esponse.reason, message)
 
     def to_date(self, time_str):
         unix = time_str.split(".")[0]
