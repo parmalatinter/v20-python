@@ -252,11 +252,11 @@ class Trade():
 
         if response.status == 201:
             tradeID = str(self.entry.get_trade_id())
-            message = 'new order event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}'.format(str(event_open_id), srt(units), srt(target_rate), srt(profit_rate) , srt(stop_rate))
+            message = 'new order event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}'.format(str(event_open_id), str(units), str(target_rate), str(profit_rate) , str(stop_rate))
             self._line.send('order profit #' + tradeID, message)
         else:
             errors = self.entry.get_errors()
-            message = 'new order faild event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}'.format(str(event_open_id), srt(units), srt(target_rate), srt(profit_rate) , srt(stop_rate))
+            message = 'new order faild event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}'.format(str(event_open_id), str(units), str(target_rate), str(profit_rate) , str(stop_rate))
             self._line.send(message, str(errors['errorCode']) + ':' + errors['errorMessage'] + ' trade_id:' + str(tradeID))
         
         return int(tradeID)
