@@ -242,9 +242,13 @@ class Trade():
     def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
         # self.market.exec({'instrument': self.instrument, 'units': units})
         target_rate = self.last_rate - 0.01 if units > 0 else self.last_rate + 0.01
+        target_rate = round(target_rate,2)
+        profit_rate = round(profit_rate,2)
+        stop_rate = round(stop_rate,2)
         self.entry.exec({'instrument': 'self.instrument', 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
         response = self.entry.get_response()
 
+        target_rate = str(target_rate)
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
 
