@@ -291,15 +291,15 @@ class Trade():
         })
         response = self._entry.get_response()
 
-        tradeID = str(self._entry.get_trade_id())
-        message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
+        transaction_id = self._entry.get_transaction_id()
+        message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, transaction_id : {}'.format(
             str(event_open_id),
             str(units),
             str(target_rate),
             str(profit_rate) ,
             str(stop_rate),
             str(self.last_rate),
-            str(tradeID)
+            str(transaction_id)
         )
 
         if response.status == 201:
@@ -308,7 +308,7 @@ class Trade():
             errors = self._entry.get_errors()
             self._line.send('new order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
         
-        return int(tradeID)
+        return int(transaction_id)
 
     def order_market(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
         profit_rate = round(profit_rate,2)
@@ -327,7 +327,7 @@ class Trade():
         })
         response = self._market.get_response()
 
-        tradeID = str(self._market.get_trade_id())
+        tradeID = self._market.get_trade_id()
         message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
             str(event_open_id),
             str(units),
@@ -408,7 +408,7 @@ class Trade():
                     'units': row['initialUnits'],
                     'event_open_id': 0,
                 }
-                self.insert_histoy(trade_history, trade_id)
+                self.insert_histoy(trade_history, trade_id, 0)
                 continue
             event_close_id = float(history_df['event_close_id'][history_df.index[0]]) if history_df['event_close_id'][history_df.index[0]] else 0
             # 利益がunitsの0.15倍ある場合は決済
@@ -841,8 +841,9 @@ class Trade():
                     target_price = self.last_rate - 0.1
 
             trade_id = 0
+            transaction_id = 0
             if is_market:
-                trade_id = self.order(
+                transaction_id = self.order(
                     units=units,
                     profit_rate=round(target_price, 2),
                     stop_rate=round(stop_rate, 2),
@@ -858,7 +859,7 @@ class Trade():
                     client_order_comment=message
                 )
             
-            if trade_id <= 0:
+            if trade_id <= 0 AND transaction_id <= 0 :
                 return
 
             trade_history = {
@@ -867,10 +868,10 @@ class Trade():
                 'units':units,
                 'event_open_id':event_open_id
             }
-            self.insert_histoy(trade_history, trade_id)
+            self.insert_histoy(trade_history, trade_id, transaction_id)
             self._line.send(event_open_id, message)
 
-    def insert_histoy(self, trade_history, trade_id):
+    def insert_histoy(self, trade_history, trade_id, transaction_id):
         self._history.insert(
             trade_id=int(trade_id),
             price=trade_history['rate'],
@@ -895,7 +896,7 @@ class Trade():
             rule_6=self.rule_6,
             resistance_high=round(self.resistande_info['resistance_high'], 2),
             resistance_low=round(self.resistande_info['resistance_low'], 2),
-            memo=''
+            transaction_id=transaction_id
         )
 
     def system_update(self, positions_infos):
@@ -908,6 +909,9 @@ class Trade():
 
 
 def main():
+
+    test()
+    exit()
 
     condition = market.condition.Market()
     if condition.get_is_opening() == False:
@@ -965,11 +969,31 @@ def main():
     transaction_id = int(details_dict['Last Transaction ID'])
     get_by_transaction_ids.main(transaction_id - 100, transaction_id)
 
+def test():
+
+    _environ = strategy.environ.Environ()
+    transactions = transaction.transactions.Transactions()
+    transactions.get()
+    orders_info = transactions.get_trades()
+    positions_infos = transactions.get_positions()
+    long_units = transactions.get_short_pos_units()
+    short_units = transactions.get_short_pos_units()
+
+    trade = Trade(_environ)
+
+    candles = inst.Candles()
+    candles_csv_string = candles.get('USD_JPY', 'M10')
+    candles_df = trade.get_df_by_string(candles_csv_string)
+
+    trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info)
+
+    trade.order(1, 110, 108, 999, 'test')
 
 if __name__ == "__main__":
 
     try:
-        main()
+        test()
+        # main()
     except:
         _line = line.line.Line()
         _line.send('Error', sys.exc_info())

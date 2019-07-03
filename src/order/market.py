@@ -106,8 +106,7 @@ class Market():
 #     market = Market()
 #     market.exec({'instrument': 'USD_JPY', 'units':1, 'take-profit-price' : 120, 'client-order-comment' : 'test'})
 #     response = market.get_response()
-#     transaction = market.get_transaction()
-#     print(transaction)
+#     print(response.__dict__)
 
 def main():
     market = Market()

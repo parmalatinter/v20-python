@@ -1,5 +1,6 @@
 SELECT
     trade_id,
+    transaction_id,
 	create_time,
 	update_time,
 	state,

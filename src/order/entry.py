@@ -15,7 +15,7 @@ class Entry():
     common.config.add_argument(parser)
     errorCode = '' 
     errorMessage = ''
-    trade_id = 0
+    transaction_id = 0
     
     def exec_by_cmd(self):
         """
@@ -110,15 +110,15 @@ class Entry():
         self.response = response
 
         if self.response.status == 201 and self.response.reason == "Created":
-            self.trade_id = self.response.get("lastTransactionID", None)
+            self.transaction_id = self.response.get("lastTransactionID", None)
         else:
             self.errorMessage = response.get("errorMessage", None)
         
     def get_response(self):
         return self.response
 
-    def get_trade_id(self):
-        return self.trade_id
+    def get_transaction_id(self):
+        return self.transaction_id
 
     def get_errors(self):
         return {
@@ -133,16 +133,16 @@ class Entry():
 
             print_order_create_response_transactions(self.response)
 
-def main():
-    entry = Entry()
-    entry.exec({'instrument': 'USD_JPY', 'units':1, 'price' : 120, 'take_profit_price' : 121 , 'stop_loss_price' : 119})
-    response = entry.get_response()
-    print(response.__dict__)
-
 # def main():
 #     entry = Entry()
-#     entry.exec_by_cmd()
-#     entry.print_response()
+#     entry.exec({'instrument': 'USD_JPY', 'units':1, 'price' : 120, 'take_profit_price' : 121 , 'stop_loss_price' : 119})
+#     response = entry.get_response()
+#     print(response.__dict__)
+
+def main():
+    entry = Entry()
+    entry.exec_by_cmd()
+    entry.print_response()
 
 if __name__ == "__main__":
     main()

@@ -1,6 +1,7 @@
 CREATE TABLE IF NOT EXISTS history (
 	id serial PRIMARY KEY,
 	trade_id integer,
+	transaction_id integer,
 	create_time timestamp default CURRENT_TIMESTAMP,
 	update_time timestamp,
 	price numeric,
