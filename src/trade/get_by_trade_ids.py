@@ -49,15 +49,17 @@ class Get_by_trade_ids(object):
                 print('info not found trade id ' + str(trade_id))
                 continue
 
-            if trade.state == 'CLOSED':
-                if hasattr(trade, 'takeProfitOrder') and trade.takeProfitOrder and trade.takeProfitOrder.state == 'FILLED':
-                    res[trade_id] = trade.takeProfitOrder.__dict__
-                    res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
-                    res[trade_id]['realizedPL'] = trade.realizedPL
-                if hasattr(trade, 'stopLossOrder') and trade.stopLossOrder and trade.stopLossOrder.state == 'FILLED':
-                    res[trade_id] = trade.stopLossOrder.__dict__
-                    res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
-                    res[trade_id]['realizedPL'] = trade.realizedPL
+            print(trade.__dict__)
+            if hasattr(trade, 'takeProfitOrder') and trade.takeProfitOrder and trade.takeProfitOrder.state == 'FILLED':
+                res[trade_id] = trade.takeProfitOrder.__dict__
+                res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
+                res[trade_id]['realizedPL'] = trade.realizedPL
+            if hasattr(trade, 'stopLossOrder') and trade.stopLossOrder and trade.stopLossOrder.state == 'FILLED':
+                res[trade_id] = trade.stopLossOrder.__dict__
+                res[trade_id]['filledTime'] = res[trade_id]['filledTime'].split(".")[0].replace('T', ' ')
+                res[trade_id]['realizedPL'] = trade.realizedPL
+            if hasattr(trade, 'clientExtensions') and trade.clientExtensions:
+                print(trade.clientExtensions)
 
 
         return res
@@ -66,12 +68,12 @@ def main():
         history = db.history.History()
         ids = history.get_trade_ids_by_not_update_pl_by_panda()
         get_by_trade_ids = Get_by_trade_ids()
-        rows = get_by_trade_ids.get(ids)
+        rows = get_by_trade_ids.get([4786])
 
         print(rows)
 
-        for trade_id, row in rows.items():
-            history.fix_update(int(trade_id), row['price'], row['realizedPL'], row['type'])
+        # for trade_id, row in rows.items():
+        #     history.fix_update(int(trade_id), row['price'], row['realizedPL'], row['type'])
 
 if __name__ == "__main__":
     main()
