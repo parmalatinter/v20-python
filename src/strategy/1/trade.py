@@ -859,7 +859,7 @@ class Trade():
                     client_order_comment=message
                 )
             
-            if trade_id <= 0 AND transaction_id <= 0 :
+            if trade_id <= 0 and transaction_id <= 0 :
                 return
 
             trade_history = {
