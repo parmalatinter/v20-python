@@ -25,7 +25,7 @@ INSERT INTO history (
 	resistance_low,
 	transaction_id
 ) 
-SELECT (
+SELECT 
 	%(trade_id)s,
 	'%(create_time)s',
 	%(price)s,
@@ -51,7 +51,7 @@ SELECT (
 	%(resistance_high)s,
 	%(resistance_low)s,
 	%(transaction_id)s
-)
+
 WHERE NOT EXISTS (
 	SELECT trade_id FROM history WHERE trade_id = %(trade_id)s
 );

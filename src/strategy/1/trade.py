@@ -215,13 +215,14 @@ class Trade():
 
         response = self._take_profit.get_response()
 
-        message = 'event_open_id: {}, now_rate : {}, trade_id : {}, profit_rate : {}, stop_loss_order_id : {}, comment : {}'.format(
+        message = 'event_close_id: {}, now_rate : {}, trade_id : {}, profit_rate : {}, take_profit_order_id : {}, comment : {}, now : {}'.format(
             str(event_close_id),
             str(self.last_rate),
             str(trade_id),
             str(profit_rate),
             str(takeProfitOrderID),
-            client_order_comment
+            client_order_comment,
+            self.now_dt.strftime('%Y-%m-%d %H:%M:%S')
         )
 
         if response.status == 201:
@@ -253,13 +254,14 @@ class Trade():
 
         response = self._stop_loss.get_response()
 
-        message = 'event_open_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, comment : {}'.format(
+        message = 'event_close_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, comment : {}, now : {}'.format(
             str(event_close_id),
             str(self.last_rate),
             str(trade_id),
             str(stop_rate),
             str(stopLossOrderID),
-            client_order_comment
+            client_order_comment,
+            self.now_dt.strftime('%Y-%m-%d %H:%M:%S')
         )
 
         if response.status == 201:
@@ -294,14 +296,15 @@ class Trade():
         response = self._entry.get_response()
 
         transaction_id = self._entry.get_transaction_id()
-        message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, transaction_id : {}'.format(
+        message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, transaction_id : {}, now : {}'.format(
             str(event_open_id),
             str(units),
             str(target_rate),
             str(profit_rate) ,
             str(stop_rate),
             str(self.last_rate),
-            str(transaction_id)
+            str(transaction_id),
+            self.now_dt.strftime('%Y-%m-%d %H:%M:%S')
         )
 
         if response.status == 201:
@@ -332,13 +335,14 @@ class Trade():
         response = self._market.get_response()
 
         tradeID = self._market.get_trade_id()
-        message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
+        message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}, now : {}'.format(
             str(event_open_id),
             str(units),
             str(profit_rate) ,
             str(stop_rate),
             str(self.last_rate),
-            str(tradeID)
+            str(tradeID),
+            self.now_dt.strftime('%Y-%m-%d %H:%M:%S')
         )
 
         if response.status == 201:
@@ -357,7 +361,8 @@ class Trade():
             str(event_open_id),
             str(units),
             str(self.last_rate),
-            str(trade_id)
+            str(trade_id),
+            self.now_dt.strftime('%Y-%m-%d %H:%M:%S')
         )
 
         if response.status == 201 or response.reason == 'OK':
@@ -541,8 +546,7 @@ class Trade():
                         profit_rate = _price + 0.03
 
                         event_close_id = 5
-                        _client_order_comment = (
-                            state + ' lose ' + str(event_close_id))
+                        _client_order_comment = state + ' lose ' + str(event_close_id)
 
                     # sellの場合 発注価格でcloseする
                     else:
@@ -550,8 +554,7 @@ class Trade():
                         profit_rate = _price - 0.03
 
                         event_close_id = 6
-                        _client_order_comment = (
-                            state + ' lose ' + str(event_close_id))
+                        _client_order_comment = state + ' lose ' + str(event_close_id)
 
                 self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, _client_order_comment, event_close_id)
                 self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, _client_order_comment, event_close_id)
@@ -563,6 +566,8 @@ class Trade():
                     state = 'lose proift 0 order {} min'.format(str(self.close_limit_minutes_2))
                 else:
                     state = 'lose proift 0 order {} min'.format(str(self.close_limit_minutes_3))
+
+                _client_order_comment = state + ' lose ' + str(event_close_id)
 
                 # 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
                 event_close_id = 7
