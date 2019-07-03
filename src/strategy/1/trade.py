@@ -904,6 +904,34 @@ class Trade():
         self._system.delete_all_by_filename()
         self._system.export_drive()
 
+    def history_update(self):
+        history_obj = {
+            'state' : 'open',
+            'instrument' : self.instrument,
+            'unrealized_pl' : 0,
+            'event_open_id' : 0,
+            'trend_1' : self.trend_usd['v1_usd'],
+            'trend_2' : self.trend_usd['v2_usd'],
+            'trend_3' : self.trend_usd['v1_jpy'],
+            'trend_4' : self.trend_usd['v2_jpy'],
+            'trend_cal' : self.trend_usd['res'],
+            'judge_1' : self.is_golden,
+            'judge_2' : self.is_dead,
+            'rule_1' : self.rule_1,
+            'rule_2' : self.rule_2,
+            'rule_3' : self.rule_3,
+            'rule_4' : self.rule_4,
+            'rule_5' : self.rule_5,
+            'rule_6' : self.rule_6,
+            'resistance_high' : self.resistande_info['resistance_high'],
+            'resistance_low' : self.resistande_info['resistance_low'],
+            'transaction_id' : 0
+         }
+        details = account.details.Details()
+        details_dict = details.get_account()
+        get_by_transaction_ids = transaction.get_by_transaction_ids.Get_by_transaction_ids(history_obj)
+        transaction_id = int(details_dict['Last Transaction ID'])
+        get_by_transaction_ids.main(transaction_id - 100, transaction_id)
 
 def main():
 
@@ -942,6 +970,8 @@ def main():
 
     trade.system_update(positions_infos)
 
+    trade.history_update()
+
     details = trade.get_account_details()
     details_csv = file.file_utility.File_utility('details.csv', drive_id)
     details_csv.set_contents(details)
@@ -956,12 +986,6 @@ def main():
     histoy_csv = file.file_utility.File_utility('history.csv', drive_id)
     histoy_csv.set_contents(histoy_csv_string)
     histoy_csv.export_drive()
-
-    details = account.details.Details()
-    details_dict = details.get_account()
-    get_by_transaction_ids = transaction.get_by_transaction_ids.Get_by_transaction_ids()
-    transaction_id = int(details_dict['Last Transaction ID'])
-    get_by_transaction_ids.main(transaction_id - 100, transaction_id)
 
 def test():
 
@@ -981,7 +1005,9 @@ def test():
 
     trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info)
 
-    trade.order(1, 110, 108, 999, 'test')
+    # trade.order(1, 110, 108, 999, 'test')
+
+    trade.history_update()
 
 if __name__ == "__main__":
 

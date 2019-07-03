@@ -9,6 +9,11 @@ import account.details
 
 class Get_by_transaction_ids(object):
 
+    history_obj = {}
+
+    def __init__(self, history_obj):
+        self.history_obj = history_obj
+
     def main(self, fromid, toid):
 
         """
@@ -39,26 +44,59 @@ class Get_by_transaction_ids(object):
             type=None
         )
 
-        # print(response.__dict__)
-
-        rows = {}
+        new_rows = {}
+        update_rows = {}
         history = db.history.History()
         for transaction in response.get("transactions", 200):
             
-            if hasattr(transaction, 'pl'):
-                print(transaction)
-                if transaction.pl:
-                    rows[transaction.id] = {
-                        'time' : transaction.time.split(".")[0].replace('T', ' '),
-                        'reason' :  transaction.reason
+            if hasattr(transaction, 'tradeOpened'):
+                if transaction.tradeOpened:
+                    new_rows[transaction.id] = {
+                        'reason' : transaction.reason,
+                        'price' : transaction.tradeOpened.price,
+                        'units' : transaction.tradeOpened.units,
+                        'tradeID' : transaction.tradeOpened.tradeID
                     }
+            if hasattr(transaction, 'tradesClosed'):
+                if transaction.tradesClosed:
                     for closed in transaction.tradesClosed:
                         if hasattr(closed, 'realizedPL'):
-                            rows[transaction.id]['price'] = closed.price
-                            rows[transaction.id]['realizedPL'] = closed.realizedPL
-                            rows[transaction.id]['tradeID'] = closed.tradeID
+                            update_rows[transaction.id] = {
+                                'reason' : transaction.reason,
+                                'price' : closed.price,
+                                'realizedPL' : closed.realizedPL,
+                                'tradeID' : closed.tradeID
+                            }
 
-        for transaction_id, row in rows.items():
+        for transaction_id, row in new_rows.items():
+            history.insert(
+                trade_id=int(row['tradeID']),
+                price=row['price'],
+                price_target=0,
+                state='open',
+                instrument=self.history_obj['instrument'],
+                units=row['units'],
+                unrealized_pl=0,
+                event_open_id=0,
+                trend_1=self.history_obj['trend_1'],
+                trend_2=self.history_obj['trend_2'],
+                trend_3=self.history_obj['trend_3'],
+                trend_4=self.history_obj['trend_4'],
+                trend_cal=self.history_obj['trend_cal'],
+                judge_1=self.history_obj['judge_1'],
+                judge_2=self.history_obj['judge_2'],
+                rule_1=self.history_obj['rule_1'],
+                rule_2=self.history_obj['rule_2'],
+                rule_3=self.history_obj['rule_3'],
+                rule_4=self.history_obj['rule_4'],
+                rule_5=self.history_obj['rule_5'],
+                rule_6=self.history_obj['rule_6'],
+                resistance_high=self.history_obj['resistance_high'],
+                resistance_low=self.history_obj['resistance_low'],
+                transaction_id=0
+            )
+
+        for transaction_id, row in update_rows.items():
             history.fix_update(int(row['tradeID']), row['price'], row['realizedPL'], row['reason'])
 
 def main():
