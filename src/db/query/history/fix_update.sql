@@ -5,4 +5,5 @@ SET
 	pl = %(pl)s,
 	memo = '%(memo)s'
 WHERE
-	trade_id = %(trade_id)s;
+	trade_id = %(trade_id)s
+	AND pl IS NULL;

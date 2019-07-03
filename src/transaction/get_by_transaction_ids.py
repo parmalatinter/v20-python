@@ -39,10 +39,14 @@ class Get_by_transaction_ids(object):
             type=None
         )
 
+        # print(response.__dict__)
+
         rows = {}
         history = db.history.History()
         for transaction in response.get("transactions", 200):
+            
             if hasattr(transaction, 'pl'):
+                print(transaction)
                 if transaction.pl:
                     rows[transaction.id] = {
                         'time' : transaction.time.split(".")[0].replace('T', ' '),
@@ -62,7 +66,7 @@ def main():
     details_dict = details.get_account()
     get_by_transaction_ids = Get_by_transaction_ids()
     transaction_id = int(details_dict['Last Transaction ID'])
-    get_by_transaction_ids.main(transaction_id - 100, transaction_id)
+    get_by_transaction_ids.main(transaction_id - 50, transaction_id)
 
 
 if __name__ == "__main__":
