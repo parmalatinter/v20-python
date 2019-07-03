@@ -338,7 +338,7 @@ class Trade():
         )
 
         if response.status == 201:
-            self._line.send('new marlet order', message)
+            self._line.send('new market order', message)
         else:
             errors = self._market.get_errors()
             self._line.send('new market order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
