@@ -81,13 +81,31 @@ class Entry():
             arguments
 
         if 'take_profit_price' in arguments:
-            print(arguments['take_profit_price'])
             kwargs = {'price': arguments['take_profit_price']}
             arguments['takeProfitOnFill'] = v20.transaction.TakeProfitDetails(**kwargs)
         if 'stop_loss_price' in arguments:
             kwargs = {'price': arguments['stop_loss_price']}
             arguments['stopLossOnFill'] = v20.transaction.StopLossDetails(**kwargs)
 
+        kwargs = {}
+        if 'client_order_id' in arguments:
+            kwargs["id"] = arguments['client_order_id']
+        if 'client_order_tag' in arguments:
+            kwargs["tag"] = arguments['client_order_id']
+        if 'client_order_comment' in arguments:
+            kwargs["comment"] = arguments['client_order_id']
+        if kwargs:
+            arguments['clientExtensions'] = v20.transaction.ClientExtensions(**kwargs)
+
+        kwargs = {}
+        if 'client_trade_id' in arguments:
+            kwargs["id"] = arguments['client_trade_id']
+        if 'client_trade_tag' in arguments:
+            kwargs["tag"] = arguments['client_trade_id']
+        if 'client_trade_comment' in arguments:
+            kwargs["comment"] = arguments['client_trade_id']
+        if kwargs:
+            arguments['tradeClientExtensions'] = v20.transaction.ClientExtensions(**kwargs)
 
         if 'replace_order_id' in arguments:
             #

@@ -287,7 +287,9 @@ class Trade():
             'take_profit_price' : profit_rate ,
             'stop_loss_price' : stop_rate,
             'client_trade_tag' : str(event_open_id),
-            'client_trade_comment' :'new order'
+            'client_trade_comment' :'new order',
+            'client_order_tag' : str(event_open_id),
+            'client_order_comment' :'new order market'
         })
         response = self._entry.get_response()
 
@@ -322,8 +324,10 @@ class Trade():
             'units': units, 
             'take_profit_price' : profit_rate , 
             'stop_loss_price' : stop_rate,
-            'client_trade_tag' : event_open_id,
-            'client_trade_comment' :'new order market'
+            'client_trade_tag' : str(event_open_id),
+            'client_trade_comment' :'new order market',
+            'client_order_tag' : str(event_open_id),
+            'client_order_comment' :'new order market'
         })
         response = self._market.get_response()
 
