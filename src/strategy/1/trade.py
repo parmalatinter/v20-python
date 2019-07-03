@@ -910,9 +910,6 @@ class Trade():
 
 def main():
 
-    test()
-    exit()
-
     condition = market.condition.Market()
     if condition.get_is_opening() == False:
         exit()
