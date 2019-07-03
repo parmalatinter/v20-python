@@ -305,8 +305,7 @@ class Trade():
     def order_market(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
         profit_rate = round(profit_rate,2)
         stop_rate = round(stop_rate,2)
- 
-        target_rate = str(target_rate)
+
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
 
