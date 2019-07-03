@@ -992,8 +992,8 @@ def test():
 if __name__ == "__main__":
 
     try:
-        test()
-        # main()
+        # test()
+        main()
     except:
         _line = line.line.Line()
         _line.send('Error', sys.exc_info())
