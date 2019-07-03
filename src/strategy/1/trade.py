@@ -289,7 +289,7 @@ class Trade():
             'client_trade_tag' : str(event_open_id),
             'client_trade_comment' :'new order',
             'client_order_tag' : str(event_open_id),
-            'client_order_comment' :'new order market'
+            'client_order_comment' :'new order'
         })
         response = self._entry.get_response()
 
