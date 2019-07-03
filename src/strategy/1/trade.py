@@ -280,7 +280,15 @@ class Trade():
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
 
-        self._entry.exec({'instrument': self.instrument, 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
+        self._entry.exec({
+            'instrument': self.instrument,
+            'units': units,
+            'price' : target_rate,
+            'take_profit_price' : profit_rate ,
+            'stop_loss_price' : stop_rate,
+            'client_trade_tag' : str(event_open_id),
+            'client_trade_comment' :'new order'
+        })
         response = self._entry.get_response()
 
         tradeID = str(self._entry.get_trade_id())
@@ -309,7 +317,14 @@ class Trade():
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
 
-        self._market.exec({'instrument': self.instrument, 'units': units, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
+        self._market.exec({
+            'instrument': self.instrument, 
+            'units': units, 
+            'take_profit_price' : profit_rate , 
+            'stop_loss_price' : stop_rate,
+            'client_trade_tag' : event_open_id,
+            'client_trade_comment' :'new order market'
+        })
         response = self._market.get_response()
 
         tradeID = str(self._market.get_trade_id())
