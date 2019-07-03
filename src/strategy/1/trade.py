@@ -910,11 +910,11 @@ class Trade():
             'instrument' : self.instrument,
             'unrealized_pl' : 0,
             'event_open_id' : 0,
-            'trend_1' : self.trend_usd['v1_usd'],
-            'trend_2' : self.trend_usd['v2_usd'],
-            'trend_3' : self.trend_usd['v1_jpy'],
-            'trend_4' : self.trend_usd['v2_jpy'],
-            'trend_cal' : self.trend_usd['res'],
+            'trend_1' : round(self.trend_usd['v1_usd'], 2),
+            'trend_2' : round(self.trend_usd['v2_usd'], 2),
+            'trend_3' : round(self.trend_usd['v1_jpy'], 2),
+            'trend_4' : round(self.trend_usd['v2_jpy'], 2),
+            'trend_cal' : round(self.trend_usd['res'], 2),
             'judge_1' : self.is_golden,
             'judge_2' : self.is_dead,
             'rule_1' : self.rule_1,
@@ -923,8 +923,8 @@ class Trade():
             'rule_4' : self.rule_4,
             'rule_5' : self.rule_5,
             'rule_6' : self.rule_6,
-            'resistance_high' : self.resistande_info['resistance_high'],
-            'resistance_low' : self.resistande_info['resistance_low'],
+            'resistance_high' : round(self.resistande_info['resistance_high'], 2),
+            'resistance_low' : round(self.resistande_info['resistance_low'], 2),
             'transaction_id' : 0
          }
         details = account.details.Details()
