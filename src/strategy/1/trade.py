@@ -275,12 +275,13 @@ class Trade():
         target_rate = round(target_rate,2)
         profit_rate = round(profit_rate,2)
         stop_rate = round(stop_rate,2)
-        self._entry.exec({'instrument': self.instrument, 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
-        response = self._entry.get_response()
 
         target_rate = str(target_rate)
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
+
+        self._entry.exec({'instrument': self.instrument, 'units': units, 'price' : target_rate, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
+        response = self._entry.get_response()
 
         tradeID = str(self._entry.get_trade_id())
         message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
@@ -304,12 +305,13 @@ class Trade():
     def order_market(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
         profit_rate = round(profit_rate,2)
         stop_rate = round(stop_rate,2)
-        self._market.exec({'instrument': self.instrument, 'units': units, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
-        response = self._market.get_response()
-
+ 
         target_rate = str(target_rate)
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
+
+        self._market.exec({'instrument': self.instrument, 'units': units, 'take_profit_price' : profit_rate , 'stop_loss_price' : stop_rate})
+        response = self._market.get_response()
 
         tradeID = str(self._market.get_trade_id())
         message = 'event_open_id: {}, units : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, trade_id : {}'.format(
