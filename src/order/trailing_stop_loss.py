@@ -14,8 +14,8 @@ class Trailing_stop_loss():
 
     def create_response(self, code):
         Response = type('Response', (object,), {})
-        obj = Response()
-        obj.status = code
+        self.response = Response()
+        self.response.status = code
 
     def exec(self, arguments):
 
