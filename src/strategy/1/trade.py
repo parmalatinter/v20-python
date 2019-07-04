@@ -33,6 +33,7 @@ import order.entry
 import order.take_profit
 import order.stop_loss
 import trade.close
+import trade.cancel
 import trade.get_by_trade_ids
 import account.details
 
@@ -43,6 +44,7 @@ class Trade():
     _system = None
     _market = None
     _entry = None
+    _cancel = None
     _take_profit = None
     _stop_loss = None
     _close = None
@@ -101,6 +103,7 @@ class Trade():
         self._system = db.system.System()
         self._market = order.market.Market()
         self._entry = order.entry.Entry()
+        self._cancel = order.cancel.Cancel()
         self._take_profit = order.take_profit.Take_profit()
         self._stop_loss = order.stop_loss.Stop_loss()
         self._close = trade.close.Close()
@@ -584,12 +587,15 @@ class Trade():
             delta_total_minuts = delta.total_seconds()/60
 
             if delta_total_minuts >= self.close_order_limit_minutes:
-                args = dict(order_id=order_id)
-                command1 = ' v20-order-cancel --order-id=%(order_id)s' % args
-                res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
-                res.wait()
-                out, err = res.communicate()
-                self._line.send('order cancel #', command1 + ' ' + out.decode('utf-8') )
+                self._cancel.exec({'order_id': order_id})
+                response = self._cancel.get_response()
+                message = '# {}, now : {}'.format(order_id, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
+
+                if response.status == 201:
+                    self._line.send('order cancel s', message)
+                else:
+                    errors = self._cancel.get_errors()
+                    self._line.send('order cancel failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
 
 
     def analyze_trade(self):
