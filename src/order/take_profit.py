@@ -63,6 +63,26 @@ class Take_profit():
         except:
             arguments
 
+        kwargs = {}
+        if 'client_order_id' in arguments:
+            kwargs["id"] = arguments['client_order_id']
+        if 'client_order_tag' in arguments:
+            kwargs["tag"] = arguments['client_order_tag']
+        if 'client_order_comment' in arguments:
+            kwargs["comment"] = arguments['client_order_comment']
+        if kwargs:
+            arguments['clientExtensions'] = v20.transaction.ClientExtensions(**kwargs)
+
+        kwargs = {}
+        if 'client_trade_id' in arguments:
+            kwargs["id"] = arguments['client_trade_id']
+        if 'client_trade_tag' in arguments:
+            kwargs["tag"] = arguments['client_trade_tag']
+        if 'client_trade_comment' in arguments:
+            kwargs["comment"] = arguments['client_trade_comment']
+        if kwargs:
+            arguments['tradeClientExtensions'] = v20.transaction.ClientExtensions(**kwargs)
+            
         if 'replace_order_id' in arguments:
             #
             # Submit the request to cancel and replace a Take Profit Order

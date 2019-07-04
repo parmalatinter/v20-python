@@ -32,6 +32,7 @@ import order.market
 import order.entry
 import order.take_profit
 import order.stop_loss
+import order.trailing_stop_loss
 import trade.close
 import order.cancel
 import trade.get_by_trade_ids
@@ -47,6 +48,7 @@ class Trade():
     _cancel = None
     _take_profit = None
     _stop_loss = None
+    _trailing_stop_loss = None
     _close = None
     _logger = None
     _line = None
@@ -106,6 +108,7 @@ class Trade():
         self._cancel = order.cancel.Cancel()
         self._take_profit = order.take_profit.Take_profit()
         self._stop_loss = order.stop_loss.Stop_loss()
+        self._trailing_stop_loss = order.trailing_stop_loss.Trailing_stop_loss()
         self._close = trade.close.Close()
         self._candle = inst_one.Candle()
 
@@ -204,19 +207,24 @@ class Trade():
 
     def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 
-        profit_rate = str(profit_rate)
         if takeProfitOrderID:
             self._take_profit.exec({
                 'tradeID': str(trade_id),
                 'price': profit_rate,
                 'replace_order_id': takeProfitOrderID,
-                'client_order_comment': client_order_comment
+                'client_trade_tag' : str(event_close_id),
+                'client_trade_comment' :client_order_comment,
+                'client_order_tag' : str(event_close_id),
+                'client_order_comment' :client_order_comment
             })
         else:
             self._take_profit.exec({
                 'tradeID': str(trade_id),
                 'price': profit_rate,
-                'client_order_comment': client_order_comment
+                'client_trade_tag' : str(event_close_id),
+                'client_trade_comment' :client_order_comment,
+                'client_order_tag' : str(event_close_id),
+                'client_order_comment' :client_order_comment
             })
 
         response = self._take_profit.get_response()
@@ -240,22 +248,32 @@ class Trade():
             return False
 
 
-    def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
+    def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id, is_trailing=False, distance=''):
 
         stop_rate = str(stop_rate)
 
+        stop_obj = self._trailing_stop_loss if is_trailing else self._stop_loss
+
         if stopLossOrderID:
-            self._stop_loss.exec({
+            stop_obj.exec({
                 'tradeID': str(trade_id),
                 'price': stop_rate,
                 'replace_order_id': stopLossOrderID,
-                'client_order_comment': client_order_comment
+                'client_trade_tag' : str(event_close_id),
+                'client_trade_comment' :client_order_comment,
+                'client_order_tag' : str(event_close_id),
+                'client_order_comment' :client_order_comment,
+                'distance' : str(distance)
             })
         else:
-            self._stop_loss.exec({
+            stop_obj.exec({
                 'tradeID': str(trade_id),
                 'price': stop_rate,
-                'client_order_comment': client_order_comment
+                'client_trade_tag' : str(event_close_id),
+                'client_trade_comment' :client_order_comment,
+                'client_order_tag' : str(event_close_id),
+                'client_order_comment' :client_order_comment,
+                'distance' : str(distance)
             })
 
         response = self._stop_loss.get_response()
