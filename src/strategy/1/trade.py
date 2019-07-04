@@ -243,7 +243,7 @@ class Trade():
             self._line.send('fix order profit', message)
             return True
         else:
-            errors = stop_obj.get_errors()
+            errors = self._take_profit.get_errors()
             self._line.send('fix order profit failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
             return False
 
