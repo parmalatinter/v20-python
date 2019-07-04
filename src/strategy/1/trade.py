@@ -33,7 +33,7 @@ import order.entry
 import order.take_profit
 import order.stop_loss
 import trade.close
-import trade.cancel
+import order.cancel
 import trade.get_by_trade_ids
 import account.details
 
