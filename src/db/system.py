@@ -60,9 +60,10 @@ class System():
             print(e)
             print(query)
             text = query + ', '
-            for arg in args:
-                text = text + str(type(arg)) + ','
-                print(type(arg))
+            if args:
+                for arg in args:
+                    text = text + str(type(arg)) + ','
+                    print(type(arg))
             _line = line.line.Line()
             _line.send(str(e), text)
             self.logger.debug(str(e) + ':' + text)

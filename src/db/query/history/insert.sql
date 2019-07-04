@@ -51,7 +51,6 @@ SELECT
 	%(resistance_high)s,
 	%(resistance_low)s,
 	%(transaction_id)s
-
 WHERE NOT EXISTS (
 	SELECT trade_id FROM history WHERE trade_id = %(trade_id)s
 );
