@@ -23,7 +23,8 @@ INSERT INTO history (
 	rule_6,
 	resistance_high,
 	resistance_low,
-	transaction_id
+	transaction_id,
+	memo
 ) 
 SELECT 
 	%(trade_id)s,
@@ -50,7 +51,8 @@ SELECT
 	%(rule_6)s,
 	%(resistance_high)s,
 	%(resistance_low)s,
-	%(transaction_id)s
+	%(transaction_id)s,
+	'%(memo)s'
 WHERE NOT EXISTS (
 	SELECT trade_id FROM history WHERE trade_id = %(trade_id)s
 );

@@ -148,7 +148,7 @@ class History():
 
         return df.to_csv(sep=",", line_terminator='\n', encoding='utf-8')
 
-    def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, resistance_high, resistance_low, transaction_id=''):
+    def insert(self, trade_id, price, price_target, state, instrument, units, unrealized_pl, event_open_id, trend_1, trend_2, trend_3, trend_4, trend_cal, judge_1, judge_2, rule_1, rule_2, rule_3, rule_4, rule_5, rule_6, resistance_high, resistance_low, transaction_id=0, memo=''):
         create_time = datetime.datetime.now()
 
         args = dict(trade_id=trade_id,
@@ -175,7 +175,8 @@ class History():
                 resistance_high=resistance_high,
                 resistance_low=resistance_low,
                 create_time=create_time,
-                transaction_id=transaction_id
+                transaction_id=transaction_id,
+                memo=memo
             )
         sql_file = open(self.dir_path + '/query/history/insert.sql', 'r')
         self.exec_query(sql_file.read() % args)
@@ -199,15 +200,16 @@ class History():
         sql_file = open(self.dir_path + '/query/history/update.sql', 'r')
         self.exec_query(sql_file.read() % args)
 
-    def fix_update(self, trade_id, price_close, pl, memo=''):
+    def fix_update(self, trade_id, price_close, pl, event_close_id, memo=''):
         update_time = datetime.datetime.now()
 
         args = dict(
                 update_time=update_time,
                 price_close=price_close,
                 pl=pl,
-                memo=memo,
-                trade_id=trade_id
+                trade_id=trade_id,
+                event_close_id=event_close_id,
+                memo=memo
             )
 
         sql_file = open(self.dir_path + '/query/history/fix_update.sql', 'r')

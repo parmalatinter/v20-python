@@ -902,7 +902,8 @@ class Trade():
             rule_6=self.rule_6,
             resistance_high=round(self.resistande_info['resistance_high'], 2),
             resistance_low=round(self.resistande_info['resistance_low'], 2),
-            transaction_id=transaction_id
+            transaction_id=transaction_id,
+            memo=''
         )
 
     def system_update(self, positions_infos):

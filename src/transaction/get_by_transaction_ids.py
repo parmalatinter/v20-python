@@ -47,6 +47,7 @@ class Get_by_transaction_ids(object):
         new_rows = {}
         update_rows = {}
         history = db.history.History()
+
         for transaction in response.get("transactions", 200):
             
             if hasattr(transaction, 'tradeOpened'):
@@ -55,8 +56,15 @@ class Get_by_transaction_ids(object):
                         'reason' : transaction.reason,
                         'price' : transaction.tradeOpened.price,
                         'units' : transaction.tradeOpened.units,
-                        'tradeID' : transaction.tradeOpened.tradeID
+                        'tradeID' : transaction.tradeOpened.tradeID,
+                        'event_open_id' : 0,
+                        'memo' : ''
                     }
+                    if hasattr(transaction.tradeOpened, 'clientExtensions'):
+                        if hasattr(transaction.tradeOpened.clientExtensions, 'tag'):
+                            new_rows[transaction.id]['event_open_id'] = int(transaction.tradeOpened.clientExtensions.tag)
+                        if hasattr(transaction.tradeOpened.clientExtensions, 'comment'):
+                            new_rows[transaction.id]['memo'] = transaction.tradeOpened.clientExtensions.comment
             if hasattr(transaction, 'tradesClosed'):
                 if transaction.tradesClosed:
                     for closed in transaction.tradesClosed:
@@ -65,8 +73,15 @@ class Get_by_transaction_ids(object):
                                 'reason' : transaction.reason,
                                 'price' : closed.price,
                                 'realizedPL' : closed.realizedPL,
-                                'tradeID' : closed.tradeID
+                                'tradeID' : closed.tradeID,
+                                'event_close_id' : '',
+                                'memo' : ''
                             }
+                            if hasattr(closed, 'clientExtensions'):
+                                if hasattr(closed.clientExtensions, 'tag'):
+                                    new_rows[transaction.id]['event_close_id'] = int(closed.clientExtensions.tag)
+                                if hasattr(closed.clientExtensions, 'comment'):
+                                    new_rows[transaction.id]['memo'] = closed.clientExtensions.comment
 
         for transaction_id, row in new_rows.items():
             history.insert(
@@ -77,7 +92,7 @@ class Get_by_transaction_ids(object):
                 instrument=self.history_obj['instrument'],
                 units=row['units'],
                 unrealized_pl=0,
-                event_open_id=0,
+                event_open_id=row['event_open_id'],
                 trend_1=self.history_obj['trend_1'],
                 trend_2=self.history_obj['trend_2'],
                 trend_3=self.history_obj['trend_3'],
@@ -93,11 +108,12 @@ class Get_by_transaction_ids(object):
                 rule_6=self.history_obj['rule_6'],
                 resistance_high=self.history_obj['resistance_high'],
                 resistance_low=self.history_obj['resistance_low'],
-                transaction_id=0
+                transaction_id=0,
+                memo=row['memo']
             )
 
         for transaction_id, row in update_rows.items():
-            history.fix_update(int(row['tradeID']), row['price'], row['realizedPL'], row['reason'])
+            history.fix_update(int(row['tradeID']), row['price'], row['realizedPL'], row['event_close_id'], row['reason'])
 
 def main():
     details = account.details.Details()
