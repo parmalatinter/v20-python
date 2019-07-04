@@ -276,7 +276,7 @@ class Trade():
                 'distance' : str(distance)
             })
 
-        response = self._stop_loss.get_response()
+        response = stop_obj.get_response()
 
         message = 'event_close_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, comment : {}, now : {}'.format(
             str(event_close_id),
@@ -292,7 +292,7 @@ class Trade():
             self._line.send('fix order stop loss', message)
             return True
         else:
-            errors = self._stop_loss.get_errors()
+            errors = stop_obj.get_errors()
             self._line.send('fix order stop failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
             return False
 
@@ -908,37 +908,7 @@ class Trade():
                 'units':units,
                 'event_open_id':event_open_id
             }
-            # self.insert_histoy(trade_history, trade_id, transaction_id)
             self._line.send(event_open_id, message)
-
-    # def insert_histoy(self, trade_history, trade_id, transaction_id):
-    #     self._history.insert(
-    #         trade_id=int(trade_id),
-    #         price=trade_history['rate'],
-    #         price_target=trade_history['target_price'],
-    #         state='open',
-    #         instrument=self.instrument,
-    #         units=trade_history['units'],
-    #         unrealized_pl=0,
-    #         event_open_id=trade_history['event_open_id'],
-    #         trend_1=round(self.trend_usd['v1_usd'], 2),
-    #         trend_2=round(self.trend_usd['v2_usd'], 2),
-    #         trend_3=round(self.trend_usd['v1_jpy'], 2),
-    #         trend_4=round(self.trend_usd['v2_jpy'], 2),
-    #         trend_cal=round(self.trend_usd['res'], 2),
-    #         judge_1=self.is_golden,
-    #         judge_2=self.is_dead,
-    #         rule_1=self.rule_1,
-    #         rule_2=self.rule_2,
-    #         rule_3=self.rule_3,
-    #         rule_4=self.rule_4,
-    #         rule_5=self.rule_5,
-    #         rule_6=self.rule_6,
-    #         resistance_high=round(self.resistande_info['resistance_high'], 2),
-    #         resistance_low=round(self.resistande_info['resistance_low'], 2),
-    #         transaction_id=transaction_id,
-    #         memo=''
-    #     )
 
     def system_update(self, positions_infos):
         win_count = self._history.get_todays_win_count()
