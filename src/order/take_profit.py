@@ -4,6 +4,7 @@ import argparse
 import common.config
 from .args import OrderArguments, add_replace_order_id_argument
 from .view import print_order_create_response_transactions
+import v20.transaction
 
 class Take_profit():
 
@@ -82,7 +83,7 @@ class Take_profit():
             kwargs["comment"] = arguments['client_trade_comment']
         if kwargs:
             arguments['tradeClientExtensions'] = v20.transaction.ClientExtensions(**kwargs)
-            
+
         if 'replace_order_id' in arguments:
             #
             # Submit the request to cancel and replace a Take Profit Order
