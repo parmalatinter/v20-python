@@ -84,9 +84,9 @@ class Market():
         if 'client_trade_id' in arguments:
             kwargs["id"] = arguments['client_trade_id']
         if 'client_trade_tag' in arguments:
-            kwargs["tag"] = arguments['client_trade_id']
+            kwargs["tag"] = arguments['client_trade_tag']
         if 'client_trade_comment' in arguments:
-            kwargs["comment"] = arguments['client_trade_id']
+            kwargs["comment"] = arguments['client_trade_comment']
         if kwargs:
             arguments['tradeClientExtensions'] = v20.transaction.ClientExtensions(**kwargs)
 
