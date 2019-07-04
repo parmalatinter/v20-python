@@ -207,6 +207,8 @@ class Trade():
 
     def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 
+        profit_rate = str(profit_rate)
+        
         if takeProfitOrderID:
             self._take_profit.exec({
                 'tradeID': str(trade_id),
