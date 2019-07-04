@@ -585,7 +585,7 @@ class Trade():
 
             if delta_total_minuts >= self.close_order_limit_minutes:
                 args = dict(order_id=order_id)
-                command1 = ' v20-order-cancel %(order_id)s' % args
+                command1 = ' v20-order-cancel --oeder-id=%(order_id)s' % args
                 res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
                 res.wait()
                 out, err = res.communicate()
