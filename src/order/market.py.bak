@@ -5,7 +5,6 @@ import common.config
 from .args import OrderArguments
 from v20.order import MarketOrderRequest
 from .view import print_order_create_response_transactions
-import v20.transaction
 
 class Market():
 
@@ -16,7 +15,7 @@ class Market():
     common.config.add_argument(parser)
     errorCode = '' 
     errorMessage = ''
-    trade_id = 0
+    trade_id = ''
 
     def exec_by_cmd(self):
 
@@ -62,34 +61,6 @@ class Market():
         #
         # Submit the request to create the Market Order
         #
-
-        if 'take_profit_price' in arguments:
-            kwargs = {'price': arguments['take_profit_price']}
-            arguments['takeProfitOnFill'] = v20.transaction.TakeProfitDetails(**kwargs)
-        if 'stop_loss_price' in arguments:
-            kwargs = {'price': arguments['stop_loss_price']}
-            arguments['stopLossOnFill'] = v20.transaction.StopLossDetails(**kwargs)
-
-        kwargs = {}
-        if 'client_order_id' in arguments:
-            kwargs["id"] = arguments['client_order_id']
-        if 'client_order_tag' in arguments:
-            kwargs["tag"] = arguments['client_order_tag']
-        if 'client_order_comment' in arguments:
-            kwargs["comment"] = arguments['client_order_comment']
-        if kwargs:
-            arguments['clientExtensions'] = v20.transaction.ClientExtensions(**kwargs)
-
-        kwargs = {}
-        if 'client_trade_id' in arguments:
-            kwargs["id"] = arguments['client_trade_id']
-        if 'client_trade_tag' in arguments:
-            kwargs["tag"] = arguments['client_trade_id']
-        if 'client_trade_comment' in arguments:
-            kwargs["comment"] = arguments['client_trade_id']
-        if kwargs:
-            arguments['tradeClientExtensions'] = v20.transaction.ClientExtensions(**kwargs)
-
         response = api.order.market(
             self.args.config.active_account,
             **arguments
@@ -99,8 +70,6 @@ class Market():
 
         if self.response.status == 201 and self.response.reason == "Created":
             self.trade_id = self.response.get("lastTransactionID", None)
-        else:
-            self.errorMessage = response.get("errorMessage", None)
 
     def get_response(self):
         return self.response
@@ -125,7 +94,8 @@ class Market():
 #     market = Market()
 #     market.exec({'instrument': 'USD_JPY', 'units':1, 'take-profit-price' : 120, 'client-order-comment' : 'test'})
 #     response = market.get_response()
-#     print(response.__dict__)
+#     transaction = market.get_transaction()
+#     print(transaction)
 
 def main():
     market = Market()
