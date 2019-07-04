@@ -60,6 +60,7 @@ class Trade():
     caculate_df = pd.DataFrame(columns=[])
     caculate_df_all = pd.DataFrame(columns=[])
     orders_info = None
+    new_orders_info = None
     resistande_info = {'resistance_high' : 0, 'resistance_low' : 0}
     now_dt = None
 
@@ -87,6 +88,7 @@ class Trade():
     close_limit_minutes_2 = 90
     close_limit_minutes_3 = 135
     close_limit_hours = 3.5
+    close_order_limit_minutes = 30
 
     first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
     win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
@@ -127,12 +129,13 @@ class Trade():
         self.regular_profit_pips = _environ.get('regular_profit_pips') if _environ.get('regular_profit_pips') else self.regular_profit_pips
         self.min_profit_pips = _environ.get('min_profit_pips') if _environ.get('min_profit_pips') else self.min_profit_pips
 
-    def set_property(self, candles_df, long_units, short_units, orders_info):
+    def set_property(self, candles_df, long_units, short_units, orders_info, new_orders_info):
         self.candles_df = candles_df
         self.long_units = long_units
         self.short_units = short_units
         self.trend_usd = self._trend.get()
         self.orders_info = orders_info
+        self.new_orders_info = new_orders_info
         self.last_df = self.get_caculate_df(self.candles_df)
         self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
         self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
@@ -575,6 +578,20 @@ class Trade():
                 self.take_profit(trade_id, round(_price, 2), takeProfitOrderID, _client_order_comment, event_close_id)
                 self._history.update(int(trade_id), event_close_id, state)                                 
 
+        for order_id, row in self.new_orders_info.items():
+
+            delta = self.now_dt - row['time']
+            delta_total_minuts = delta.total_seconds()/60
+
+            if delta_total_minuts >= self.close_order_limit_minutes:
+                args = dict(order_id=order_id)
+                command1 = ' v20-order-cancel %(order_id)s' % args
+                res = subprocess.Popen(command1, stdout=subprocess.PIPE, stderr=None, shell=True)
+                res.wait()
+                out, err = res.communicate()
+                self._line.send('order cancel #', command1 + ' ' + out.decode('utf-8') )
+
+
     def analyze_trade(self):
 
         _units = 0
@@ -961,6 +978,7 @@ def main():
     transactions = transaction.transactions.Transactions()
     transactions.get()
     orders_info = transactions.get_trades()
+    new_orders_info = transactions.get_new_orders()
     positions_infos = transactions.get_positions()
     long_units = transactions.get_short_pos_units()
     short_units = transactions.get_short_pos_units()
@@ -971,7 +989,7 @@ def main():
     candles_csv_string = candles.get('USD_JPY', 'M10')
     candles_df = trade.get_df_by_string(candles_csv_string)
 
-    trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info)
+    trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info, new_orders_info=new_orders_info)
             
     if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
         trade.analyze_trade()
@@ -1003,7 +1021,8 @@ def test():
     transactions = transaction.transactions.Transactions()
     transactions.get()
     orders_info = transactions.get_trades()
-    positions_infos = transactions.get_positions()
+    new_orders_info = transactions.get_new_orders()
+    # positions_infos = transactions.get_positions()
     long_units = transactions.get_short_pos_units()
     short_units = transactions.get_short_pos_units()
 
@@ -1013,7 +1032,7 @@ def test():
     candles_csv_string = candles.get('USD_JPY', 'M10')
     candles_df = trade.get_df_by_string(candles_csv_string)
 
-    trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info)
+    trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info, new_orders_info=new_orders_info)
 
     # trade.order(1, 110, 108, 999, 'test')
 

@@ -11,6 +11,7 @@ import pytz
 
 class Transactions(object):
 
+    new_orders = {}
     orders = {}
     positions = {}
     long_pos = {}
@@ -35,8 +36,6 @@ class Transactions(object):
 
         response1 = api.account.get(account_id)
 
-        file_name = 'transaction.csv'
-
         res = '{},{},{},{},{},{},{}\n'.format(
             'id',
             'time',
@@ -56,6 +55,16 @@ class Transactions(object):
 
         for order in getattr(res, "orders", []):
             self.orders[order.id] = order.__dict__
+            if self.orders[order.id]['type'] == 'MARKET_IF_TOUCHED':
+                self.new_orders[order.id] = self.orders[order.id]
+                # ,time,close,open,high,low,volume
+                unix = self.new_orders[order.id]['createTime'].split(".")[0]
+                try:
+                    time = datetime.strptime(unix.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+                except:
+                    time = unix.split(".")[0]
+
+                self.new_orders[order.id]['time'] = time
             
         texts = ''
         for trade in getattr(res, "trades", []):
@@ -103,6 +112,9 @@ class Transactions(object):
     def get_orders(self):
         return self.orders
 
+    def get_new_orders(self):
+        return self.new_orders
+
     def get_positions(self):
         return self.positions
 
@@ -115,9 +127,8 @@ class Transactions(object):
 def main():
     transactions = Transactions()
     transactions.get()
-    res = transactions.get_positions()
-    print(transactions.get_long_pos_units())
-    print(transactions.get_short_pos_units())
+    res = transactions.get_new_orders()
+    print(res)
 
 if __name__ == "__main__":
     main()
