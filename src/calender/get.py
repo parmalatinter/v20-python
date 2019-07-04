@@ -94,9 +94,13 @@ class Calendar(object):
             from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
             to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
             
-            if from_us_datetime_hours < self.hours and  from_us_datetime_hours > 0:
+            if from_us_datetime_hours < self.hours and from_us_datetime_hours > 0:
+                log = 'stop stade 1 {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
+                print(log)
                 return True
-            if to_us_datetime_hours > -self.hours and  to_us_datetime_hours < 0:
+            if to_us_datetime_hours > -self.hours and to_us_datetime_hours < 0:
+                log = 'stop stade 2 {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
+                print(log)
                 return True
         return False
 
