@@ -87,16 +87,27 @@ class Calendar(object):
     def in_danger_time(self, df):
         df = df[df['important'].str.contains('★★★')]
         now = pd.Timestamp.now()
-        
+        # 計算式
+        # 答え < 0 or  0 > 0 - self.hours　危険時間帯
+        # from 5:00 to 8:00 now 7:00
+        # 5:00 - 7:00 -2
+        # 7:00 - 8:00 -1
+
+        # from 5:00 to 8:00 now 11:00
+        # 5:00 - 11:00 -5
+        # 11:00 - 8:00 3
+
+        # from 5:00 to 8:00 now 4:00
+        # 5:00 - 4:00 1
+        # 4:00 - 8:00 -4
+
         for index, row in df.iterrows():
             from_us_datetime = pd.to_datetime(row['from_us_datetime'], format='%Y-%m-%d %H:%M:%S')
             to_us_datetime = pd.to_datetime(row['to_us_datetime'], format='%Y-%m-%d %H:%M:%S')
             from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
             to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
             
-            if from_us_datetime_hours < self.hours and  from_us_datetime_hours > 0:
-                return True
-            if to_us_datetime_hours > -self.hours and  to_us_datetime_hours < 0:
+            if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
                 return True
         return False
 
