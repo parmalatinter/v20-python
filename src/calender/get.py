@@ -108,6 +108,8 @@ class Calendar(object):
             to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
             
             if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
+                log = 'stop trade {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
+                print(log)
                 return True
         return False
 

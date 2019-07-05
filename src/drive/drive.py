@@ -2,18 +2,23 @@
 from pydrive.auth import GoogleAuth
 from pydrive.drive import GoogleDrive
 import os, json
+import strategy.environ
 
 class Drive():
 
 	drive_obj = None
 	folder_id = None
 	file_list = None
+	env = 'TEST'
 
 	def __init__(self, folder_id):
+		environ = strategy.environ.Environ()
+		self.env = environ.get('ENV') if environ.get('ENV') else self.env
 		self.set_service(folder_id)
 
 	def set_service(self, folder_id):
-		os.chdir(os.path.dirname(os.path.abspath(__file__)))
+		print(os.path.dirname(os.path.abspath(__file__)) + '/' + self.env)
+		os.chdir(os.path.dirname(os.path.abspath(__file__)) + '/' + self.env)
 		gauth = GoogleAuth()
 
 		# Try to load saved client credentials

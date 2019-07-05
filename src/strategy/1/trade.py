@@ -32,6 +32,7 @@ import order.market
 import order.entry
 import order.take_profit
 import order.stop_loss
+import order.trailing_stop_loss
 import trade.close
 import order.cancel
 import trade.get_by_trade_ids
@@ -47,6 +48,7 @@ class Trade():
     _cancel = None
     _take_profit = None
     _stop_loss = None
+    _trailing_stop_loss = None
     _close = None
     _logger = None
     _line = None
@@ -106,6 +108,7 @@ class Trade():
         self._cancel = order.cancel.Cancel()
         self._take_profit = order.take_profit.Take_profit()
         self._stop_loss = order.stop_loss.Stop_loss()
+        self._trailing_stop_loss = order.trailing_stop_loss.Trailing_stop_loss()
         self._close = trade.close.Close()
         self._candle = inst_one.Candle()
 
@@ -205,18 +208,25 @@ class Trade():
     def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 
         profit_rate = str(profit_rate)
+        
         if takeProfitOrderID:
             self._take_profit.exec({
                 'tradeID': str(trade_id),
                 'price': profit_rate,
                 'replace_order_id': takeProfitOrderID,
-                'client_order_comment': client_order_comment
+                'client_trade_tag' : str(event_close_id),
+                'client_trade_comment' :client_order_comment,
+                'client_order_tag' : str(event_close_id),
+                'client_order_comment' :client_order_comment
             })
         else:
             self._take_profit.exec({
                 'tradeID': str(trade_id),
                 'price': profit_rate,
-                'client_order_comment': client_order_comment
+                'client_trade_tag' : str(event_close_id),
+                'client_trade_comment' :client_order_comment,
+                'client_order_tag' : str(event_close_id),
+                'client_order_comment' :client_order_comment
             })
 
         response = self._take_profit.get_response()
@@ -236,29 +246,39 @@ class Trade():
             return True
         else:
             errors = self._take_profit.get_errors()
-            self._line.send('fix order profit failed', message)
+            self._line.send('fix order profit failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
             return False
 
 
-    def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id):
+    def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id, is_trailing=False, distance=''):
 
         stop_rate = str(stop_rate)
 
+        stop_obj = self._trailing_stop_loss if is_trailing else self._stop_loss
+
         if stopLossOrderID:
-            self._stop_loss.exec({
+            stop_obj.exec({
                 'tradeID': str(trade_id),
                 'price': stop_rate,
                 'replace_order_id': stopLossOrderID,
-                'client_order_comment': client_order_comment
+                'client_trade_tag' : str(event_close_id),
+                'client_trade_comment' :client_order_comment,
+                'client_order_tag' : str(event_close_id),
+                'client_order_comment' :client_order_comment,
+                'distance' : str(distance)
             })
         else:
-            self._stop_loss.exec({
+            stop_obj.exec({
                 'tradeID': str(trade_id),
                 'price': stop_rate,
-                'client_order_comment': client_order_comment
+                'client_trade_tag' : str(event_close_id),
+                'client_trade_comment' :client_order_comment,
+                'client_order_tag' : str(event_close_id),
+                'client_order_comment' :client_order_comment,
+                'distance' : str(distance)
             })
 
-        response = self._stop_loss.get_response()
+        response = stop_obj.get_response()
 
         message = 'event_close_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, comment : {}, now : {}'.format(
             str(event_close_id),
@@ -274,7 +294,7 @@ class Trade():
             self._line.send('fix order stop loss', message)
             return True
         else:
-            errors = self._stop_loss.get_errors()
+            errors = stop_obj.get_errors()
             self._line.send('fix order stop failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
             return False
 
@@ -890,37 +910,7 @@ class Trade():
                 'units':units,
                 'event_open_id':event_open_id
             }
-            # self.insert_histoy(trade_history, trade_id, transaction_id)
             self._line.send(event_open_id, message)
-
-    # def insert_histoy(self, trade_history, trade_id, transaction_id):
-    #     self._history.insert(
-    #         trade_id=int(trade_id),
-    #         price=trade_history['rate'],
-    #         price_target=trade_history['target_price'],
-    #         state='open',
-    #         instrument=self.instrument,
-    #         units=trade_history['units'],
-    #         unrealized_pl=0,
-    #         event_open_id=trade_history['event_open_id'],
-    #         trend_1=round(self.trend_usd['v1_usd'], 2),
-    #         trend_2=round(self.trend_usd['v2_usd'], 2),
-    #         trend_3=round(self.trend_usd['v1_jpy'], 2),
-    #         trend_4=round(self.trend_usd['v2_jpy'], 2),
-    #         trend_cal=round(self.trend_usd['res'], 2),
-    #         judge_1=self.is_golden,
-    #         judge_2=self.is_dead,
-    #         rule_1=self.rule_1,
-    #         rule_2=self.rule_2,
-    #         rule_3=self.rule_3,
-    #         rule_4=self.rule_4,
-    #         rule_5=self.rule_5,
-    #         rule_6=self.rule_6,
-    #         resistance_high=round(self.resistande_info['resistance_high'], 2),
-    #         resistance_low=round(self.resistande_info['resistance_low'], 2),
-    #         transaction_id=transaction_id,
-    #         memo=''
-    #     )
 
     def system_update(self, positions_infos):
         win_count = self._history.get_todays_win_count()
