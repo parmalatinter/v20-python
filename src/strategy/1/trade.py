@@ -436,7 +436,7 @@ class Trade():
             history_df = self._history.get_by_panda(trade_id)
 
             if history_df.empty:
-                self._line.send('history_df.empty', 'error')
+                self._line.send('history_df.empty', 'info')
                 continue
             event_close_id = float(history_df['event_close_id'][history_df.index[0]]) if history_df['event_close_id'][history_df.index[0]] else 0
             # 利益がunitsの0.15倍ある場合は決済
