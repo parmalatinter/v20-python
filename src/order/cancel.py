@@ -95,12 +95,12 @@ class Cancel():
                 arguments['order_id']
             )
 
-            if not self.response.status == 201 :
-                self.errorMessage = self.response.get("errorMessage", None)
- 
-            elif self.response.status == 200 :
+            if self.response.status == 200 :
                 self.errorMessage = "Order Cancel"
        
+            elif not self.response.status == 201 :
+                self.errorMessage = self.response.get("errorMessage", None)
+ 
     def get_response(self):
         return self.response
 
