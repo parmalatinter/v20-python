@@ -19,9 +19,9 @@ class Calendar(object):
     def __init__(self):
         _environ = strategy.environ.Environ()
         os.environ['TZ'] = 'America/New_York'
-        self.calendar_csv = file.file_utility.File_utility(self.filename, self.folder)
-        self.hours = (float(_environ.get('hours')) if _environ.get('hours') else 3) / 2
         self.folder = _environ.get('sub_drive_id') if _environ.get('sub_drive_id') else self.folder
+        self.hours = (float(_environ.get('hours')) if _environ.get('hours') else 3) / 2
+        self.calendar_csv = file.file_utility.File_utility(self.filename, self.folder)       
 
     def get_drive_id(self):
         return self.folder

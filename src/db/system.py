@@ -34,8 +34,9 @@ class System():
         self.password = _environ.get('db_password') if _environ.get('db_password') else self.password
         self.host = _environ.get('db_host') if _environ.get('db_host') else self.host
         self.port = _environ.get('db_port') if _environ.get('db_port') else self.port
-        self.csv = file.file_utility.File_utility(self.filename, self.drive_id)
         self.drive_id = _environ.get('sub_drive_id') if _environ.get('sub_drive_id') else self.drive_id
+        self.csv = file.file_utility.File_utility(self.filename, self.drive_id)
+        
 
     def get_conn(self):
         conn = psycopg2.connect("host=" + self.host + " port=" + self.port + " dbname=" +
