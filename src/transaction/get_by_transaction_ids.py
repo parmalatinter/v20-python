@@ -42,7 +42,7 @@ class Get_by_transaction_ids(object):
             fromID=fromid,
             toID=toid,
             type=None
-        )m
+        )
 
         new_rows = {}
         update_rows = {}
