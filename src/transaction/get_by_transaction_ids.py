@@ -74,7 +74,7 @@ class Get_by_transaction_ids(object):
                                 'price' : closed.price,
                                 'realizedPL' : closed.realizedPL,
                                 'tradeID' : closed.tradeID,
-                                'event_close_id' : '',
+                                'event_close_id' : 0,
                                 'memo' : ''
                             }
                             if hasattr(closed, 'clientExtensions'):
