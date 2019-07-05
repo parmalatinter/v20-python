@@ -42,7 +42,7 @@ class Get_by_transaction_ids(object):
             fromID=fromid,
             toID=toid,
             type=None
-        )
+        )m
 
         new_rows = {}
         update_rows = {}
@@ -79,7 +79,7 @@ class Get_by_transaction_ids(object):
                             }
                             if hasattr(closed, 'clientExtensions'):
                                 if hasattr(closed.clientExtensions, 'tag'):
-                                    new_rows[transaction.id]['event_close_id'] = int(closed.clientExtensions.tag)
+                                    new_rows[transaction.id]['event_close_id'] = float(closed.clientExtensions.tag)
                                 if hasattr(closed.clientExtensions, 'comment'):
                                     new_rows[transaction.id]['memo'] = closed.clientExtensions.comment
 
