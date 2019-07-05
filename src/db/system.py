@@ -29,14 +29,13 @@ class System():
 
     def __init__(self):
         _environ = strategy.environ.Environ()
-        self.dbname = _environ.get('dbname') if _environ.get(
-            'dbname') else self.dbname
-        self.user = _environ.get('user') if _environ.get('user') else self.user
-        self.password = _environ.get('password') if _environ.get(
-            'password') else self.password
-        self.host = _environ.get('host') if _environ.get('host') else self.host
-        self.port = _environ.get('port') if _environ.get('port') else self.port
+        self.dbname = _environ.get('dbname') if _environ.get('dbname') else self.dbname
+        self.user = _environ.get('db_user') if _environ.get('db_user') else self.user
+        self.password = _environ.get('db_password') if _environ.get('db_password') else self.password
+        self.host = _environ.get('db_host') if _environ.get('db_host') else self.host
+        self.port = _environ.get('db_port') if _environ.get('db_port') else self.port
         self.csv = file.file_utility.File_utility(self.filename, self.drive_id)
+        self.drive_id = _environ.get('sub_drive_id') if _environ.get('sub_drive_id') else self.drive_id
 
     def get_conn(self):
         conn = psycopg2.connect("host=" + self.host + " port=" + self.port + " dbname=" +
