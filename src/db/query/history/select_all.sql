@@ -8,7 +8,6 @@ SELECT
 	units,
 	pl,
 	price,
-	price_target,
 	price_close,
 	event_open_id,
 	event_close_id,
