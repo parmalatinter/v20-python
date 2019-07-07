@@ -122,10 +122,10 @@ def main():
     transaction_id = int(details_dict['Last Transaction ID'])
     from_transaction_id = 0
     if transaction_id < 50:
-        transaction_id = 0
+        from_transaction_id = 0
     else:
         from_transaction_id = transaction_id - 50
-    get_by_transaction_ids.main(transaction_id - 50, transaction_id)
+    get_by_transaction_ids.main(from_transaction_id, transaction_id)
 
 
 if __name__ == "__main__":
