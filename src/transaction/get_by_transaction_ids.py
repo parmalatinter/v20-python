@@ -120,6 +120,8 @@ def main():
     details_dict = details.get_account()
     get_by_transaction_ids = Get_by_transaction_ids()
     transaction_id = int(details_dict['Last Transaction ID'])
+    if transaction_id < 50:
+        transaction_id = 0
     get_by_transaction_ids.main(transaction_id - 50, transaction_id)
 
 
