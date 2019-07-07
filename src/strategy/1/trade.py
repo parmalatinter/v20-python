@@ -947,9 +947,9 @@ class Trade():
         details_dict = details.get_account()
         get_by_transaction_ids = transaction.get_by_transaction_ids.Get_by_transaction_ids(history_obj)
         transaction_id = int(details_dict['Last Transaction ID'])
-        from_transaction_id = 0
+        from_transaction_id = 1
         if transaction_id < 50:
-            from_transaction_id = 0
+            from_transaction_id = 1
         else:
             from_transaction_id = transaction_id - 50
         get_by_transaction_ids.main(from_transaction_id, transaction_id)
