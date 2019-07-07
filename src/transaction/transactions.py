@@ -14,8 +14,8 @@ class Transactions(object):
     new_orders = {}
     orders = {}
     positions = {}
-    long_pos = {}
-    short_pos = {}
+    long_pos = {'units': 0}
+    short_pos = {'units': 0}
     trades = {}
 
     def get(self):
