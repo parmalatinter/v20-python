@@ -2,9 +2,14 @@
 
 import datetime
 import calender.get
-
+import strategy.environ
 
 class Market(object):
+	is_stop = True
+
+	def __init__(self, folder_id):
+		environ = strategy.environ.Environ()
+		self.is_stop = environ.get('is_stop') if environ.get('is_stop') else self.is_stop
 
 	def get_utc_time(self):
 		return datetime.datetime.utcnow() + datetime.timedelta(hours=9)
@@ -84,6 +89,8 @@ class Market(object):
 		close = self.get_close(is_summer)
 		is_eneble = self.judge_is_opening(jstTime, close - reduce_time) 
 		if not is_eneble:
+			return False
+		elif not self.is_stop
 			return False
 
 		_calender = calender.get.Calendar()
