@@ -125,7 +125,6 @@ def main():
         from_transaction_id = 0
     else:
         from_transaction_id = transaction_id - 50
-    from_transaction_id = 0
     get_by_transaction_ids.main(from_transaction_id, transaction_id)
 
 
