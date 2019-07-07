@@ -7,7 +7,7 @@ import strategy.environ
 class Market(object):
 	is_stop = True
 
-	def __init__(self, folder_id):
+	def __init__(self):
 		environ = strategy.environ.Environ()
 		self.is_stop = environ.get('is_stop') if environ.get('is_stop') else self.is_stop
 
