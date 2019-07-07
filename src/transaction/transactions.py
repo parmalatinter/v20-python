@@ -13,7 +13,7 @@ class Transactions(object):
 
     new_orders = {}
     orders = {}
-    positions = {}
+    positions = {'pl': 0, 'unrealizedPL': 0}
     long_pos = {'units': 0}
     short_pos = {'units': 0}
     trades = {}
