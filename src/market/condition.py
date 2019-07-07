@@ -5,7 +5,7 @@ import calender.get
 import strategy.environ
 
 class Market(object):
-	is_stop = True
+	is_stop = False
 
 	def __init__(self):
 		environ = strategy.environ.Environ()
