@@ -90,7 +90,7 @@ class Market(object):
 		is_eneble = self.judge_is_opening(jstTime, close - reduce_time) 
 		if not is_eneble:
 			return False
-		elif not self.is_stop
+		elif not self.is_stop:
 			return False
 
 		_calender = calender.get.Calendar()
