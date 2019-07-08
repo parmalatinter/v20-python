@@ -623,6 +623,7 @@ class Trade():
 
         # ゴールデンクロスの場合
         if self.is_golden:
+            self._line.send('is_golden', str(self.last_rate))
             # trendがnormal_trend_range以上の場合
             if self.trend_usd['res'] > self.normal_trend_range:
                 _message = 'buy golden order trend > normal_trend_range 1 # {}'.format(str(self.last_rate))
@@ -673,6 +674,7 @@ class Trade():
 
         # デッドクロスの場合
         if self.is_dead:
+            self._line.send('is_dead', str(self.last_rate))
             # trendが-normal_trend_range以下の場合
             if self.trend_usd['res'] < 0 - self.normal_trend_range:
                 _message = 'sell dead order trend < -normal_trend_range 4 # {}'.format(str(self.last_rate))
