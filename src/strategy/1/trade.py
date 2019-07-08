@@ -854,7 +854,7 @@ class Trade():
         if event_open_id > 0:
 
             if units > 0:
-                if self.long_units:
+                if self.long_units > 0:
                     if (self.long_units / units) >= self.limit_units_count:
                         return
                 if stop_rate == 0:
@@ -868,7 +868,7 @@ class Trade():
                 if target_price - self.last_rate < self.regular_profit_pips:
                     target_price = self.last_rate + 0.14
             else:
-                if self.short_units:
+                if self.short_units > 0:
                     if (self.short_units / units) >= self.limit_units_count:
                         return
                 if stop_rate == 0:
