@@ -84,7 +84,7 @@ class Trade():
     mean = 0
     late = 0
     last_rate = 0
-    regular_profit_pips = 0.08
+    regular_profit_pips = 0.14
     min_profit_pips = 0.02
     normal_pips_range = 15
     normal_trend_range = 15
@@ -863,10 +863,10 @@ class Trade():
                 if self.last_rate - stop_rate < self.regular_profit_pips:
                     stop_rate = self.lower
                 if self.last_rate - stop_rate < self.regular_profit_pips:
-                    stop_rate = self.last_rate - 0.1
+                    stop_rate = self.last_rate - 0.14
                 # targetが浅いので変更
                 if target_price - self.last_rate < self.regular_profit_pips:
-                    target_price = self.last_rate + 0.1
+                    target_price = self.last_rate + 0.14
             else:
                 if self.short_units:
                     if (self.short_units / units) >= self.limit_units_count:
@@ -877,10 +877,10 @@ class Trade():
                 if stop_rate - self.last_rate < self.regular_profit_pips:
                     stop_rate = self.upper
                 if stop_rate - self.last_rate  < self.regular_profit_pips:
-                    stop_rate = self.last_rate + 0.1
+                    stop_rate = self.last_rate + 0.14
                 # targetが浅いので変更
                 if self.last_rate - target_price < self.regular_profit_pips:
-                    target_price = self.last_rate - 0.1
+                    target_price = self.last_rate - 0.14
 
             trade_id = 0
             transaction_id = 0
