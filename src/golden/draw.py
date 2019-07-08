@@ -185,7 +185,7 @@ class Draw(object):
 
         # ルールその3 C3 > upper
         df['rule_3'] = 0
-        df.loc[(df['c3'] > df['upper']),'rule_3']=1
+        df.loc[(df['o3'] > df['upper']),'rule_3']=1
 
         # ルールその4 3つ陰線
         df['rule_4'] = 0
@@ -244,18 +244,18 @@ class Draw(object):
         )
         return candle_temp
 
-    def plot(self, candle_temp):
+    def plot(self, candle_temp, from_index):
 
-        candle_temp = candle_temp[100:].copy()
+        candle_temp = candle_temp[from_index:].copy()
         # # ローソク足表示
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['upper_high'])
+        ax.plot(candle_temp['lower_low'])
         ax.plot(candle_temp['sma_2'])
         ax.plot(candle_temp['sma_14'])
+        ax.plot(candle_temp['h'])
+        ax.plot(candle_temp['l'])
 
         ax = plt.subplot(2, 1, 2, title='golden dead')
         ax.plot(candle_temp['golden'])
@@ -266,14 +266,14 @@ class Draw(object):
 
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['upper_high'])
+        ax.plot(candle_temp['lower_low'])
         ax.plot(candle_temp['sma_2'])
         ax.plot(candle_temp['sma_14'])
+        ax.plot(candle_temp['h'])
+        ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='rule_1 rule_2')
+        ax = plt.subplot(2, 1, 2, title='rule_1 Close before 3 < lower, rule_2 3 positive')
         ax.plot(candle_temp['rule_1'])
         ax.plot(candle_temp['rule_2'])
 
@@ -282,14 +282,14 @@ class Draw(object):
 
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['upper_high'])
+        ax.plot(candle_temp['lower_low'])
         ax.plot(candle_temp['sma_2'])
         ax.plot(candle_temp['sma_14'])
+        ax.plot(candle_temp['h'])
+        ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='rule_3 rule_4')
+        ax = plt.subplot(2, 1, 2, title='rule_3 C3 > upper, rule_4 3 negative')
         ax.plot(candle_temp['rule_3'])
         ax.plot(candle_temp['rule_4'])
 
@@ -298,14 +298,14 @@ class Draw(object):
 
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
-        ax.plot(candle_temp['upper'])
-        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['upper_high'])
+        ax.plot(candle_temp['lower_low'])
         ax.plot(candle_temp['sma_2'])
         ax.plot(candle_temp['sma_14'])
+        ax.plot(candle_temp['h'])
+        ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='rule_5 rule_6')
+        ax = plt.subplot(2, 1, 2, title='rule_5 h > upper, rule_6, l > lower')
         ax.plot(candle_temp['rule_5'])
         ax.plot(candle_temp['rule_6'])
 
@@ -330,7 +330,7 @@ def main():
     dir_path = os.path.dirname(os.path.realpath(__file__))
     draw.chdir(dir_path + "/datas")
     candles_df = draw.get_df_by_string(candles_csv_string)
-    draw.plot(candles_df)
+    draw.plot(candles_df, 50)
     print(candles_df)
     # print(draw.candle_supres())
 
