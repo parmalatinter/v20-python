@@ -7,7 +7,10 @@ from datetime import datetime
 import pandas as pd
 import numpy as np
 import math
- 
+
+import strategy.environ 
+import file.file_utility
+
 # ローソク足描写
 import matplotlib.pyplot as plt
 from mpl_finance import candlestick2_ohlc, volume_overlay as mpf
@@ -241,65 +244,95 @@ class Draw(object):
         )
         return candle_temp
 
-    def plot(self, df, candle_temp):
+    def plot(self, candle_temp):
+
+        candle_temp = candle_temp[100:].copy()
         # # ローソク足表示
-        # ax = plt.subplot(2, 1, 1)
-        # ax.plot(candle_temp['mean'])
-        # ax.plot(candle_temp['upper'])
-        # ax.plot(candle_temp['lower'])
-        # ax.plot(candle_temp['upper'])
-        # ax.plot(candle_temp['lower'])
-        # ax.plot(candle_temp['sma_5'])
-        # ax.plot(candle_temp['sma_15'])
+        ax = plt.subplot(2, 1, 1)
+        ax.plot(candle_temp['mean'])
+        ax.plot(candle_temp['upper'])
+        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['upper'])
+        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['sma_2'])
+        ax.plot(candle_temp['sma_14'])
 
-
-        ax = plt.subplot(2, 1, 2)
+        ax = plt.subplot(2, 1, 2, title='golden dead')
         ax.plot(candle_temp['golden'])
         ax.plot(candle_temp['dead'])
 
-
+        plt.savefig('draw1.png')
         plt.show()
 
         ax = plt.subplot(2, 1, 1)
-        # ax.plot(candle_temp['rule_1'])
-        # ax.plot(candle_temp['rule_2'])
-        # ax.plot(candle_temp['rule_3'])
-        # ax.plot(candle_temp['rule_4'])
+        ax.plot(candle_temp['mean'])
+        ax.plot(candle_temp['upper'])
+        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['upper'])
+        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['sma_2'])
+        ax.plot(candle_temp['sma_14'])
+
+        ax = plt.subplot(2, 1, 2, title='rule_1 rule_2')
+        ax.plot(candle_temp['rule_1'])
+        ax.plot(candle_temp['rule_2'])
+
+        plt.savefig('draw2.png')
+        plt.show()
+
+        ax = plt.subplot(2, 1, 1)
+        ax.plot(candle_temp['mean'])
+        ax.plot(candle_temp['upper'])
+        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['upper'])
+        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['sma_2'])
+        ax.plot(candle_temp['sma_14'])
+
+        ax = plt.subplot(2, 1, 2, title='rule_3 rule_4')
+        ax.plot(candle_temp['rule_3'])
         ax.plot(candle_temp['rule_4'])
-        ax.plot(candle_temp['rule_5'])
+
+        plt.savefig('draw3.png')
         plt.show()
 
         ax = plt.subplot(2, 1, 1)
-        # ax = plt.subplot(2, 1, 2)
-        # ax.plot(candle_temp['g_profit'])
-        # ax.plot(candle_temp['d_profit'])
-        # print(candle_temp.head(1)['t'])
-        # print(candle_temp['g_profit'].sum())
-        # print(candle_temp['d_profit'].sum())
-        # print(candle_temp.tail(1)['t'])
-        print(candle_temp['rule_5'])
-        print(candle_temp['rule_6'])
+        ax.plot(candle_temp['mean'])
+        ax.plot(candle_temp['upper'])
+        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['upper'])
+        ax.plot(candle_temp['lower'])
+        ax.plot(candle_temp['sma_2'])
+        ax.plot(candle_temp['sma_14'])
+
+        ax = plt.subplot(2, 1, 2, title='rule_5 rule_6')
+        ax.plot(candle_temp['rule_5'])
+        ax.plot(candle_temp['rule_6'])
+
+        plt.savefig('draw4.png')
         plt.show()
-        
-        # ax = plt.subplot(2, 1, 1)
-        # # バックテストの結果
-        # df[['g_profit', 'd_profit']].cumsum().plot(grid=True, figsize=(15, 10))
-     
-        # plt.savefig('my_figure.png')
-        # plt.show()
+
+
+    def get_df_by_string(self, csv_string):
+        if csv_string:
+            return pd.read_csv(pd.compat.StringIO(csv_string), sep=',', engine='python', skipinitialspace=True)
+        else:
+            return pd.DataFrame(columns=[])
 
 def main():
+
+    environ = strategy.environ.Environ()
+    drive_id = environ.get('drive_id') if environ.get('drive_id') else '1K8dkTbwHXcAv60u5O6BELrqT50gheNkC'
+    candles_csv = file.file_utility.File_utility('candles.csv', drive_id)
+    candles_csv_string = candles_csv.get_string().getvalue()
+
     draw = Draw()
     dir_path = os.path.dirname(os.path.realpath(__file__))
     draw.chdir(dir_path + "/datas")
-    df = pd.read_csv('usd_10min_api.csv', sep=',', engine='python', skipinitialspace=True)
-    draw.set_file_name('usd_10min_api.csv')
-    df = draw.caculate(df)
-    # candle_temp = draw.caculate_candle(df)
-    # # print(df)
-    # draw.plot(df, candle_temp)
-    # df.to_csv('out.csv')
-    print(draw.candle_supres())
+    candles_df = draw.get_df_by_string(candles_csv_string)
+    draw.plot(candles_df)
+    print(candles_df)
+    # print(draw.candle_supres())
 
 if __name__ == "__main__":
     main()
