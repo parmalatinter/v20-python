@@ -746,7 +746,7 @@ class Trade():
                  event_open_id=_event_open_id,
                  target_price=_target_price,
                  stop_rate=_stop_rate,
-                 is_market=True
+                 is_market=False
              )
 
             _units = 0 - _units
@@ -767,7 +767,7 @@ class Trade():
                  event_open_id=_event_open_id,
                  target_price=_target_price,
                  stop_rate=_stop_rate,
-                 is_market=True
+                 is_market=False
              )
 
             _target_price = self.last_rate + self.min_profit_pips
@@ -780,7 +780,7 @@ class Trade():
              event_open_id=_event_open_id,
              target_price=_target_price,
              stop_rate=_stop_rate,
-             is_market=True
+             is_market=False
          )
         _event_open_id = 0
         # 判定基準がなく停滞中
@@ -801,7 +801,7 @@ class Trade():
                      event_open_id=_event_open_id,
                      target_price=_target_price,
                      stop_rate=_stop_rate,
-                     is_market=True
+                     is_market=False
                  )
 
                 _units = self.units
@@ -814,7 +814,7 @@ class Trade():
                      event_open_id=_event_open_id,
                      target_price=_target_price,
                      stop_rate=_stop_rate,
-                     is_market=True
+                     is_market=False
                  )
 
             # 抵抗ライン下限突破
@@ -833,7 +833,7 @@ class Trade():
                      event_open_id=_event_open_id,
                      target_price=_target_price,
                      stop_rate=_stop_rate,
-                     is_market=True
+                     is_market=False
                  )
 
                 _units = 0 - self.units
@@ -846,7 +846,7 @@ class Trade():
                      event_open_id=_event_open_id,
                      target_price=_target_price,
                      stop_rate=_stop_rate,
-                     is_market=True
+                     is_market=False
                 )
 
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0, is_market=False):
