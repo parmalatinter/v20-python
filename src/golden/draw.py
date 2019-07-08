@@ -10,12 +10,14 @@ import math
 
 import strategy.environ 
 import file.file_utility
+import line.line
 
 # ローソク足描写
 import matplotlib.pyplot as plt
 from mpl_finance import candlestick2_ohlc, volume_overlay as mpf
 
-import os 
+import os
+import io
 
 class Draw(object):
 
@@ -246,6 +248,8 @@ class Draw(object):
 
     def plot(self, candle_temp, from_index):
 
+        _line = line.line.Line()
+        format = "png"
         candle_temp = candle_temp[from_index:].copy()
         # # ローソク足表示
         ax = plt.subplot(2, 1, 1)
@@ -261,8 +265,12 @@ class Draw(object):
         ax.plot(candle_temp['golden'])
         ax.plot(candle_temp['dead'])
 
-        plt.savefig('draw1.png')
-        plt.show()
+        # plt.savefig('draw1.png')
+        
+        sio = io.BytesIO()
+        plt.savefig(sio, format=format)
+        _line.send('image', 'golden dead', sio.getvalue())
+        # plt.show()
 
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
@@ -277,8 +285,11 @@ class Draw(object):
         ax.plot(candle_temp['rule_1'])
         ax.plot(candle_temp['rule_2'])
 
-        plt.savefig('draw2.png')
-        plt.show()
+        # plt.savefig('draw2.png')
+        sio = io.BytesIO()
+        plt.savefig(sio, format=format)
+        _line.send('image', 'rule_1 Close before 3 < lower, rule_2 3 positive', sio.getvalue())
+        # plt.show()
 
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
@@ -293,8 +304,11 @@ class Draw(object):
         ax.plot(candle_temp['rule_3'])
         ax.plot(candle_temp['rule_4'])
 
-        plt.savefig('draw3.png')
-        plt.show()
+        # plt.savefig('draw3.png')
+        sio = io.BytesIO()
+        plt.savefig(sio, format=format)
+        _line.send('image', 'rule_3 C3 > upper, rule_4 3 negative', sio.getvalue())
+        # plt.show()
 
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
@@ -309,8 +323,11 @@ class Draw(object):
         ax.plot(candle_temp['rule_5'])
         ax.plot(candle_temp['rule_6'])
 
-        plt.savefig('draw4.png')
-        plt.show()
+        # plt.savefig('draw4.png')
+        sio = io.BytesIO()
+        plt.savefig(sio, format=format)
+        _line.send('image', 'rule_5 h > upper, rule_6, l > lower', sio.getvalue())
+        # plt.show()
 
 
     def get_df_by_string(self, csv_string):
@@ -332,6 +349,7 @@ def main():
     candles_df = draw.get_df_by_string(candles_csv_string)
     draw.plot(candles_df, 50)
     print(candles_df)
+
     # print(draw.candle_supres())
 
 if __name__ == "__main__":

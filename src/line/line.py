@@ -20,14 +20,16 @@ class Line(object):
 		
 		self.headers = {'Authorization': 'Bearer ' + self.line_notify_token}  # 発行したトークン
 
-	def send(self, title, message):
+	def send(self, title, message, imageFile=None):
 		args = dict(title=title, message=message)
 		message = '%(title)s\n%(message)s' % args
 
 		print(message)
-
+		files = None
+		if imageFile:
+			files = {'imageFile': imageFile}
 		payload = {'message': message}
-		line_notify = requests.post(self.line_notify_api, data=payload, headers=self.headers)
+		line_notify = requests.post(self.line_notify_api, data=payload, headers=self.headers,files=files)
 		
 def main():
     line = Line()
