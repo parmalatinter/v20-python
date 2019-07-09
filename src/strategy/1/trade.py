@@ -622,6 +622,8 @@ class Trade():
 
         self.update_last_rate()
 
+        print('start trade')
+
         # ゴールデンクロスの場合
         if self.is_golden:
             self._line.send('is_golden', str(self.last_rate))
