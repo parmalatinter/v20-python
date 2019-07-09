@@ -990,9 +990,7 @@ def main():
 
     trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info, new_orders_info=new_orders_info)
     
-    print(condition.get_is_eneble_new_order(reduce_time))
     print(_environ.get('is_stop'))
-    print(type(_environ.get('is_stop')))
     if condition.get_is_eneble_new_order(reduce_time) and _environ.get('is_stop') == '0':
         trade.analyze_trade()
 
