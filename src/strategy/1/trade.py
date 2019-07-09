@@ -300,7 +300,7 @@ class Trade():
             return False
 
     def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
-        target_rate = self.last_rate - 0.03 if units > 0 else self.last_rate + 0.03
+        target_rate = self.last_rate - 0.08 if units > 0 else self.last_rate + 0.08
         target_rate = round(target_rate,2)
         profit_rate = round(profit_rate,2)
         stop_rate = round(stop_rate,2)
