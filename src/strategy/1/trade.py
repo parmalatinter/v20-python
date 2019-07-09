@@ -160,9 +160,9 @@ class Trade():
         self.rule_3 = True if self.last_df['rule_3'][self.last_df.index[0]] == 1 else False
         # ルールその4 3つ陰線
         self.rule_4 = True if self.last_df['rule_4'][self.last_df.index[0]] == 1 else False
-        # ルールその5 ボリバン上限突破
+        # ルールその5 連続二回ボリバン上限突破
         self.rule_5 = True if self.last_df['rule_5'][self.last_df.index[0]] == 1 else False
-        # ルールその6 ボリバン下限限突破
+        # ルールその6 連続二回ボリバン下限限突破
         self.rule_6 = True if self.last_df['rule_6'][self.last_df.index[0]] == 1 else False
         # ルールその7 判定基準外
         self.rule_7 = True if self.rule_1 or self.rule_2 or self.rule_3 or self.rule_4 else False
@@ -737,8 +737,8 @@ class Trade():
             _event_open_id = 8
             _target_price = self.last_rate - self.regular_profit_pips
 
-        # ルールその5 ボリバン上限突破　且つ　trendが-20以下の場合
-        elif self.rule_5 and self.trend_usd['res'] < -20:
+        # ルールその5 連続二回ボリバン上限突破
+        elif self.rule_5:
             _message = 'buy chance order 9 # {}'.format(str(self.last_rate))
             _units = self.units/2
             _event_open_id = 9
@@ -758,8 +758,8 @@ class Trade():
             _target_price = self.last_rate - self.min_profit_pips
             _stop_rate = self.last_rate + self.regular_profit_pips
 
-        # ルールその6 ボリバン下限突破　且つ　 trendが20以上の場合
-        elif self.rule_6 and self.trend_usd['res'] > 20:
+        # ルールその6 連続二回ボリバン下限突破
+        elif self.rule_6:
             _message = 'sell chance order 10 # {}'.format(str(self.last_rate))
             _units = self.units/2
             _event_open_id = 10

@@ -196,11 +196,11 @@ class Draw(object):
 
         # ルールその5 h > upper
         df['rule_5'] = 0
-        df.loc[(df['h'] > df['upper_high']),'rule_5']=1
+        df.loc[(df['c'] > df['upper_high']) & (df['c1'] > df['upper_high'])]=1
 
         # ルールその6 l > lower
         df['rule_6'] = 0
-        df.loc[(df['l'] < df['lower_low']),'rule_6']=1
+        df.loc[(df['c'] < df['lower_low']) & (df['c1'] < df['lower_low'])]=1
 
         # ゴールデンクロスを検出
         asign1 = np.sign(df['diff1'])
