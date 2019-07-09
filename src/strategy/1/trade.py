@@ -143,6 +143,7 @@ class Trade():
         self.orders_info = orders_info
         self.new_orders_info = new_orders_info
         self.last_df = self.get_caculate_df(self.candles_df)
+        print(self.last_df)
         self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
         self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
         self.upper = float(self.last_df['upper'][self.last_df.index[0]])
