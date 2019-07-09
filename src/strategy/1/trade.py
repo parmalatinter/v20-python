@@ -987,7 +987,9 @@ def main():
     candles_df = trade.get_df_by_string(candles_csv_string)
 
     trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info, new_orders_info=new_orders_info)
-            
+    
+    print(condition.get_is_eneble_new_order(reduce_time))
+    print(_environ.get('is_stop'))
     if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
         trade.analyze_trade()
 
