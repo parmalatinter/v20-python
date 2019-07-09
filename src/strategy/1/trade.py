@@ -385,7 +385,7 @@ class Trade():
         response = self._close.get_response()
 
         message = 'event_open_id: {}, units : {}, now_rate : {}, trade_id : {}, now : {}'.format(
-            str(event_open_id),
+            str(event_close_id),
             str(units),
             str(self.last_rate),
             str(trade_id),
