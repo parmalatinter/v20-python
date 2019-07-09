@@ -990,7 +990,7 @@ def main():
     
     print(condition.get_is_eneble_new_order(reduce_time))
     print(_environ.get('is_stop'))
-    if condition.get_is_eneble_new_order(reduce_time) and not _environ.get('is_stop'):
+    if condition.get_is_eneble_new_order(reduce_time) and _environ.get('is_stop') == 0:
         trade.analyze_trade()
 
     trade.close()
