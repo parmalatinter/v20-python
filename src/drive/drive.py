@@ -65,7 +65,6 @@ class Drive():
 	def delete_all(self):
 		for file1 in self.file_list:
 			file1.Delete()
-			print('deleted: %s, id: %s' % (file1['title'], file1['id']))
 		self.reset_file_list()
 
 	def delete_all_by_filename(self, filename):
