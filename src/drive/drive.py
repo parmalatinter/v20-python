@@ -48,7 +48,6 @@ class Drive():
 		file.SetContentString(title)
 		file.Upload()
 		self.reset_file_list()
-		print('uploaded: %s, id: %s' % (file['title'], file['id']))
 		return file
 
 	def delete_by_filename(self, filename):
@@ -58,7 +57,6 @@ class Drive():
 			return
 			
 		file.Delete()
-		print('deleted: %s, id: %s' % (file['title'], file['id']))
 		self.reset_file_list()
 
 	def get_file_list(self):
