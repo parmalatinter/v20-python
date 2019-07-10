@@ -85,7 +85,7 @@ class Trade():
     late = 0
     last_rate = 0
     regular_profit_pips = 0.14
-    min_profit_pips = 0.02
+    min_profit_pips = 0.08
     normal_pips_range = 15
     normal_trend_range = 15
     close_limit_minutes_1 = 45
