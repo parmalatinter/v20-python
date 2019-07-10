@@ -76,6 +76,7 @@ class Trade():
     rule_6 = False
     is_golden = False
     is_dead = False
+    is_long_and_short_trade = False
 
     upper = 0
     lower = 0
@@ -88,7 +89,7 @@ class Trade():
     min_profit_pips = 0.08
     normal_pips_range = 15
     normal_trend_range = 15
-    close_limit_minutes_1 = 45
+    close_limit_minutes_1 = 60
     close_limit_minutes_2 = 90
     close_limit_minutes_3 = 135
     close_limit_hours = 3.5
@@ -134,6 +135,7 @@ class Trade():
             'normal_trend_range') else self.normal_trend_range
         self.regular_profit_pips = _environ.get('regular_profit_pips') if _environ.get('regular_profit_pips') else self.regular_profit_pips
         self.min_profit_pips = _environ.get('min_profit_pips') if _environ.get('min_profit_pips') else self.min_profit_pips
+        self.is_long_and_short_trade = self.long_units > 0 and self.short_units > 0
 
     def set_property(self, candles_df, long_units, short_units, orders_info, new_orders_info):
         self.candles_df = candles_df
@@ -154,7 +156,7 @@ class Trade():
 
         # ルールその1 C3 < lower
         self.rule_1 = True if self.last_df['rule_1'][self.last_df.index[0]] == 1 else False
-        # ルールその2　3つ陽線
+        # ルールその2 3つ陽線
         self.rule_2 = True if self.last_df['rule_2'][self.last_df.index[0]] == 1 else False
         # ルールその3 C3 > upper
         self.rule_3 = True if self.last_df['rule_3'][self.last_df.index[0]] == 1 else False
@@ -316,9 +318,9 @@ class Trade():
             'take_profit_price' : profit_rate ,
             'stop_loss_price' : stop_rate,
             'client_trade_tag' : str(event_open_id),
-            'client_trade_comment' :'new order',
+            'client_trade_comment' :client_order_comment,
             'client_order_tag' : str(event_open_id),
-            'client_order_comment' :'new order'
+            'client_order_comment' :client_order_comment
         })
         response = self._entry.get_response()
 
@@ -355,9 +357,9 @@ class Trade():
             'take_profit_price' : profit_rate , 
             'stop_loss_price' : stop_rate,
             'client_trade_tag' : str(event_open_id),
-            'client_trade_comment' :'new order market',
+            'client_trade_comment' :client_order_comment,
             'client_order_tag' : str(event_open_id),
-            'client_order_comment' :'new order market'
+            'client_order_comment' :client_order_comment
         })
         response = self._market.get_response()
 
@@ -447,10 +449,16 @@ class Trade():
                 continue
 
             pips = 0
-            # 30分 ~ close処理無しの場合
-            condition_1 = delta_total_minuts > self.close_limit_minutes_1 and event_close_id <= 0
-            if condition_1:
-                state = 'fix order {} min'.format(str(self.close_limit_minutes_1))
+            # close_limit_minutes_1分 ~ close処理無しの場合 
+            # close_limit_minutes_2分 ~ close処理無し 両建ての場合 
+            condition_1 = delta_total_minuts > self.close_limit_minutes_1 and event_close_id <= 0 and not self.is_long_and_short_trade
+            condition_2 = delta_total_minuts > self.close_limit_minutes_2 and event_close_id <= 0 and self.is_long_and_short_trade
+            if condition_1 or condition_2:
+                if delta_total_minuts >= self.close_limit_minutes_1:
+                    state = 'fix order {} min'.format(str(self.close_limit_minutes_1))
+                else:
+                    state = 'fix order {} min'.format(str(self.close_limit_minutes_2))
+
                  # buyの場合 
                 if row['currentUnits'] > 0:
                     
@@ -499,12 +507,12 @@ class Trade():
                 continue
 
             # 90分 ~ でclose処理(id:1,2)の場合
-            condition_2 = delta_total_minuts >= self.close_limit_minutes_2 and event_close_id in self.first_event_close_ids
+            condition_3 = delta_total_minuts >= self.close_limit_minutes_2 and event_close_id in self.first_event_close_ids
             # 120分 ~ で以前利益があったの場合
-            condition_3 = delta_total_minuts >= self.close_limit_minutes_3 and event_close_id in self.win_event_close_ids
+            condition_4 = delta_total_minuts >= self.close_limit_minutes_3 and event_close_id in self.win_event_close_ids
             # 90分 ~ 利益なしの場合
-            condition_4 = delta_total_minuts >= self.close_limit_minutes_2 and row['unrealizedPL'] < 0
-            if condition_2 or condition_3:
+            condition_5 = delta_total_minuts >= self.close_limit_minutes_2 and row['unrealizedPL'] < 0
+            if condition_3 or condition_4:
 
                 event_close_id = 99
                 state = ''
@@ -581,7 +589,7 @@ class Trade():
 
                 self._history.update(int(trade_id), event_close_id, state)
 
-            if condition_4:
+            if condition_5:
                 if delta_total_minuts >= self.close_limit_minutes_2:
                     state = 'lose proift 0 order {} min'.format(str(self.close_limit_minutes_2))
                 else:
@@ -589,7 +597,7 @@ class Trade():
 
                 _client_order_comment = state + ' lose ' + str(event_close_id)
 
-                # 90分 ~ で利益ない場合　とりあえず発注価格でcloseする
+                # 90分 ~ で利益ない場合 とりあえず発注価格でcloseする
                 event_close_id = 7
 
                 self.take_profit(trade_id, round(_price, 2), takeProfitOrderID, _client_order_comment, event_close_id)
@@ -723,14 +731,14 @@ class Trade():
              is_market=False
          )
         _event_open_id = 0
-        # ルールその1 C3 < lower　且つ　 ルールその2　3つ陽線
+        # ルールその1 C3 < lower 且つ  ルールその2 3つ陽線
         if self.rule_1 and self.rule_2:
             _message = 'buy chance order 7 # {}'.format(str(self.last_rate))
             _units = self.units/2
             _event_open_id = 7
             _target_price = self.last_rate + self.regular_profit_pips
 
-        # ルールその3 C3 > upper　且つ　 ルールその4　3つ陰線
+        # ルールその3 C3 > upper 且つ  ルールその4 3つ陰線
         elif self.rule_3 and self.rule_4:
             _message = 'sell chance order 8 # {}'.format(str(self.last_rate))
             _units = 0 - (self.units/2)
