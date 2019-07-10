@@ -900,7 +900,7 @@ class Trade():
 
             trade_id = 0
             transaction_id = 0
-            if is_market:
+            if not is_market:
                 transaction_id = self.order(
                     units=units,
                     profit_rate=round(target_price, 2),
