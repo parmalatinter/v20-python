@@ -804,7 +804,7 @@ class Trade():
             if self.resistande_info['resistance_high'] == 0:
                 return
             elif self.resistande_info['resistance_high'] < self.last_rate:
-                _message = 'line break chance order 11 # {}'.format(str(self.last_rate))
+                _message = 'resistance break chance order 11 # {}'.format(str(self.last_rate))
                 _units = 0 - self.units
                 _event_open_id = 11
                 _target_price = self.last_rate - self.min_profit_pips
@@ -836,7 +836,7 @@ class Trade():
             if self.resistande_info['resistance_low'] == 0:
                 return
             elif self.resistande_info['resistance_low'] > self.last_rate:
-                _message = 'line break chance order 12 # {}'.format(str(self.last_rate))
+                _message = 'resistance break chance order 12 # {}'.format(str(self.last_rate))
                 _units = self.units
                 _event_open_id = 12
                 _target_price = self.last_rate + self.min_profit_pips
