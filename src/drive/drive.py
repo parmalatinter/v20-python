@@ -17,7 +17,6 @@ class Drive():
 		self.set_service(folder_id)
 
 	def set_service(self, folder_id):
-		print(os.path.dirname(os.path.abspath(__file__)) + '/' + self.env)
 		os.chdir(os.path.dirname(os.path.abspath(__file__)) + '/' + self.env)
 		gauth = GoogleAuth()
 
@@ -73,7 +72,6 @@ class Drive():
 		for file1 in self.file_list:
 			if file1['title'] == filename:
 				file1.Delete()
-				print('deleted: %s, id: %s' % (file1['title'], file1['id']))
 		self.reset_file_list()
 
 	def get_content_by_filename(self, filename):
