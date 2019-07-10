@@ -137,12 +137,13 @@ class Trade():
             'normal_trend_range') else self.normal_trend_range
         self.regular_profit_pips = _environ.get('regular_profit_pips') if _environ.get('regular_profit_pips') else self.regular_profit_pips
         self.min_profit_pips = _environ.get('min_profit_pips') if _environ.get('min_profit_pips') else self.min_profit_pips
-        self.is_long_and_short_trade = self.long_units > 0 and self.short_units > 0
+
 
     def set_property(self, candles_df, long_units, short_units, orders_info, new_orders_info):
         self.candles_df = candles_df
         self.long_units = long_units
         self.short_units = short_units
+        self.is_long_and_short_trade = self.long_units > 0 and self.short_units > 0
         self.trend_usd = self._trend.get()
         self.orders_info = orders_info
         self.new_orders_info = new_orders_info
