@@ -76,8 +76,8 @@ class Calendar(object):
         from_us_datetime = str(now.year) +  '/' + str(now.month) + '/' + str(now.day) + ' 19:00'
         to_us_datetime = str(now.year) +  '/' + str(now.month) + '/' + str(now.day) + ' 21:00'
         time = datetime.time(9, 00, 00)
-        row = [now.day, time, '日本','日経','★★★','-', '-', '-', pd.to_datetime(us_datetime), pd.to_datetime(from_us_datetime), pd.to_datetime(to_us_datetime)]
-        dfs1.loc[len(dfs1)] = row
+        row = [str(now.month) + '/' + str(now.day), time, '日本','日経','★★★','', '', '', pd.to_datetime(us_datetime), pd.to_datetime(from_us_datetime), pd.to_datetime(to_us_datetime)]
+        dfs1.loc[998] = row
 
         # ダウ開始時間
         _market = market.condition.Market()
@@ -93,8 +93,8 @@ class Calendar(object):
             to_us_datetime = str(now.year) +  '/' + str(now.month) + '/' + str(now.day) + ' 11:30'
             time = datetime.time(23, 30, 00)
 
-        row = [now.day, time, '米国','ダウ','★★★','-', '-', '-', pd.to_datetime(us_datetime), pd.to_datetime(from_us_datetime), pd.to_datetime(to_us_datetime)]
-        dfs1.loc[len(dfs1)] = row
+        row = [str(now.month) + '/' + str(now.day), time, '米国','ダウ','★★★','', '', '', pd.to_datetime(us_datetime), pd.to_datetime(from_us_datetime), pd.to_datetime(to_us_datetime)]
+        dfs1.loc[999] = row
 
         return dfs1
 
