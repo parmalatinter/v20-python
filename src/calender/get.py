@@ -22,7 +22,7 @@ class Calendar(object):
         _environ = strategy.environ.Environ()
         os.environ['TZ'] = 'America/New_York'
         self.folder = _environ.get('sub_drive_id') if _environ.get('sub_drive_id') else self.folder
-        self.hours = (float(_environ.get('hours')) if _environ.get('hours') else 3) / 2
+        self.hours = (float(_environ.get('hours')) if _environ.get('hours') else 4) / 2
         self.calendar_csv = file.file_utility.File_utility(self.filename, self.folder)       
 
     def get_drive_id(self):
@@ -87,8 +87,8 @@ class Calendar(object):
         df = pd.read_csv(calendar_csv_string, sep=',', engine='python', skipinitialspace=True)
         return df
 
-    def test_log(self, title, now, from_us_datetime, to_us_datetime, from_us_datetime_hours, to_us_datetime_hours):
-        log = 'log trade {} now : {} {} - {} {} - {}'.format(title, now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), str(from_us_datetime_hours), str(to_us_datetime_hours))
+    def test_log(self, title, now, from_us_datetime, to_us_datetime):
+        log = 'log trade {} now : {} {} - {}'.format(title, now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
         print(log)
 
     def in_danger_time(self, df):
@@ -114,11 +114,9 @@ class Calendar(object):
         for index, row in df.iterrows():
             from_us_datetime = pd.to_datetime(row['from_us_datetime'], format='%Y-%m-%d %H:%M:%S')
             to_us_datetime = pd.to_datetime(row['to_us_datetime'], format='%Y-%m-%d %H:%M:%S')
-            from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
-            to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
             
-            self.test_log(row['name'], now, from_us_datetime, to_us_datetime, from_us_datetime_hours, to_us_datetime_hours)
-            if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
+            self.test_log(row['name'], now, from_us_datetime, to_us_datetime)
+            if  (from_us_datetime + offsets.Hour(-self.hours)) < now and now > (to_us_datetime + offsets.Hour(self.hours)):
                 log = 'stop trade {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
                 print(log)
                 return True
@@ -126,11 +124,9 @@ class Calendar(object):
         # # 日経開始時間
         from_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 19:00:00', format='%Y-%m-%d %H:%M:%S')
         to_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 21:00:00', format='%Y-%m-%d %H:%M:%S')
-        from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
-        to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
         
-        self.test_log('日経開始時間', now, from_us_datetime, to_us_datetime, from_us_datetime_hours, to_us_datetime_hours)
-        if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
+        self.test_log('日経開始時間', now, from_us_datetime, to_us_datetime)
+        if  (from_us_datetime + offsets.Hour(-self.hours)) < now and now > (to_us_datetime + offsets.Hour(self.hours)):
             log = 'stop trade {} now : {} {} - {}'.format('日経開始時間', now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
             print(log)
             return True
@@ -144,11 +140,9 @@ class Calendar(object):
             from_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 09:30:00', format='%Y-%m-%d %H:%M:%S')
             to_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 11:30:00', format='%Y-%m-%d %H:%M:%S')
 
-        from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
-        to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
         
-        self.test_log('ダウ開始時間', now, from_us_datetime, to_us_datetime, from_us_datetime_hours, to_us_datetime_hours)
-        if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
+        self.test_log('ダウ開始時間', now, from_us_datetime, to_us_datetime)
+        if  (from_us_datetime + offsets.Hour(-self.hours)) < now and now > (to_us_datetime + offsets.Hour(self.hours)):
             log = 'stop trade {} now : {} {} - {}'.format('ダウ開始時間', now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
             print(log)
             return True
