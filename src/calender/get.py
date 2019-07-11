@@ -1,6 +1,7 @@
 #!/usr/bin/env python
 
 import pandas as pd
+import pandas.tseries.offsets as offsets
 import numpy as np
 import datetime
 from io import StringIO
@@ -88,7 +89,8 @@ class Calendar(object):
 
     def in_danger_time(self, df):
         df = df[df['important'].str.contains('★★★')]
-        now = datetime.timedelta(hours=-13)
+        now = pd.Timestamp.now()
+        now = now + offsets.Hour(-13)
         # 計算式
         # 答え < 0 or  0 > 0 - self.hours　危険時間帯
         # from 5:00 to 8:00 now 7:00
@@ -113,8 +115,6 @@ class Calendar(object):
                 log = 'stop trade {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
                 print(log)
                 return True
-
-        now = datetime.datetime.now()
         _market = market.condition.Market()
         # # 日経開始時間
         from_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 19:00:00', format='%Y-%m-%d %H:%M:%S')
@@ -155,9 +155,8 @@ def main():
     dfs = calendar.dataGet()
     df = calendar.format(dfs)
     calendar.delete_all_by_filename()
-    text = calendar.set_to_drive(df)
-    _line = line.line.Line()
-    _line.send("calendar",text)
+    text = calendar.in_danger_time(df)
+    print(text)
     # print(calendar.in_danger_time(df))
 
 if __name__ == "__main__":
