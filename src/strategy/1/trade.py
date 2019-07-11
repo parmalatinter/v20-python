@@ -276,7 +276,6 @@ class Trade():
         else:
             stop_obj.exec({
                 'tradeID': str(trade_id),
-                'price': stop_rate,
                 'replace_order_id': trailingStopLossOrderID,
                 'client_trade_tag' : str(event_close_id),
                 'client_trade_comment' :client_order_comment,
@@ -469,14 +468,14 @@ class Trade():
                     
                     pips = self.last_rate - _price
                     # 利益0.1以上
-                    if pips > 0.1:
+                    if pips > self.regular_profit_pips:
                         event_close_id = 1.1
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
-                        self.market_close(trade_id, 'ALL', event_close_id)
+                        self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
-                    elif pips > self.regular_profit_pips:
+                    elif pips > 0.1:
                         event_close_id = 1.2
                         profit_rate = self.last_rate + 0.03
                     # それ以外
@@ -488,14 +487,14 @@ class Trade():
                 else:
                     pips = _price - self.last_rate
                     # 利益0.1以上
-                    if pips > 0.1:
+                    if pips > self.regular_profit_pips:
                         event_close_id = 2.1
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
-                        self.market_close(trade_id, 'ALL', event_close_id)
+                        self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
-                    elif pips > self.regular_profit_pips:
+                    elif pips > 0.1:
                         event_close_id = 2.2
                         profit_rate = self.last_rate - 0.03
                     # それ以外
@@ -554,7 +553,7 @@ class Trade():
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
                             distance = round(stop_rate-self.last_rate, 2)
-                            self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
+                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
 
                     # sellの場合 現在価格マイナス0.1でcloseする
                     else:
@@ -576,7 +575,7 @@ class Trade():
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
                             distance = round(self.last_rate - stop_rate, 2)
-                            self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
+                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
 
                 # 負けの場合
                 else:
