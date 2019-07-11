@@ -155,8 +155,9 @@ def main():
     dfs = calendar.dataGet()
     df = calendar.format(dfs)
     calendar.delete_all_by_filename()
-    text = calendar.in_danger_time(df)
-    print(text)
+    text = calendar.set_to_drive(df)
+    _line = line.line.Line()
+    _line.send("calendar",text)
     # print(calendar.in_danger_time(df))
 
 if __name__ == "__main__":
