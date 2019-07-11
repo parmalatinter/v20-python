@@ -9,7 +9,7 @@ class Market(object):
 
 	def __init__(self):
 		environ = strategy.environ.Environ()
-		self.is_stop = True if it environ.get('is_stop') == '0' else self.is_stop
+		self.is_stop = True if not environ.get('is_stop') == '0' else self.is_stop
 
 	def get_utc_time(self):
 		return datetime.datetime.utcnow() + datetime.timedelta(hours=9)
