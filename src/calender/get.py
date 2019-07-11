@@ -116,7 +116,7 @@ class Calendar(object):
             to_us_datetime = pd.to_datetime(row['to_us_datetime'], format='%Y-%m-%d %H:%M:%S')
             
             self.test_log(row['name'], now, from_us_datetime, to_us_datetime)
-            if  (from_us_datetime + offsets.Hour(-self.hours)) < now and (to_us_datetime + offsets.Hour(self.hours)) > now:
+            if from_us_datetime < now and to_us_datetime > now:
                 log = 'stop trade {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
                 print(log)
                 return True
@@ -126,7 +126,7 @@ class Calendar(object):
         to_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 21:00:00', format='%Y-%m-%d %H:%M:%S')
         
         self.test_log('日経開始時間', now, from_us_datetime, to_us_datetime)
-        if  (from_us_datetime + offsets.Hour(-self.hours)) < now and (to_us_datetime + offsets.Hour(self.hours)) > now:
+       if from_us_datetime < now and to_us_datetime > now:
             log = 'stop trade {} now : {} {} - {}'.format('日経開始時間', now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
             print(log)
             return True
@@ -142,7 +142,7 @@ class Calendar(object):
 
         
         self.test_log('ダウ開始時間', now, from_us_datetime, to_us_datetime)
-        if  (from_us_datetime + offsets.Hour(-self.hours)) < now and (to_us_datetime + offsets.Hour(self.hours)) > now:
+        if from_us_datetime < now and to_us_datetime > now:
             log = 'stop trade {} now : {} {} - {}'.format('ダウ開始時間', now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
             print(log)
             return True
