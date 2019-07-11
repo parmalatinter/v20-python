@@ -77,6 +77,9 @@ class Market(object):
 		return res
 
 	def get_is_opening(self):
+		if self.is_stop:
+			print('stop from env is_stop')
+			return False
 		jstTime = self.get_utc_time()
 		is_summer = self.get_is_summer(jstTime)
 		close = self.get_close(is_summer)
@@ -88,10 +91,6 @@ class Market(object):
 		is_summer = self.get_is_summer(jstTime)
 		close = self.get_close(is_summer)
 		# is_eneble = self.judge_is_opening(jstTime, close - reduce_time) 
-		# if not is_eneble:
-		# 	return False
-		# elif not self.is_stop:
-		# 	return False
 
 		_calender = calender.get.Calendar()
 		df = _calender.get_df()
