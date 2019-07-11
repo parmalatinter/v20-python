@@ -901,14 +901,6 @@ class Trade():
             trade_id = 0
             transaction_id = 0
             if is_market:
-                transaction_id = self.order(
-                    units=units,
-                    profit_rate=round(target_price, 2),
-                    stop_rate=round(stop_rate, 2),
-                    event_open_id=event_open_id,
-                    client_order_comment=message
-                )
-            else:
                 trade_id = self.order_market(
                     units=units,
                     profit_rate=round(target_price, 2),
@@ -916,7 +908,14 @@ class Trade():
                     event_open_id=event_open_id,
                     client_order_comment=message
                 )
-            
+            else:
+                transaction_id = self.order(
+                    units=units,
+                    profit_rate=round(target_price, 2),
+                    stop_rate=round(stop_rate, 2),
+                    event_open_id=event_open_id,
+                    client_order_comment=message
+                )
             if trade_id <= 0 and transaction_id <= 0 :
                 return
 
