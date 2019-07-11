@@ -88,7 +88,7 @@ class Calendar(object):
 
     def in_danger_time(self, df):
         df = df[df['important'].str.contains('★★★')]
-        now = pd.Timestamp.now()
+        now = datetime.timedelta(hours=-13)
         # 計算式
         # 答え < 0 or  0 > 0 - self.hours　危険時間帯
         # from 5:00 to 8:00 now 7:00
