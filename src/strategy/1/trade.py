@@ -448,8 +448,9 @@ class Trade():
             event_close_id = float(history_df['event_close_id'][history_df.index[0]]) if history_df['event_close_id'][history_df.index[0]] else 0
             # 利益がunitsの0.15倍ある場合は決済
             if row['unrealizedPL'] / self.units  > 0.15:
-                self.market_close(trade_id, 'ALL', 10)
-                self._history.update(int(trade_id), 10, 'profit max close')
+                _client_order_comment = 'profit max close'
+                self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                self._history.update(int(trade_id), 10, _client_order_comment)
                 continue
 
             pips = 0
