@@ -95,7 +95,7 @@ class Trade():
     close_limit_minutes_2 = 90
     close_limit_minutes_3 = 135
     close_limit_hours = 3.5
-    close_order_limit_minutes = 30
+    close_order_limit_minutes = 45
 
     first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
     win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
@@ -256,11 +256,11 @@ class Trade():
             return False
 
 
-    def stop_loss(self, trade_id, stop_rate, stopLossOrderID, client_order_comment, event_close_id, is_trailing=False, distance=''):
+    def stop_loss(self, trade_id, stop_rate, stopLossOrderID, trailingStopLossOrderID, client_order_comment, event_close_id, is_trailing=False, distance=0):
 
         stop_rate = str(stop_rate)
 
-        stop_obj = self._trailing_stop_loss if is_trailing else self._stop_loss
+        stop_obj = self._trailing_stop_loss if is_trailing and distance > 0 else self._stop_loss
 
         if stopLossOrderID:
             stop_obj.exec({
@@ -277,6 +277,7 @@ class Trade():
             stop_obj.exec({
                 'tradeID': str(trade_id),
                 'price': stop_rate,
+                'replace_order_id': trailingStopLossOrderID,
                 'client_trade_tag' : str(event_close_id),
                 'client_trade_comment' :client_order_comment,
                 'client_order_tag' : str(event_close_id),
@@ -427,6 +428,7 @@ class Trade():
 
             takeProfitOrderID = str(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
             stopLossOrderID = str(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
+            trailingStopLossOrderID = str(row['trailingStopLossOrderID']) if row['trailingStopLossOrderID'] else ''
 
             delta_total_minuts = delta.total_seconds()/60
             delta_total_hours = delta_total_minuts/60
@@ -550,6 +552,10 @@ class Trade():
                             event_close_id = 3.3
                             profit_rate = self.last_rate + 0.03
 
+                        if not stopLossOrderID or not trailingStopLossOrderID:
+                            distance = round(stop_rate-self.last_rate, 2)
+                            self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
+
                     # sellの場合 現在価格マイナス0.1でcloseする
                     else:
                         _client_order_comment = state + ' win 4'
@@ -567,6 +573,10 @@ class Trade():
                         else:
                             event_close_id = 4.3
                             profit_rate = self.last_rate - 0.03
+
+                        if not stopLossOrderID or not trailingStopLossOrderID:
+                            distance = round(self.last_rate - stop_rate, 2)
+                            self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
 
                 # 負けの場合
                 else:
@@ -587,9 +597,11 @@ class Trade():
                         event_close_id = 6
                         _client_order_comment = state + ' lose ' + str(event_close_id)
 
-                self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, _client_order_comment, event_close_id)
-                self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, _client_order_comment, event_close_id)
+                if not stopLossOrderID or not trailingStopLossOrderID:
+                    self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id)
 
+                self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id)
+                    
                 self._history.update(int(trade_id), event_close_id, state)
 
             if condition_5:
@@ -603,7 +615,7 @@ class Trade():
                 # 90分 ~ で利益ない場合 とりあえず発注価格でcloseする
                 event_close_id = 7
 
-                self.take_profit(trade_id, round(_price, 2), takeProfitOrderID, _client_order_comment, event_close_id)
+                self.take_profit(trade_id, round(_price, 2), takeProfitOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id)
                 self._history.update(int(trade_id), event_close_id, state)                                 
 
         for order_id, row in self.new_orders_info.items():
