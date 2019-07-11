@@ -1069,6 +1069,10 @@ def test():
 
     trade.history_update()
 
+    condition = market.condition.Market()
+    print(condition.get_is_opening())
+    print(condition.get_is_eneble_new_order(5))
+
 if __name__ == "__main__":
 
     try:

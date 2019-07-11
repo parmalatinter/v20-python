@@ -87,6 +87,10 @@ class Calendar(object):
         df = pd.read_csv(calendar_csv_string, sep=',', engine='python', skipinitialspace=True)
         return df
 
+    def test_log(self, title, now, from_us_datetime, to_us_datetime):
+        log = 'log trade {} now : {} {} - {}'.format(title, now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
+        print(log)
+
     def in_danger_time(self, df):
         df = df[df['important'].str.contains('★★★')]
         now = pd.Timestamp.now()
@@ -111,6 +115,7 @@ class Calendar(object):
             from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
             to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
             
+            self.test_log(row['name'], now, from_us_datetime, to_us_datetime)
             if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
                 log = 'stop trade {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
                 print(log)
@@ -121,9 +126,10 @@ class Calendar(object):
         to_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 21:00:00', format='%Y-%m-%d %H:%M:%S')
         from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
         to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
-            
+        
+        self.test_log('日経開始時間', now, from_us_datetime, to_us_datetime)
         if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
-            log = 'stop trade {} {} - {}'.format('日経開始時間', from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
+            log = 'stop trade {} now : {} {} - {}'.format('日経開始時間', now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
             print(log)
             return True
 
@@ -138,9 +144,10 @@ class Calendar(object):
 
         from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
         to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
-            
+        
+        self.test_log('ダウ開始時間', now, from_us_datetime, to_us_datetime)
         if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
-            log = 'stop trade {} {} - {}'.format('ダウ開始時間', from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
+            log = 'stop trade {} now : {} {} - {}'.format('ダウ開始時間', now.strftime('%Y-%m-%d %H:%M:%S'), from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
             print(log)
             return True
             
