@@ -8,6 +8,7 @@ import line.line
 import os
 import file.file_utility
 import strategy.environ
+import market.condition
 
 class Calendar(object):
 
@@ -112,6 +113,37 @@ class Calendar(object):
                 log = 'stop trade {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
                 print(log)
                 return True
+
+        now = datetime.datetime.now()
+        _market = market.condition.Market()
+        # # 日経開始時間
+        from_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 19:00:00', format='%Y-%m-%d %H:%M:%S')
+        to_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 21:00:00', format='%Y-%m-%d %H:%M:%S')
+        from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
+        to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
+            
+        if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
+            log = 'stop trade {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
+            print(log)
+            return True
+
+        # # ダウ開始時間
+        utc_time = _market.get_utc_time()
+        if _market.get_is_summer(utc_time):
+            from_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 08:30:00', format='%Y-%m-%d %H:%M:%S')
+            to_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 10:30:00', format='%Y-%m-%d %H:%M:%S')
+        else:
+            from_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 09:30:00', format='%Y-%m-%d %H:%M:%S')
+            to_us_datetime = pd.to_datetime(str(now.year) +  '-' + str(now.month) + '-' + str(now.day) + ' 11:30:00', format='%Y-%m-%d %H:%M:%S')
+
+        from_us_datetime_hours = int(round((from_us_datetime - now).total_seconds() / 60 / 60 ))
+        to_us_datetime_hours = int(round((now - to_us_datetime).total_seconds() / 60 / 60))
+            
+        if from_us_datetime_hours > 0-self.hours and from_us_datetime_hours < 0 and to_us_datetime_hours > 0-self.hours and to_us_datetime_hours < 0:
+            log = 'stop trade {} {} - {}'.format(row['name'], from_us_datetime.strftime('%Y-%m-%d %H:%M:%S'), to_us_datetime.strftime('%Y-%m-%d %H:%M:%S'))
+            print(log)
+            return True
+            
         return False
 
     def delete_all_by_filename(self):
