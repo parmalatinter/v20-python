@@ -606,9 +606,9 @@ class Trade():
                         _client_order_comment = state + ' lose ' + str(event_close_id)
 
                 if not stopLossOrderID or not trailingStopLossOrderID:
-                    self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id)
+                    self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, _client_order_comment, event_close_id)
 
-                self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id)
+                self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, _client_order_comment, event_close_id)
                     
                 self._history.update(int(trade_id), event_close_id, state)
 
@@ -623,7 +623,7 @@ class Trade():
                 # 90分 ~ で利益ない場合 とりあえず発注価格でcloseする
                 event_close_id = 7
 
-                self.take_profit(trade_id, round(_price, 2), takeProfitOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id)
+                self.take_profit(trade_id, round(_price, 2), takeProfitOrderID, _client_order_comment, event_close_id)
                 self._history.update(int(trade_id), event_close_id, state)                                 
 
         for order_id, row in self.new_orders_info.items():
