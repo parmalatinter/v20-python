@@ -94,7 +94,9 @@ class Calendar(object):
     def in_danger_time(self, df):
         df = df[df['important'].str.contains('★★★')]
         now = pd.Timestamp.now()
+        print(now.strftime('%Y-%m-%d %H:%M:%S'))
         now = now + offsets.Hour(-13)
+        print(now.strftime('%Y-%m-%d %H:%M:%S'))
         # 計算式
         # 答え < 0 or  0 > 0 - self.hours　危険時間帯
         # from 5:00 to 8:00 now 7:00
@@ -166,6 +168,11 @@ def main():
     _line = line.line.Line()
     _line.send("calendar",text)
     # print(calendar.in_danger_time(df))
+
+def test():
+    calendar = Calendar()
+    dfs = calendar.dataGet()
+    df = calendar.format(dfs)
 
 if __name__ == "__main__":
     main()
