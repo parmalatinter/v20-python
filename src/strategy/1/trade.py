@@ -88,7 +88,7 @@ class Trade():
     long_units = 0
     short_units = 0
     regular_profit_pips = 0.14
-    min_profit_pips = 0.08
+    min_profit_pips = 0.10
     normal_pips_range = 15
     normal_trend_range = 15
     close_limit_minutes_1 = 60
@@ -323,12 +323,13 @@ class Trade():
             'client_trade_tag' : str(event_open_id),
             'client_trade_comment' :client_order_comment,
             'client_order_tag' : str(event_open_id),
-            'client_order_comment' :client_order_comment
+            'client_order_comment' : client_order_comment,
+            'trailing_stop_loss_distance' : str(self.min_profit_pips)
         })
         response = self._entry.get_response()
 
         transaction_id = self._entry.get_transaction_id()
-        message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, transaction_id : {}, now : {}'.format(
+        message = 'event_open_id: {}, units : {}, target_rate : {}, profit_rate : {}, stop_rate : {}, now_rate : {}, transaction_id : {}, distance: {}, now : {}'.format(
             str(event_open_id),
             str(units),
             str(target_rate),
@@ -336,6 +337,7 @@ class Trade():
             str(stop_rate),
             str(self.last_rate),
             str(transaction_id),
+            str(self.min_profit_pips),
             self.now_dt.strftime('%Y-%m-%d %H:%M:%S')
         )
 
