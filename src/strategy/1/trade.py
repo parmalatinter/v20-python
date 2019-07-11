@@ -77,6 +77,7 @@ class Trade():
     is_golden = False
     is_dead = False
     is_long_and_short_trade = False
+    is_new_trade = False
 
     upper = 0
     lower = 0
@@ -210,6 +211,10 @@ class Trade():
 
     def get_histoy_csv(self):
         return self._history.get_all_by_csv()
+
+    def send_draw(self):
+        draw = golden.draw.Draw()
+        draw.plot(self.caculate_df_all, 50)
 
     def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 
@@ -940,6 +945,8 @@ class Trade():
                 'event_open_id':event_open_id
             }
             self._line.send(event_open_id, message)
+
+            self.is_new_trade = True
 
     def system_update(self, positions_infos):
         win_count = self._history.get_todays_win_count()
