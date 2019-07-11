@@ -213,8 +213,9 @@ class Trade():
         return self._history.get_all_by_csv()
 
     def send_draw(self):
-        draw = golden.draw.Draw()
-        draw.plot(self.caculate_df_all, 50)
+        if self.is_new_trade:
+            draw = golden.draw.Draw()
+            draw.plot(self.caculate_df_all, 50)
 
     def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 
@@ -1024,6 +1025,7 @@ def main():
     print(_environ.get('is_stop'))
     if condition.get_is_eneble_new_order(reduce_time) and _environ.get('is_stop') == '0':
         trade.analyze_trade()
+        trade.send_draw()
 
     trade.close()
 
