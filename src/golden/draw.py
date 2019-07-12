@@ -174,8 +174,7 @@ class Draw(object):
         df['sma_2'] = np.round(df['c'].rolling(window=2).mean(), 2)
         # 期間14単純移動平均
         df['sma_14'] = np.round(df['c'].rolling(window=14).mean(), 2)
-        df['diff1'] = df['mean'] - df['l']
-        df['diff2'] = df['mean'] - df['h']
+        df['diff'] = df['sma_2'] - df['sma_14']
 
         # ルールその1 C3 < lower
         df['rule_1'] = 0
@@ -203,22 +202,17 @@ class Draw(object):
         df.loc[(df['c'] < df['lower_low']) & (df['c1'] < df['lower_low'])]=1
 
         # ゴールデンクロスを検出
-        asign1 = np.sign(df['diff1'])
-        asign2 = np.sign(df['diff2'])
+        asign = np.sign(df['diff'])
          
-        sz = asign1 == 0
+        sz = asign == 0
         while sz.any():
-            asign1[sz] = np.roll(asign1, 1)[sz]
-            sz = asign1 == 0
-        sz = asign2 == 0
-        while sz.any():
-            asign2[sz] = np.roll(asign2, 1)[sz]
-            sz = asign2 == 0
+            asign[sz] = np.roll(asign, 1)[sz]
+            sz = asign == 0
 
-        df['golden'] = ((np.roll(asign1, 1) - asign1) == -2).astype(int)
+        df['golden'] = ((np.roll(asign, 1) - asign) == -2).astype(int)
 
         # デッドクロスを検出
-        df['dead'] = ((np.roll(asign2, 1) - asign2) == 2).astype(int)
+        df['dead'] = ((np.roll(asign, 1) - asign) == 2).astype(int)
 
         # ranges = slice(df['l'],170,None)
  
