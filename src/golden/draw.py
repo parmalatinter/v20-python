@@ -277,7 +277,7 @@ class Draw(object):
         ax.plot(candle_temp['l'])
 
         ax = plt.subplot(2, 1, 2, title='golden dead', color=['red', 'blue'])
-        # ax.plot(candle_temp['golden'])
+        ax.plot(candle_temp['golden'])
         ax.plot(candle_temp['dead'])
 
         # plt.savefig('draw1.png')
