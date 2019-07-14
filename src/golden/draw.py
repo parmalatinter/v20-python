@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import common.config
 import common.args
 from datetime import datetime
@@ -277,8 +276,8 @@ class Draw(object):
         ax.plot(candle_temp['h'])
         ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='golden dead')
-        ax.plot(candle_temp['golden'])
+        ax = plt.subplot(2, 1, 2, title='golden dead', color=['red', 'blue'])
+        # ax.plot(candle_temp['golden'])
         ax.plot(candle_temp['dead'])
 
         # plt.savefig('draw1.png')
@@ -297,7 +296,7 @@ class Draw(object):
         ax.plot(candle_temp['h'])
         ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='rule_1 Close before 3 < lower, rule_2 3 positive')
+        ax = plt.subplot(2, 1, 2, title='rule_1 Close before 3 < lower, rule_2 3 positive', color=['red', 'blue'])
         ax.plot(candle_temp['rule_1'])
         ax.plot(candle_temp['rule_2'])
 
@@ -316,7 +315,7 @@ class Draw(object):
         ax.plot(candle_temp['h'])
         ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='rule_3 C3 > upper, rule_4 3 negative')
+        ax = plt.subplot(2, 1, 2, title='rule_3 C3 > upper, rule_4 3 negative', color=['red', 'blue'])
         ax.plot(candle_temp['rule_3'])
         ax.plot(candle_temp['rule_4'])
 
@@ -335,7 +334,7 @@ class Draw(object):
         ax.plot(candle_temp['h'])
         ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='rule_5 h > upper, rule_6, l > lower')
+        ax = plt.subplot(2, 1, 2, title='rule_5 h > upper, rule_6, l > lower', color=['red', 'blue'])
         ax.plot(candle_temp['rule_5'])
         ax.plot(candle_temp['rule_6'])
 
