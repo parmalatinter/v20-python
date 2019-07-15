@@ -89,7 +89,7 @@ class Trade():
     long_units = 0
     short_units = 0
     regular_profit_pips = 0.14
-    min_profit_pips = 0.05
+    min_profit_pips = 0.08
     normal_pips_range = 15
     normal_trend_range = 15
     close_limit_minutes_1 = 60
