@@ -860,8 +860,8 @@ class Trade():
                 _message = 'resistance break chance order 12 # {}'.format(str(self.last_rate))
                 _units = self.units
                 _event_open_id = 12
-                _target_price = self.last_rate + self.min_profit_pips
-                _stop_rate = self.last_rate - self.regular_profit_pips
+                _target_price = self.last_rate - self.min_profit_pips
+                _stop_rate = self.last_rate + self.regular_profit_pips
 
                 self.new_trade(
                      message=_message,
@@ -873,8 +873,8 @@ class Trade():
                  )
 
                 _units = 0 - self.units
-                _target_price = self.last_rate - self.min_profit_pips
-                _stop_rate = self.last_rate + self.regular_profit_pips
+                _target_price = self.last_rate + self.min_profit_pips
+                _stop_rate = self.last_rate - self.regular_profit_pips
 
                 self.new_trade(
                      message=_message,
