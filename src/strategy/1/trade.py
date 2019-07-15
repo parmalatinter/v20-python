@@ -936,6 +936,9 @@ class Trade():
                     event_open_id=event_open_id,
                     client_order_comment=message
                 )
+
+            self.is_new_trade = True
+
             if trade_id <= 0 and transaction_id <= 0 :
                 return
 
@@ -946,8 +949,6 @@ class Trade():
                 'event_open_id':event_open_id
             }
             self._line.send(event_open_id, message)
-
-            self.is_new_trade = True
 
     def system_update(self, positions_infos):
         win_count = self._history.get_todays_win_count()
