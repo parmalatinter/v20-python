@@ -214,7 +214,7 @@ class Draw(object):
             l_asign[sz] = np.roll(l_asign, 1)[sz]
             sz = l_asign == 0
 
-        df['dead'] = ((np.roll(l_asign, 1) - l_asign) == -2).astype(int)
+        df['golden'] = ((np.roll(l_asign, 1) - l_asign) == -2).astype(int)
 
         # ゴールデンクロスを検出
         h_asign = np.sign(df['h_diff'])
@@ -224,7 +224,7 @@ class Draw(object):
             h_asign[sz] = np.roll(h_asign, 1)[sz]
             sz = h_asign == 0
 
-        df['golden'] = ((np.roll(h_asign, 1) - h_asign) == 2).astype(int)
+        df['dead'] = ((np.roll(h_asign, 1) - h_asign) == 2).astype(int)
 
         
         
