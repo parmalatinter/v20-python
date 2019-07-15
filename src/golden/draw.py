@@ -276,16 +276,30 @@ class Draw(object):
         ax.plot(candle_temp['h'])
         ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='golden dead')
+        ax = plt.subplot(2, 1, 2, title='golden')
         ax.plot(candle_temp['golden'])
-        ax.plot(candle_temp['dead'])
 
         # plt.savefig('draw1.png')
         
         sio = io.BytesIO()
         plt.savefig(sio, format=format)
         _line.send('image', 'golden dead', sio.getvalue())
-        # plt.show()
+
+        ax = plt.subplot(2, 1, 1)
+        ax.plot(candle_temp['mean'])
+        ax.plot(candle_temp['upper_high'])
+        ax.plot(candle_temp['lower_low'])
+        ax.plot(candle_temp['sma_2'])
+        ax.plot(candle_temp['sma_14'])
+        ax.plot(candle_temp['h'])
+        ax.plot(candle_temp['l'])
+
+        ax = plt.subplot(2, 1, 2, title='dead')
+        ax.plot(candle_temp['dead'])
+        
+        sio = io.BytesIO()
+        plt.savefig(sio, format=format)
+        _line.send('image', 'golden dead', sio.getvalue())
 
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
