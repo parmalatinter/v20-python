@@ -1,6 +1,5 @@
 #!/usr/bin/env python
 
-import argparse
 import common.config
 import common.args
 from datetime import datetime
@@ -174,7 +173,13 @@ class Draw(object):
         df['sma_2'] = np.round(df['c'].rolling(window=2).mean(), 2)
         # 期間14単純移動平均
         df['sma_14'] = np.round(df['c'].rolling(window=14).mean(), 2)
+
+        df['h_sma_2'] = np.round(df['h'].rolling(window=2).mean(), 2)
+        df['l_sma_2'] = np.round(df['l'].rolling(window=2).mean(), 2)
+
         df['diff'] = df['sma_2'] - df['sma_14']
+        df['l_diff'] = df['h_sma_2'] - df['sma_14']
+        df['h_diff'] = df['l_sma_2'] - df['sma_14']
 
         # ルールその1 C3 < lower
         df['rule_1'] = 0
@@ -201,17 +206,28 @@ class Draw(object):
         df['rule_6'] = 0
         df.loc[(df['c'] < df['lower_low']) & (df['c1'] < df['lower_low'])]=1
 
-        # ゴールデンクロスを検出
-        asign1 = np.sign(df['diff'])
-         
-        sz = asign == 0
-        while sz.any():
-            asign[sz] = np.roll(asign, 1)[sz]
-            sz = asign == 0
-
-        df['golden'] = ((np.roll(asign, 1) - asign) == -2).astype(int)
         # デッドクロスを検出
-        df['dead'] = ((np.roll(asign, 1) - asign) == 2).astype(int)
+        l_asign = np.sign(df['l_diff'])
+         
+        sz = l_asign == 0
+        while sz.any():
+            l_asign[sz] = np.roll(l_asign, 1)[sz]
+            sz = l_asign == 0
+
+        df['golden'] = ((np.roll(l_asign, 1) - l_asign) == -2).astype(int)
+
+        # ゴールデンクロスを検出
+        h_asign = np.sign(df['h_diff'])
+         
+        sz = h_asign == 0
+        while sz.any():
+            h_asign[sz] = np.roll(h_asign, 1)[sz]
+            sz = h_asign == 0
+
+        df['dead'] = ((np.roll(h_asign, 1) - h_asign) == 2).astype(int)
+
+        
+        
 
         # ranges = slice(df['l'],170,None)
  
@@ -260,16 +276,30 @@ class Draw(object):
         ax.plot(candle_temp['h'])
         ax.plot(candle_temp['l'])
 
-        ax = plt.subplot(2, 1, 2, title='golden dead')
+        ax = plt.subplot(2, 1, 2, title='golden')
         ax.plot(candle_temp['golden'])
-        ax.plot(candle_temp['dead'])
 
         # plt.savefig('draw1.png')
         
         sio = io.BytesIO()
         plt.savefig(sio, format=format)
         _line.send('image', 'golden dead', sio.getvalue())
-        # plt.show()
+
+        ax = plt.subplot(2, 1, 1)
+        ax.plot(candle_temp['mean'])
+        ax.plot(candle_temp['upper_high'])
+        ax.plot(candle_temp['lower_low'])
+        ax.plot(candle_temp['sma_2'])
+        ax.plot(candle_temp['sma_14'])
+        ax.plot(candle_temp['h'])
+        ax.plot(candle_temp['l'])
+
+        ax = plt.subplot(2, 1, 2, title='dead')
+        ax.plot(candle_temp['dead'])
+        
+        sio = io.BytesIO()
+        plt.savefig(sio, format=format)
+        _line.send('image', 'golden dead', sio.getvalue())
 
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
@@ -353,6 +383,3 @@ def main():
 
 if __name__ == "__main__":
     main()
-
-
-

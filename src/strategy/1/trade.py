@@ -96,7 +96,7 @@ class Trade():
     close_limit_minutes_2 = 90
     close_limit_minutes_3 = 135
     close_limit_hours = 3.5
-    close_order_limit_minutes = 45
+    close_order_limit_minutes = 90
 
     first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
     win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
@@ -860,8 +860,8 @@ class Trade():
                 _message = 'resistance break chance order 12 # {}'.format(str(self.last_rate))
                 _units = self.units
                 _event_open_id = 12
-                _target_price = self.last_rate + self.min_profit_pips
-                _stop_rate = self.last_rate - self.regular_profit_pips
+                _target_price = self.last_rate - self.min_profit_pips
+                _stop_rate = self.last_rate + self.regular_profit_pips
 
                 self.new_trade(
                      message=_message,
@@ -873,8 +873,8 @@ class Trade():
                  )
 
                 _units = 0 - self.units
-                _target_price = self.last_rate - self.min_profit_pips
-                _stop_rate = self.last_rate + self.regular_profit_pips
+                _target_price = self.last_rate + self.min_profit_pips
+                _stop_rate = self.last_rate - self.regular_profit_pips
 
                 self.new_trade(
                      message=_message,
@@ -936,6 +936,9 @@ class Trade():
                     event_open_id=event_open_id,
                     client_order_comment=message
                 )
+
+            self.is_new_trade = True
+
             if trade_id <= 0 and transaction_id <= 0 :
                 return
 
@@ -946,8 +949,6 @@ class Trade():
                 'event_open_id':event_open_id
             }
             self._line.send(event_open_id, message)
-
-            self.is_new_trade = True
 
     def system_update(self, positions_infos):
         win_count = self._history.get_todays_win_count()
