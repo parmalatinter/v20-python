@@ -118,7 +118,7 @@ class Trade():
         self._trailing_stop_loss = order.trailing_stop_loss.Trailing_stop_loss()
         self._close = trade.close.Close()
         self._candle = inst_one.Candle()
-        self._pricing = pricing.get.Pricing()
+        self._pricing = pricing.get.Pricing()1
 
         self._trend = trend.get.Trend()
         trace_log = common.trace_log.Trace_log()
@@ -667,7 +667,7 @@ class Trade():
 
         print('start trade')
 
-        if self.self.min_spred < self.self.spred:
+        if self.min_spred < self.spred:
             return
 
         # ゴールデンクロスの場合
