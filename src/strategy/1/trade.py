@@ -88,14 +88,14 @@ class Trade():
     last_rate = 0
     long_units = 0
     short_units = 0
-    regular_profit_pips = 0.14
+    regular_profit_pips = 0.20
     min_profit_pips = 0.05
     normal_pips_range = 15
     normal_trend_range = 15
     close_limit_minutes_1 = 60
     close_limit_minutes_2 = 90
     close_limit_minutes_3 = 135
-    close_limit_hours = 3.5
+    close_limit_hours = 6
     close_order_limit_minutes = 90
 
     first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
