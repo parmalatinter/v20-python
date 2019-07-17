@@ -37,6 +37,7 @@ import trade.close
 import order.cancel
 import trade.get_by_trade_ids
 import account.details
+import pricing.get
 
 
 class Trade():
@@ -54,6 +55,7 @@ class Trade():
     _line = None
     _candle = None
     _trend = None
+    _pricing = None
     instrument = "USD_JPY"
     units = 10
     limit_units_count = 2
@@ -85,6 +87,8 @@ class Trade():
     lower_low = 0
     mean = 0
     late = 0
+    min_spred = 0.008
+    spred = 0
     last_rate = 0
     long_units = 0
     short_units = 0
@@ -102,8 +106,6 @@ class Trade():
     first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
     win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
 
-
-
     def __init__(self, _environ):
         self._line = line.line.Line()
         self._history = db.history.History()
@@ -116,6 +118,7 @@ class Trade():
         self._trailing_stop_loss = order.trailing_stop_loss.Trailing_stop_loss()
         self._close = trade.close.Close()
         self._candle = inst_one.Candle()
+        self._pricing = pricing.get.Pricing()
 
         self._trend = trend.get.Trend()
         trace_log = common.trace_log.Trace_log()
@@ -140,7 +143,7 @@ class Trade():
         self.regular_profit_pips = _environ.get('regular_profit_pips') if _environ.get('regular_profit_pips') else self.regular_profit_pips
         self.min_profit_pips = _environ.get('min_profit_pips') if _environ.get('min_profit_pips') else self.min_profit_pips
         self.entry_pips = _environ.get('entry_pips') if _environ.get('entry_pips') else self.entry_pips
-
+        self.min_spred = _environ.get('min_spred') if _environ.get('min_spred') else self.min_spred
 
     def set_property(self, candles_df, long_units, short_units, orders_info, new_orders_info):
         self.candles_df = candles_df
@@ -151,7 +154,6 @@ class Trade():
         self.orders_info = orders_info
         self.new_orders_info = new_orders_info
         self.last_df = self.get_caculate_df(self.candles_df)
-        print(self.last_df)
         self.is_golden = True if self.last_df['golden'][self.last_df.index[0]] else False
         self.is_dead = True if self.last_df['dead'][self.last_df.index[0]] else False
         self.upper = float(self.last_df['upper'][self.last_df.index[0]])
@@ -178,9 +180,10 @@ class Trade():
         self.update_last_rate()
 
     def update_last_rate(self):
-        self._candle.get(self.instrument)
-        self.last_rate = round(self._candle.get_last_rate(), 2)
-        self.now_dt = self._candle.get_last_date()
+        price = self._pricing.get(self.instrument)
+        self.spred = price['spred']
+        self.last_rate = price['price']
+        self.now_dt = price['time']
 
     def get_df(self, csv_string):
         return pd.read_csv(csv_string, sep=',', engine='python', skipinitialspace=True)
@@ -664,6 +667,9 @@ class Trade():
 
         print('start trade')
 
+        if self.self.min_spred < self.self.spred:
+            return
+
         # ゴールデンクロスの場合
         if self.is_golden:
             self._line.send('is_golden', str(self.last_rate))
@@ -990,8 +996,10 @@ class Trade():
             'resistance_low' : round(self.resistande_info['resistance_low'], 2),
             'transaction_id' : 0
          }
+ 
         details = account.details.Details()
         details_dict = details.get_account()
+
         get_by_transaction_ids = transaction.get_by_transaction_ids.Get_by_transaction_ids(history_obj)
         transaction_id = int(details_dict['Last Transaction ID'])
         from_transaction_id = 1
