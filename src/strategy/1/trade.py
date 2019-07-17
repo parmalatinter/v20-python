@@ -317,9 +317,9 @@ class Trade():
 
     def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
         target_rate = self.last_rate - self.entry_pips if units > 0 else self.last_rate + self.entry_pips
-        target_rate = round(target_rate,2)
-        profit_rate = round(profit_rate,2)
-        stop_rate = round(stop_rate,2)
+        target_rate = round(target_rate,3)
+        profit_rate = round(profit_rate,3)
+        stop_rate = round(stop_rate,3)
 
         target_rate = str(target_rate)
         stop_rate = str(stop_rate)
@@ -361,8 +361,8 @@ class Trade():
         return int(transaction_id)
 
     def order_market(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
-        profit_rate = round(profit_rate,2)
-        stop_rate = round(stop_rate,2)
+        profit_rate = round(profit_rate,3)
+        stop_rate = round(stop_rate,3)
 
         stop_rate = str(stop_rate)
         profit_rate = str(profit_rate)
@@ -427,7 +427,7 @@ class Trade():
 
             self.update_last_rate()
 
-            _price = round(float(row['price']), 2)
+            _price = round(float(row['price']), 3)
             _client_order_comment = ''
             unix = row['openTime'].split(".")[0]
             trade_dt = None
@@ -519,7 +519,7 @@ class Trade():
 
                 _client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
-                res = self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, _client_order_comment, event_close_id)
+                res = self.take_profit(trade_id, round(profit_rate, 3), takeProfitOrderID, _client_order_comment, event_close_id)
                 if res:
                     self._history.update(int(trade_id), event_close_id, state)
                 continue
@@ -566,7 +566,7 @@ class Trade():
                             profit_rate = self.last_rate + 0.03
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
-                            distance = round(stop_rate-self.last_rate, 2)
+                            distance = round(stop_rate-self.last_rate, 3)
                             self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
 
                     # sellの場合 現在価格マイナス0.1でcloseする
@@ -588,7 +588,7 @@ class Trade():
                             profit_rate = self.last_rate - 0.03
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
-                            distance = round(self.last_rate - stop_rate, 2)
+                            distance = round(self.last_rate - stop_rate, 3)
                             self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
 
                 # 負けの場合
@@ -611,9 +611,9 @@ class Trade():
                         _client_order_comment = state + ' lose ' + str(event_close_id)
 
                 if not stopLossOrderID or not trailingStopLossOrderID:
-                    self.stop_loss(trade_id, round(stop_rate, 2), stopLossOrderID, _client_order_comment, event_close_id)
+                    self.stop_loss(trade_id, round(stop_rate, 3), stopLossOrderID, _client_order_comment, event_close_id)
 
-                self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, _client_order_comment, event_close_id)
+                self.take_profit(trade_id, round(profit_rate, 3), takeProfitOrderID, _client_order_comment, event_close_id)
                     
                 self._history.update(int(trade_id), event_close_id, state)
 
@@ -635,7 +635,7 @@ class Trade():
                 else:
                     profit_rate = _price - 0.01
 
-                self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, _client_order_comment, event_close_id)
+                self.take_profit(trade_id, round(profit_rate, 3), takeProfitOrderID, _client_order_comment, event_close_id)
                 self._history.update(int(trade_id), event_close_id, state)                                 
 
         for order_id, row in self.new_orders_info.items():
@@ -938,16 +938,16 @@ class Trade():
             if is_market:
                 trade_id = self.order_market(
                     units=units,
-                    profit_rate=round(target_price, 2),
-                    stop_rate=round(stop_rate, 2),
+                    profit_rate=round(target_price, 3),
+                    stop_rate=round(stop_rate, 3),
                     event_open_id=event_open_id,
                     client_order_comment=message
                 )
             else:
                 transaction_id = self.order(
                     units=units,
-                    profit_rate=round(target_price, 2),
-                    stop_rate=round(stop_rate, 2),
+                    profit_rate=round(target_price, 3),
+                    stop_rate=round(stop_rate, 3),
                     event_open_id=event_open_id,
                     client_order_comment=message
                 )
@@ -959,7 +959,7 @@ class Trade():
 
             trade_history = {
                 'rate': self.last_rate,
-                'target_price': round(target_price, 2),
+                'target_price': round(target_price, 3),
                 'units':units,
                 'event_open_id':event_open_id
             }
@@ -979,11 +979,11 @@ class Trade():
             'instrument' : self.instrument,
             'unrealized_pl' : 0,
             'event_open_id' : 0,
-            'trend_1' : round(self.trend_usd['v1_usd'], 2),
-            'trend_2' : round(self.trend_usd['v2_usd'], 2),
-            'trend_3' : round(self.trend_usd['v1_jpy'], 2),
-            'trend_4' : round(self.trend_usd['v2_jpy'], 2),
-            'trend_cal' : round(self.trend_usd['res'], 2),
+            'trend_1' : round(self.trend_usd['v1_usd'], 3),
+            'trend_2' : round(self.trend_usd['v2_usd'], 3),
+            'trend_3' : round(self.trend_usd['v1_jpy'], 3),
+            'trend_4' : round(self.trend_usd['v2_jpy'], 3),
+            'trend_cal' : round(self.trend_usd['res'], 3),
             'judge_1' : self.is_golden,
             'judge_2' : self.is_dead,
             'rule_1' : self.rule_1,
@@ -992,8 +992,8 @@ class Trade():
             'rule_4' : self.rule_4,
             'rule_5' : self.rule_5,
             'rule_6' : self.rule_6,
-            'resistance_high' : round(self.resistande_info['resistance_high'], 2),
-            'resistance_low' : round(self.resistande_info['resistance_low'], 2),
+            'resistance_high' : round(self.resistande_info['resistance_high'], 3),
+            'resistance_low' : round(self.resistande_info['resistance_low'], 3),
             'transaction_id' : 0
          }
  
