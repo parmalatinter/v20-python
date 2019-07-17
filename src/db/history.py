@@ -237,13 +237,13 @@ class History():
 
 def main():
     history = History()
-    # print(history.get_by_query("SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo'))
-    # print(history.get_by_query("SELECT event_open_id, count(state), sum(pl) AS sum FROM history GROUP BY event_open_id ORDER BY sum DESC", 'event_open_id'))
+    print(history.get_by_query("SELECT memo , event_open_id, count(state), sum(pl) FROM history GROUP BY memo, event_open_id ORDER BY memo, count", 'memo'))
+    print(history.get_by_query("SELECT event_open_id, count(state), sum(pl) AS sum FROM history GROUP BY event_open_id ORDER BY sum DESC", 'event_open_id'))
     # print(history.get_todays_win_count())
     # print(history.get_todays_lose_count())
     
 
-    history.add_column("transaction_id integer")
+    # history.add_column("transaction_id integer")
     # history.add_column("resistance_low numeric")
     # history.add_column("trend_cal numeric")
     # history.add_column("rule_5 boolean")
@@ -288,10 +288,10 @@ def main():
     # history.update(trade_id, price_close, pl, event_close_id, state)
 
     # # print(history.get_all_by_panda())
-    df = history.get_by_panda(1)
-    print(df['trade_id'][df.index[0]])
+    # df = history.get_by_panda(1)
+    # print(df['trade_id'][df.index[0]])
 
-    history.delete(1)
+    # history.delete(1)
 
 
 if __name__ == "__main__":
