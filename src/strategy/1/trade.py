@@ -665,10 +665,10 @@ class Trade():
 
         self.update_last_rate()
 
-        print('start trade')
-
         if self.min_spred < self.spred:
             return
+
+        print('start trade')
 
         # ゴールデンクロスの場合
         if self.is_golden:
