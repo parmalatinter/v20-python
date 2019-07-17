@@ -104,7 +104,10 @@ class Pricing(object):
         spred = round(self.price.asks[0].price - self.price.bids[0].price,3)
         price = round((self.price.asks[0].price + self.price.bids[0].price)/2,3)
         unix = self.price.time.split(".")[0]
-        time = datetime.fromtimestamp(int(unix))
+        try:
+            time = datetime.strptime(unix.replace('T', ' '), '%Y-%m-%d %H:%M:%S')
+        except:
+            time = datetime.fromtimestamp(int(unix))
         return {'time' : time, 'price' : price, 'bids' : self.price.bids[0].price, 'asks' : self.price.asks[0].price, 'spred' : spred}
 
 
