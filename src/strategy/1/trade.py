@@ -589,7 +589,7 @@ class Trade():
                 # 負けの場合
                 else:
 
-                    # buyの場合 発注価格でcloseする
+                    # buyの場合 発注価格+0.03でcloseする
                     if row['currentUnits'] > 0:
                         stop_rate = self.last_rate - 0.5
                         profit_rate = _price + 0.03
@@ -597,7 +597,7 @@ class Trade():
                         event_close_id = 5
                         _client_order_comment = state + ' lose ' + str(event_close_id)
 
-                    # sellの場合 発注価格でcloseする
+                    # sellの場合 発注価格-0.03でcloseする
                     else:
                         stop_rate = self.last_rate + 0.5
                         profit_rate = _price - 0.03
@@ -623,7 +623,14 @@ class Trade():
                 # 90分 ~ で利益ない場合 とりあえず発注価格でcloseする
                 event_close_id = 7
 
-                self.take_profit(trade_id, round(_price, 2), takeProfitOrderID, _client_order_comment, event_close_id)
+                # buyの場合 発注価格+0.01でcloseする
+                if row['currentUnits'] > 0:
+                    profit_rate = _price + 0.01
+                # buyの場合 発注価格-0.01でcloseする
+                else:
+                    profit_rate = _price - 0.01
+
+                self.take_profit(trade_id, round(profit_rate, 2), takeProfitOrderID, _client_order_comment, event_close_id)
                 self._history.update(int(trade_id), event_close_id, state)                                 
 
         for order_id, row in self.new_orders_info.items():
