@@ -649,7 +649,7 @@ class Trade():
                     self._line.send('order cancel s', message)
                 else:
                     errors = self._cancel.get_errors()
-                    self._line.send('order cancel failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
+                    self._line.send('order cancel ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
 
 
     def analyze_trade(self):
