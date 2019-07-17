@@ -643,7 +643,7 @@ class Trade():
             delta = self.now_dt - row['time']
             delta_total_minuts = delta.total_seconds()/60
 
-            if delta_total_minuts >= self.close_order_limit_minutes:
+            if delta_total_minuts >= self.close_order_limit_minutes or self.min_spred < self.spred:
                 self._cancel.exec({'order_id': order_id})
                 response = self._cancel.get_response()
                 message = '# {}, now : {}'.format(order_id, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
