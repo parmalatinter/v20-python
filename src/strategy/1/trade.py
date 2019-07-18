@@ -489,7 +489,7 @@ class Trade():
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
-                    elif pips > 0.1:
+                    elif pips > 0.05:
                         event_close_id = 1.2
                         profit_rate = self.last_rate + 0.03
                     # それ以外
