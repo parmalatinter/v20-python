@@ -483,18 +483,18 @@ class Trade():
                     pips = self.last_rate - _price
                     # 利益0.1以上
                     if pips > self.regular_profit_pips:
-                        event_close_id = 1.1
+                        event_close_id = 11
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
                         self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
                     elif pips > 0.05:
-                        event_close_id = 1.2
+                        event_close_id = 12
                         profit_rate = self.last_rate + 0.03
                     # それ以外
                     else:
-                        event_close_id = 1.3
+                        event_close_id = 13
                         # spred分の損を回収
                         profit_rate = _price + 0.02
                 # sellの場合 
@@ -502,18 +502,18 @@ class Trade():
                     pips = _price - self.last_rate
                     # 利益0.1以上
                     if pips > self.regular_profit_pips:
-                        event_close_id = 2.1
+                        event_close_id = 21
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
                         self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
                     elif pips > 0.1:
-                        event_close_id = 2.2
+                        event_close_id = 22
                         profit_rate = self.last_rate - 0.03
                     # それ以外
                     else:
-                        event_close_id = 2.3
+                        event_close_id = 23
                         # spred分の損を回収
                         profit_rate = _price - 0.02
 
@@ -552,17 +552,17 @@ class Trade():
                         _client_order_comment = state + ' win 3'
                         # regular_profit_pips以上利益の場合closeする
                         if self.last_rate - _price > self.regular_profit_pips:
-                            event_close_id = 3.1
+                            event_close_id = 31
                             profit_rate = self.last_rate + 0.02
                         # ボリバン上限突破
                         elif self.upper_high < self.last_rate:
-                            event_close_id = 3.2
+                            event_close_id = 32
                             self.market_close(trade_id, 'ALL', event_close_id)
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
                         # それ以外
                         else:
-                            event_close_id = 3.3
+                            event_close_id = 33
                             profit_rate = self.last_rate + 0.03
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
@@ -574,17 +574,17 @@ class Trade():
                         _client_order_comment = state + ' win 4'
                         # regular_profit_pips以上利益の場合closeする
                         if _price - self.last_rate > self.regular_profit_pips:
-                            event_close_id = 4.1
+                            event_close_id = 41
                             profit_rate = self.last_rate - 0.02
                         # ボリバン下限突破
                         elif self.lower_low > self.last_rate:
-                            event_close_id = 4.2
+                            event_close_id = 42
                             self.market_close(trade_id, 'ALL', event_close_id)
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
                         # それ以外
                         else:
-                            event_close_id = 4.3
+                            event_close_id = 43
                             profit_rate = self.last_rate - 0.03
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
@@ -599,7 +599,7 @@ class Trade():
                         stop_rate = self.last_rate - 0.5
                         profit_rate = _price + 0.03
 
-                        event_close_id = 5
+                        event_close_id = 50
                         _client_order_comment = state + ' lose ' + str(event_close_id)
 
                     # sellの場合 発注価格-0.03でcloseする
@@ -607,7 +607,7 @@ class Trade():
                         stop_rate = self.last_rate + 0.5
                         profit_rate = _price - 0.03
 
-                        event_close_id = 6
+                        event_close_id = 60
                         _client_order_comment = state + ' lose ' + str(event_close_id)
 
                 if not stopLossOrderID or not trailingStopLossOrderID:
@@ -626,7 +626,7 @@ class Trade():
                 _client_order_comment = state + ' lose ' + str(event_close_id)
 
                 # 90分 ~ で利益ない場合 とりあえず発注価格でcloseする
-                event_close_id = 7
+                event_close_id = 70
 
                 # buyの場合 発注価格+0.01でcloseする
                 if row['currentUnits'] > 0:
@@ -677,7 +677,7 @@ class Trade():
             if self.trend_usd['res'] > self.normal_trend_range:
                 _message = 'buy golden order trend > normal_trend_range 1 # {}'.format(str(self.last_rate))
                 _units = self.units
-                _event_open_id = 1
+                _event_open_id = 11
                 _target_price = self.last_rate + 0.1
                 _stop_rate = self.last_rate - 0.1
 
@@ -685,14 +685,14 @@ class Trade():
             elif self.trend_usd['res'] < 0-self.normal_trend_range:
                 _message = 'buy golden order trend < -normal_trend_range 2  # {}'.format(str(self.last_rate))
                 _units = self.units
-                _event_open_id = 2
+                _event_open_id = 12
                 _target_price = self.last_rate + 0.1
                 _stop_rate = self.last_rate - 0.1
             # その他の場合
             else:
                 _message = 'buy golden order trend other 3 # {}'.format(str(self.last_rate))
                 _units = self.units/2
-                _event_open_id = 3
+                _event_open_id = 13
                 _target_price = self.last_rate + self.entry_pips
                 _stop_rate = self.last_rate - self.regular_profit_pips
 
@@ -728,7 +728,7 @@ class Trade():
             if self.trend_usd['res'] < 0 - self.normal_trend_range:
                 _message = 'sell dead order trend < -normal_trend_range 4 # {}'.format(str(self.last_rate))
                 _units = 0 - self.units
-                _event_open_id = 4
+                _event_open_id = 21
                 _target_price = self.last_rate - 0.1
                 _stop_rate = self.last_rate + 0.1
 
@@ -736,14 +736,14 @@ class Trade():
             elif self.trend_usd['res'] > self.normal_trend_range:
                 _message = 'sell dead order trend > normal_trend_range 5 # {}'.format(str(self.last_rate))
                 _units = 0 - self.units
-                _event_open_id = 5
+                _event_open_id = 22
                 _target_price = self.last_rate - 0.1
                 _stop_rate = self.last_rate + 0.1
             # その他の場合
             else:
                 _message = 'sell dead order other 6 # {}'.format(str(self.last_rate))
                 _units = self.units/2
-                _event_open_id = 6
+                _event_open_id = 23
                 _target_price = self.last_rate - self.entry_pips
                 _stop_rate = self.last_rate + self.regular_profit_pips
 
@@ -773,21 +773,21 @@ class Trade():
         if self.rule_1 and self.rule_2:
             _message = 'buy chance order 7 # {}'.format(str(self.last_rate))
             _units = self.units/2
-            _event_open_id = 7
+            _event_open_id = 31
             _target_price = self.last_rate + self.regular_profit_pips
 
         # ルールその3 C3 > upper 且つ  ルールその4 3つ陰線
         elif self.rule_3 and self.rule_4:
             _message = 'sell chance order 8 # {}'.format(str(self.last_rate))
             _units = 0 - (self.units/2)
-            _event_open_id = 8
+            _event_open_id = 32
             _target_price = self.last_rate - self.regular_profit_pips
 
         # ルールその5 連続二回ボリバン上限突破
         elif self.rule_5:
             _message = 'buy chance order 9 # {}'.format(str(self.last_rate))
             _units = self.units/2
-            _event_open_id = 9
+            _event_open_id = 33
             _target_price = self.last_rate + self.entry_pips
             _stop_rate = self.last_rate - self.regular_profit_pips
 
@@ -808,7 +808,7 @@ class Trade():
         elif self.rule_6:
             _message = 'sell chance order 10 # {}'.format(str(self.last_rate))
             _units = self.units/2
-            _event_open_id = 10
+            _event_open_id = 41
             _target_price = self.last_rate - self.entry_pips
             _stop_rate = self.last_rate + self.regular_profit_pips
 
@@ -842,7 +842,7 @@ class Trade():
             elif self.resistande_info['resistance_high'] < self.last_rate:
                 _message = 'resistance break chance order 11 # {}'.format(str(self.last_rate))
                 _units = 0 - self.units
-                _event_open_id = 11
+                _event_open_id = 51
                 _target_price = self.last_rate - self.entry_pips
                 _stop_rate = self.last_rate + self.regular_profit_pips
 
@@ -874,7 +874,7 @@ class Trade():
             elif self.resistande_info['resistance_low'] > self.last_rate:
                 _message = 'resistance break chance order 12 # {}'.format(str(self.last_rate))
                 _units = self.units
-                _event_open_id = 12
+                _event_open_id = 61
                 _target_price = self.last_rate - self.entry_pips
                 _stop_rate = self.last_rate + self.regular_profit_pips
 
