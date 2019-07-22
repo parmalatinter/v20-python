@@ -140,10 +140,10 @@ class Trade():
             'normal_pips_range') else self.normal_pips_range
         self.normal_trend_range = int(_environ.get('normal_trend_range')) if _environ.get(
             'normal_trend_range') else self.normal_trend_range
-        self.regular_profit_pips = _environ.get('regular_profit_pips') if _environ.get('regular_profit_pips') else self.regular_profit_pips
-        self.min_profit_pips = _environ.get('min_profit_pips') if _environ.get('min_profit_pips') else self.min_profit_pips
-        self.entry_pips = _environ.get('entry_pips') if _environ.get('entry_pips') else self.entry_pips
-        self.min_spred = _environ.get('min_spred') if _environ.get('min_spred') else self.min_spred
+        self.regular_profit_pips = float(_environ.get('regular_profit_pips')) if _environ.get('regular_profit_pips') else self.regular_profit_pips
+        self.min_profit_pips =  float(_environ.get('min_profit_pips')) if _environ.get('min_profit_pips') else self.min_profit_pips
+        self.entry_pips =  float(_environ.get('entry_pips')) if _environ.get('entry_pips') else self.entry_pips
+        self.min_spred =  float(_environ.get('min_spred')) if _environ.get('min_spred') else self.min_spred
 
     def set_property(self, candles_df, long_units, short_units, orders_info, new_orders_info):
         self.candles_df = candles_df
