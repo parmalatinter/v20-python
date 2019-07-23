@@ -442,6 +442,7 @@ class Trade():
             stopLossOrderID = str(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
             trailingStopLossOrderID = str(row['trailingStopLossOrderID']) if row['trailingStopLossOrderID'] else ''
             event_open_id = str(row['event_open_id']) if row['event_open_id'] else 0
+            memo = str(row['memo']) if row['memo'] else 0
 
             delta_total_minuts = delta.total_seconds()/60
             delta_total_hours = delta_total_minuts/60
@@ -455,7 +456,8 @@ class Trade():
             history_df = self._history.get_by_panda(trade_id)
 
             if history_df.empty:
-                self._line.send('history_df.empty', 'info')
+                message = 'order filled {} {}'.format(str(event_open_id), memo)
+                self._line.send(message)
                 continue
             event_close_id = float(history_df['event_close_id'][history_df.index[0]]) if history_df['event_close_id'][history_df.index[0]] else 0
             # 利益がunitsの0.15倍ある場合は決済
