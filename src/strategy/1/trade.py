@@ -495,6 +495,13 @@ class Trade():
                         event_close_id = 13
                         # spred分の損を回収
                         profit_rate = _price + 0.02
+                        # 負け 両建て
+                        if self.is_long_and_short_trade:
+                            event_close_id = 14
+                            _client_order_comment = state + ' long and short trade stop' + str(event_close_id)
+                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.02)
+                            self._history.update(int(trade_id), event_close_id, _client_order_comment)
+                            continue
                 # sellの場合 
                 else:
                     pips = _price - self.last_rate
@@ -514,6 +521,13 @@ class Trade():
                         event_close_id = 23
                         # spred分の損を回収
                         profit_rate = _price - 0.02
+                        # 負け 両建て
+                        if self.is_long_and_short_trade:
+                            event_close_id = 24
+                            _client_order_comment = state + ' long and short trade stop' + str(event_close_id)
+                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.02)
+                            self._history.update(int(trade_id), event_close_id, _client_order_comment)
+                            continue
 
                 _client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
