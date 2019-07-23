@@ -504,6 +504,8 @@ class Trade():
                             self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.02)
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
+                    else:
+                        continue
                 # sellの場合 
                 else:
                     pips = _price - self.last_rate
@@ -530,7 +532,9 @@ class Trade():
                             self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.02)
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
-
+                    else:
+                        continue
+                        
                 _client_order_comment = state + ' profit reduce ' + str(event_close_id)
 
                 self.take_profit(trade_id, round(profit_rate, 3), takeProfitOrderID, _client_order_comment, event_close_id)
