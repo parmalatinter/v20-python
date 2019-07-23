@@ -679,7 +679,7 @@ class Trade():
             # その他の場合
             else:
                 _message = 'buy golden order trend other 3 # {}'.format(str(self.last_rate))
-                _units = self.units/2
+                _units = self.units
                 _event_open_id = 13
                 _target_price = self.last_rate + self.entry_pips
                 _stop_rate = self.last_rate - self.regular_profit_pips
@@ -730,7 +730,7 @@ class Trade():
             # その他の場合
             else:
                 _message = 'sell dead order other 6 # {}'.format(str(self.last_rate))
-                _units = self.units/2
+                _units = self.units
                 _event_open_id = 23
                 _target_price = self.last_rate - self.entry_pips
                 _stop_rate = self.last_rate + self.regular_profit_pips
@@ -760,21 +760,21 @@ class Trade():
         # ルールその1 C3 < lower 且つ  ルールその2 3つ陽線
         if self.rule_1 and self.rule_2:
             _message = 'buy chance order 7 # {}'.format(str(self.last_rate))
-            _units = self.units/2
+            _units = self.units
             _event_open_id = 31
             _target_price = self.last_rate + self.regular_profit_pips
 
         # ルールその3 C3 > upper 且つ  ルールその4 3つ陰線
         elif self.rule_3 and self.rule_4:
             _message = 'sell chance order 8 # {}'.format(str(self.last_rate))
-            _units = 0 - (self.units/2)
+            _units = 0 - (self.units)
             _event_open_id = 32
             _target_price = self.last_rate - self.regular_profit_pips
 
         # ルールその5 連続二回ボリバン上限突破
         elif self.rule_5:
             _message = 'buy chance order 9 # {}'.format(str(self.last_rate))
-            _units = self.units/2
+            _units = self.units
             _event_open_id = 33
             _target_price = self.last_rate + self.entry_pips
             _stop_rate = self.last_rate - self.regular_profit_pips
@@ -795,7 +795,7 @@ class Trade():
         # ルールその6 連続二回ボリバン下限突破
         elif self.rule_6:
             _message = 'sell chance order 10 # {}'.format(str(self.last_rate))
-            _units = self.units/2
+            _units = self.units
             _event_open_id = 41
             _target_price = self.last_rate - self.entry_pips
             _stop_rate = self.last_rate + self.regular_profit_pips
