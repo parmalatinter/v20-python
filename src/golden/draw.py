@@ -370,7 +370,7 @@ def main():
     draw = Draw()
     df = draw.get_df_by_string(candles_csv_string)
     candle_df = draw.caculate_candle(df)
-    draw.plot(candle_df, 50)
+    draw.plot(candle_df, 30)
     print(candle_df)
 
 if __name__ == "__main__":
