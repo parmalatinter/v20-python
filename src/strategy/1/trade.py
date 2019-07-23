@@ -103,8 +103,8 @@ class Trade():
     close_limit_hours = 6
     close_order_limit_minutes = 90
 
-    first_event_close_ids = [1.1, 1.2, 1.3, 2.1, 2.2, 2.3]
-    win_event_close_ids = [1.1, 1.2, 2.1, 2.2, 3.1, 3.2, 3.3, 4.1, 4.2, 4.3]
+    first_event_close_ids = [11, 12, 13, 21, 22, 23]
+    win_event_close_ids = [11, 12, 21, 22, 31, 32, 33, 41, 42, 43]
 
     def __init__(self, _environ):
         self._line = line.line.Line()
@@ -441,6 +441,7 @@ class Trade():
             takeProfitOrderID = str(row['takeProfitOrderID']) if row['takeProfitOrderID'] else ''
             stopLossOrderID = str(row['stopLossOrderID']) if row['stopLossOrderID'] else ''
             trailingStopLossOrderID = str(row['trailingStopLossOrderID']) if row['trailingStopLossOrderID'] else ''
+            event_open_id = str(row['event_open_id']) if row['event_open_id'] else 0
 
             delta_total_minuts = delta.total_seconds()/60
             delta_total_hours = delta_total_minuts/60
@@ -483,13 +484,14 @@ class Trade():
                         event_close_id = 11
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
                         self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                        self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
                     elif pips > 0.05:
                         event_close_id = 12
                         profit_rate = self.last_rate + 0.03
-                    # それ以外
-                    else:
+                    # 負け
+                    elif pips < 0:
                         event_close_id = 13
                         # spred分の損を回収
                         profit_rate = _price + 0.02
@@ -501,13 +503,14 @@ class Trade():
                         event_close_id = 21
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
                         self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                        self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
                     elif pips > 0.1:
                         event_close_id = 22
                         profit_rate = self.last_rate - 0.03
-                    # それ以外
-                    else:
+                    # 負け
+                    elif pips < 0:
                         event_close_id = 23
                         # spred分の損を回収
                         profit_rate = _price - 0.02
@@ -560,6 +563,7 @@ class Trade():
                         if not stopLossOrderID or not trailingStopLossOrderID:
                             distance = round(stop_rate-self.last_rate, 3)
                             self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
+                            self._history.update(int(trade_id), event_close_id, _client_order_comment)
 
                     # sellの場合 現在価格マイナス0.1でcloseする
                     else:
@@ -581,7 +585,7 @@ class Trade():
                         if not stopLossOrderID or not trailingStopLossOrderID:
                             distance = round(self.last_rate - stop_rate, 3)
                             self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
-
+                            self._history.update(int(trade_id), event_close_id, _client_order_comment)
                 # 負けの場合
                 else:
 
@@ -603,6 +607,7 @@ class Trade():
 
                 if not stopLossOrderID or not trailingStopLossOrderID:
                     self.stop_loss(trade_id, round(stop_rate, 3), stopLossOrderID, _client_order_comment, event_close_id)
+                    self._history.update(int(trade_id), event_close_id, _client_order_comment)
 
                 self.take_profit(trade_id, round(profit_rate, 3), takeProfitOrderID, _client_order_comment, event_close_id)
 

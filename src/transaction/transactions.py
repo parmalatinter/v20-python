@@ -81,8 +81,12 @@ class Transactions(object):
                 self.trades[trade.id]['stopLossOrder'] = self.orders[trade.stopLossOrderID]
             if trade.trailingStopLossOrderID:
                 self.trades[trade.id]['trailingStopLossOrder'] = self.orders[trade.trailingStopLossOrderID]
+            if hasattr(transaction, 'tradeOpened'):
+                if transaction.tradeOpened:
+                    if hasattr(transaction.tradeOpened, 'clientExtensions'):
+                        if hasattr(transaction.tradeOpened.clientExtensions, 'tag'):
+                             self.trades[trade.id]['event_open_id'] = int(transaction.tradeOpened.clientExtensions.tag)
 
-            # print(transaction.price)
             self.trades[trade.id]['transaction'] = transaction.__dict__
 
             # ,time,close,open,high,low,volume
