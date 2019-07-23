@@ -226,9 +226,6 @@ class Draw(object):
 
         df['dead'] = ((np.roll(h_asign, 1) - h_asign) == 2).astype(int)
 
-        
-        
-
         # ranges = slice(df['l'],170,None)
  
         # 10分間でポジションを決済
@@ -248,8 +245,6 @@ class Draw(object):
 
         self.df = df
         return df
-
-
 
     def caculate_candle(self, df):
         ax = plt.subplot(2, 1, 1)
@@ -373,13 +368,10 @@ def main():
     candles_csv_string = candles_csv.get_string().getvalue()
 
     draw = Draw()
-    dir_path = os.path.dirname(os.path.realpath(__file__))
-    draw.chdir(dir_path + "/datas")
-    candles_df = draw.get_df_by_string(candles_csv_string)
-    draw.plot(candles_df, 50)
-    print(candles_df)
-
-    # print(draw.candle_supres())
+    df = draw.get_df_by_string(candles_csv_string)
+    candle_df = draw.caculate_candle(df)
+    draw.plot(candle_df, 50)
+    print(candle_df)
 
 if __name__ == "__main__":
     main()
