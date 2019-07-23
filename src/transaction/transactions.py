@@ -75,6 +75,8 @@ class Transactions(object):
             self.trades[trade.id]['takeProfitOrder'] = None
             self.trades[trade.id]['stopLossOrder'] = None
             self.trades[trade.id]['trailingStopLossOrder'] = None
+            self.trades[trade.id]['event_open_id'] = 0
+            self.trades[trade.id]['memo'] = None
             if trade.takeProfitOrderID:
                 self.trades[trade.id]['takeProfitOrder'] = self.orders[trade.takeProfitOrderID]
             if trade.stopLossOrderID:
@@ -85,8 +87,9 @@ class Transactions(object):
                 if transaction.tradeOpened:
                     if hasattr(transaction.tradeOpened, 'clientExtensions'):
                         if hasattr(transaction.tradeOpened.clientExtensions, 'tag'):
-                             self.trades[trade.id]['event_open_id'] = int(transaction.tradeOpened.clientExtensions.tag)
-
+                            self.trades[trade.id]['event_open_id'] = int(transaction.tradeOpened.clientExtensions.tag)
+                        if hasattr(transaction.tradeOpened.clientExtensions, 'comment'):
+                            self.trades[trade.id]['memo'] = transaction.tradeOpened.clientExtensions.comment
             self.trades[trade.id]['transaction'] = transaction.__dict__
 
             # ,time,close,open,high,low,volume
