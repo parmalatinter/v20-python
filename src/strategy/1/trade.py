@@ -1089,7 +1089,9 @@ def test():
     # positions_infos = transactions.get_positions()
     long_units = transactions.get_short_pos_units()
     short_units = transactions.get_short_pos_units()
-
+    print('units')
+    print(long_units)
+    print(short_units)
     trade = Trade(_environ)
 
     candles = inst.Candles()
