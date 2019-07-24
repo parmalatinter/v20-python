@@ -149,7 +149,7 @@ class Trade():
         self.candles_df = candles_df
         self.long_units = long_units
         self.short_units = short_units
-        self.is_long_and_short_trade = self.long_units > 0 and self.short_units > 0
+        self.is_long_and_short_trade = self.long_units > 0 and self.short_units < 0
         self.trend_usd = self._trend.get()
         self.orders_info = orders_info
         self.new_orders_info = new_orders_info
