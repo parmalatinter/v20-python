@@ -642,14 +642,24 @@ class Trade():
                 # 90分 ~ で利益ない場合 とりあえず発注価格でcloseする
                 event_close_id = 70
 
-                # buyの場合 発注価格+0.01でcloseする
-                if row['currentUnits'] > 0:
-                    profit_rate = _price + 0.01
-                # buyの場合 発注価格-0.01でcloseする
+                if not self.is_long_and_short_trade:
+                    # buyの場合 価格+0.01でcloseする
+                    if row['currentUnits'] > 0:
+                        profit_rate = self.last_rate + 0.02
+                    # buyの場合 価格-0.01でcloseする
+                    else:
+                        profit_rate = self.last_rate - 0.02
+                    self.take_profit(trade_id, round(profit_rate, 3), takeProfitOrderID, _client_order_comment, event_close_id)   
                 else:
-                    profit_rate = _price - 0.01
+                    # buyの場合 発注価格+0.01でcloseする
+                    if row['currentUnits'] > 0:
+                        stop_rate = self.last_rate + 0.02
+                    # buyの場合 発注価格-0.01でcloseする
+                    else:
+                        stop_rate = self.last_rate - 0.02
+                    self.stop_loss(trade_id, round(stop_rate, 3), stopLossOrderID, _client_order_comment, event_close_id)
 
-                self.take_profit(trade_id, round(profit_rate, 3), takeProfitOrderID, _client_order_comment, event_close_id)                                 
+                                              
 
         for order_id, row in self.new_orders_info.items():
 
