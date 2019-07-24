@@ -1042,7 +1042,7 @@ def main():
     orders_info = transactions.get_trades()
     new_orders_info = transactions.get_new_orders()
     positions_infos = transactions.get_positions()
-    long_units = transactions.get_short_pos_units()
+    long_units = transactions.get_long_pos_units()
     short_units = transactions.get_short_pos_units()
 
     trade = Trade(_environ)
