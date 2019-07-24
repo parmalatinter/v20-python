@@ -932,8 +932,8 @@ class Trade():
                 if target_price - self.last_rate < self.regular_profit_pips:
                     target_price = self.last_rate + self.regular_profit_pips
             else:
-                if self.short_units > 0:
-                    if (self.short_units / units) >= self.limit_units_count:
+                if self.short_units < 0:
+                    if ((0-self.short_units) / units) >= self.limit_units_count:
                         return
                 if stop_rate == 0:
                     stop_rate = self.mean + ((self.upper - self.mean) / 2)
