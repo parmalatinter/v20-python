@@ -657,8 +657,9 @@ class Trade():
                     # buyの場合 発注価格-0.01でcloseする
                     else:
                         stop_rate = self.last_rate - 0.02
-                    self.stop_loss(trade_id, round(stop_rate, 3), stopLossOrderID, _client_order_comment, event_close_id)
-
+                    distance = round(self.last_rate - stop_rate, 3)
+                    self.stop_loss(trade_id, stop_rate, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, False)
+                            
                                               
 
         for order_id, row in self.new_orders_info.items():
