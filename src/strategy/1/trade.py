@@ -653,13 +653,11 @@ class Trade():
                 else:
                     # buyの場合 発注価格+0.01でcloseする
                     if row['currentUnits'] > 0:
-                        stop_rate = self.last_rate + 0.02
+                        profit_rate = self.last_rate + 0.02
                     # buyの場合 発注価格-0.01でcloseする
                     else:
-                        stop_rate = self.last_rate - 0.02
-                    self.stop_loss(trade_id, stop_rate, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, False)
-                            
-                                              
+                        profit_rate = self.last_rate - 0.02
+                    self.take_profit(trade_id, round(profit_rate, 3), takeProfitOrderID, _client_order_comment, event_close_id)                          
 
         for order_id, row in self.new_orders_info.items():
 
