@@ -876,19 +876,6 @@ class Trade():
                      is_market=True
                  )
 
-                _units = self.units
-                _target_price = self.last_rate + self.entry_pips
-                _stop_rate = self.last_rate - (self.regular_profit_pips/2)
-
-                self.new_trade(
-                     message=_message,
-                     units=_units,
-                     event_open_id=_event_open_id,
-                     target_price=_target_price,
-                     stop_rate=_stop_rate,
-                     is_market=True
-                 )
-
             # 抵抗ライン下限突破
             if self.resistande_info['resistance_low'] == 0:
                 return
@@ -907,19 +894,6 @@ class Trade():
                      stop_rate=_stop_rate,
                      is_market=True
                  )
-
-                _units = 0 - self.units
-                _target_price = self.last_rate + self.entry_pips
-                _stop_rate = self.last_rate - (self.regular_profit_pips/2)
-
-                self.new_trade(
-                     message=_message,
-                     units=_units,
-                     event_open_id=_event_open_id,
-                     target_price=_target_price,
-                     stop_rate=_stop_rate,
-                     is_market=True
-                )
 
     def new_trade(self,  message, units, event_open_id, target_price, stop_rate=0, is_market=False):
         # 新規オーダーする場合
