@@ -714,7 +714,7 @@ class Trade():
                 _message = 'buy golden order trend other 3 # {}'.format(str(self.last_rate))
                 _units = self.units
                 _event_open_id = 13
-                _target_price = self.last_rate + self.entry_pips
+                _target_price = self.last_rate + self.regular_profit_pips
                 _stop_rate = self.last_rate - self.regular_profit_pips
 
                 self.new_trade(
@@ -723,7 +723,7 @@ class Trade():
                      event_open_id=_event_open_id,
                      target_price=_target_price,
                      stop_rate=_stop_rate,
-                     is_market=False
+                     is_market=True
                  )
 
                 _units = 0 - _units
@@ -765,7 +765,7 @@ class Trade():
                 _message = 'sell dead order other 6 # {}'.format(str(self.last_rate))
                 _units = self.units
                 _event_open_id = 23
-                _target_price = self.last_rate - self.entry_pips
+                _target_price = self.last_rate - self.regular_profit_pips
                 _stop_rate = self.last_rate + self.regular_profit_pips
 
                 self.new_trade(
@@ -774,7 +774,7 @@ class Trade():
                      event_open_id=_event_open_id,
                      target_price=_target_price,
                      stop_rate=_stop_rate,
-                     is_market=False
+                     is_market=True
                  )
 
                 _target_price = self.last_rate + self.entry_pips
