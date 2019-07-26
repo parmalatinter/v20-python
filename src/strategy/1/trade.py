@@ -463,7 +463,7 @@ class Trade():
             # 利益がunitsの0.15倍ある場合は決済
             if row['unrealizedPL'] / self.units  > 0.15:
                 _client_order_comment = 'profit max close'
-                self.stop_loss(trade_id, 0, None, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
                 continue
 
             pips = 0
@@ -582,7 +582,7 @@ class Trade():
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
                             distance = round(stop_rate-self.last_rate, 3)
-                            self.stop_loss(trade_id, 0, None, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
+                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
 
                     # sellの場合 現在価格マイナス0.1でcloseする
@@ -604,7 +604,7 @@ class Trade():
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
                             distance = round(self.last_rate - stop_rate, 3)
-                            self.stop_loss(trade_id, 0, None, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
+                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                 # 負けの場合
                 else:
