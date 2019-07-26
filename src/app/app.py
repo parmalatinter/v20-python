@@ -42,7 +42,7 @@ def hello(name='candles'):
     drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
     now = pd.Timestamp.now()
     _pricing = pricing.get.Pricing()
-    instrument = _environ.get('instrument') if _environ.get('instrument') else "USD_JPY"
+    instrument = environ.get('instrument') if environ.get('instrument') else "USD_JPY"
     price = _pricing.get(instrument)
     last_rate = price['price']
     if name == 'calendar' or name == 'system':
