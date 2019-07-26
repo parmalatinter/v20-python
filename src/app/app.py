@@ -41,10 +41,10 @@ def index():
 def hello(name='candles'):
     drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
     now = pd.Timestamp.now()
-    _pricing = pricing.get.Pricing()
-    instrument = environ.get('instrument') if environ.get('instrument') else "USD_JPY"
-    price = _pricing.get(instrument)
-    last_rate = price['price']
+    # _pricing = pricing.get.Pricing()
+    # instrument = environ.get('instrument') if environ.get('instrument') else "USD_JPY"
+    # price = _pricing.get(instrument)
+    # last_rate = price['price']
     if name == 'calendar' or name == 'system':
         _calender = calender.get.Calendar()
         drive_id =_calender.get_drive_id()
@@ -59,7 +59,7 @@ def hello(name='candles'):
     candles_csv_string.close()
     if name == '':
         name = u'ななしさん'
-    return render_template('hello.html', name=name, contents=contents, now=now, last_rate=last_rate)
+    return render_template('hello.html', name=name, contents=contents, now=now)
 
 @app.route('/line/<name>')
 @auth.login_required
