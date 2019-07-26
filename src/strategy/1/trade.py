@@ -221,7 +221,7 @@ class Trade():
     def send_draw(self):
         if self.is_new_trade:
             draw = golden.draw.Draw()
-            draw.plot(self.caculate_df_all, 50)
+            draw.plot(self.caculate_df_all, 30)
 
     def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 
