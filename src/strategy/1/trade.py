@@ -202,7 +202,8 @@ class Trade():
     def get_caculate_df(self, df_candles):
         if self.caculate_df.empty:
             draw = golden.draw.Draw()
-            self.caculate_df_all = draw.caculate(df_candles[0:100])
+            self.caculate_df_all = draw.caculate(df_candles)
+            self.caculate_df_all = draw.caculate_candle(self.caculate_df_all)
             self.caculate_df = self.caculate_df_all.tail(1)
             self.resistande_info = draw.candle_supres()
 
