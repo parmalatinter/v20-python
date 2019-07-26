@@ -485,7 +485,7 @@ class Trade():
                     if pips > self.regular_profit_pips:
                         event_close_id = 11
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
-                        self.stop_loss(trade_id, 0, None, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                        self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
@@ -513,7 +513,7 @@ class Trade():
                     if pips > self.regular_profit_pips:
                         event_close_id = 21
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
-                        self.stop_loss(trade_id, 0, None, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                        self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
@@ -529,7 +529,7 @@ class Trade():
                         if self.is_long_and_short_trade:
                             event_close_id = 24
                             _client_order_comment = state + ' long and short trade stop' + str(event_close_id)
-                            self.stop_loss(trade_id, 0, None, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.02)
+                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.02)
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
                     else:
