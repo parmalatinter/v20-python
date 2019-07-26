@@ -10,6 +10,7 @@ from flask_httpauth import HTTPBasicAuth
 import file.file_utility
 import strategy.environ
 import calender.get
+import pricing.get
 import subprocess
 
 app = Flask(__name__)
@@ -39,9 +40,11 @@ def index():
 @auth.login_required
 def hello(name='candles'):
     drive_id = environ.get('drive_id') if environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
-    now1 = pd.Timestamp.now()
-    now2 = datetime.datetime.now() 
-
+    now = pd.Timestamp.now()
+    pricing = pricing.get.Pricing()
+    instrument = _environ.get('instrument') if _environ.get('instrument') else "USD_JPY"
+    price = spricing.get(instrument)
+    last_rate = price['price']
     if name == 'calendar' or name == 'system':
         _calender = calender.get.Calendar()
         drive_id =_calender.get_drive_id()
@@ -56,7 +59,7 @@ def hello(name='candles'):
     candles_csv_string.close()
     if name == '':
         name = u'ななしさん'
-    return render_template('hello.html', name=name, contents=contents, now1=now1, now2=now2)
+    return render_template('hello.html', name=name, contents=contents, now=now, last_rate=last_rate)
 
 @app.route('/line/<name>')
 @auth.login_required
