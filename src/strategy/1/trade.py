@@ -272,13 +272,13 @@ class Trade():
 
         stop_rate = str(stop_rate)
 
-        stop_obj = self._trailing_stop_loss if is_trailing and distance > 0 else self._stop_loss
-
-        if stopLossOrderID:
+        if is_trailing and distance > 0:
+            stop_obj = self._trailing_stop_loss
+            if stopLossOrderID:
+                self._cancel.exec({'order_id': stopLossOrderID})
             stop_obj.exec({
                 'tradeID': str(trade_id),
-                'price': stop_rate,
-                'replace_order_id': stopLossOrderID,
+                'replace_order_id': trailingStopLossOrderID,
                 'client_trade_tag' : str(event_close_id),
                 'client_trade_comment' :client_order_comment,
                 'client_order_tag' : str(event_close_id),
@@ -286,9 +286,13 @@ class Trade():
                 'distance' : str(distance)
             })
         else:
+            stop_obj = self._stop_loss
+            if trailingStopLossOrderID:
+                self._cancel.exec({'order_id': trailingStopLossOrderID})
             stop_obj.exec({
                 'tradeID': str(trade_id),
-                'replace_order_id': trailingStopLossOrderID,
+                'price': stop_rate,
+                'replace_order_id': stopLossOrderID,
                 'client_trade_tag' : str(event_close_id),
                 'client_trade_comment' :client_order_comment,
                 'client_order_tag' : str(event_close_id),
