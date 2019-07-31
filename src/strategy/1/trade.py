@@ -309,12 +309,13 @@ class Trade():
 
         response = stop_obj.get_response()
 
-        message = 'event_close_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, comment : {}, now : {}'.format(
+        message = 'event_close_id: {}, now_rate : {}, trade_id : {}, stop_rate : {}, stop_loss_order_id : {}, trailingStopLossOrderID : {}, comment : {}, now : {}'.format(
             str(event_close_id),
             str(self.last_rate),
             str(trade_id),
             str(stop_rate),
             str(stopLossOrderID),
+            str(trailingStopLossOrderID),
             client_order_comment,
             self.now_dt.strftime('%Y-%m-%d %H:%M:%S')
         )
@@ -324,7 +325,7 @@ class Trade():
             return True
         else:
             errors = stop_obj.get_errors()
-            title = 'new order failed errorCode : {}, errorMessage : {}, status : {}'.format(
+            title = 'stop failed errorCode : {}, errorMessage : {}, status : {}'.format(
                 str(errors['errorCode']),
                 str(errors['errorMessage']),
                 str(response.status)
