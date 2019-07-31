@@ -283,6 +283,20 @@ class Trade():
             stop_obj = self._trailing_stop_loss
             if stopLossOrderID:
                 self._cancel.exec({'order_id': stopLossOrderID})
+                response = self._cancel.get_response()
+                message = '# {}, now : {}'.format(order_id, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
+
+                if response.status == 200:
+                    self._line.send('order cancel s', message)
+                else:
+                    errors = self._cancel.get_errors()
+                    title = 'order cancel failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                        str(errors['errorCode']),
+                        str(errors['errorMessage']),
+                        str(response.status)
+                    )
+                    self._line.send(title, message)
+                    return
             stop_obj.exec({
                 'tradeID': str(trade_id),
                 'replace_order_id': trailingStopLossOrderID,
@@ -296,6 +310,20 @@ class Trade():
             stop_obj = self._stop_loss
             if trailingStopLossOrderID:
                 self._cancel.exec({'order_id': trailingStopLossOrderID})
+                response = self._cancel.get_response()
+                message = '# {}, now : {}'.format(order_id, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
+
+                if response.status == 200:
+                    self._line.send('order cancel s', message)
+                else:
+                    errors = self._cancel.get_errors()
+                    title = 'order cancel failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                        str(errors['errorCode']),
+                        str(errors['errorMessage']),
+                        str(response.status)
+                    )
+                    self._line.send(title, message)
+                    return
             stop_obj.exec({
                 'tradeID': str(trade_id),
                 'price': stop_rate,
@@ -517,7 +545,16 @@ class Trade():
                     if pips > self.regular_profit_pips:
                         event_close_id = 11
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
-                        self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                        self.stop_loss(
+                            trade_id=trade_id,
+                            stop_rate=0,
+                            stopLossOrderID=stopLossOrderID,
+                            trailingStopLossOrderID=trailingStopLossOrderID,
+                            client_order_comment=_client_order_comment,
+                            event_close_id=event_close_id,
+                            is_trailing=True,
+                            distance=(self.regular_stop_pips/2)
+                        )
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
@@ -533,7 +570,16 @@ class Trade():
                         if self.is_long_and_short_trade:
                             event_close_id = 14
                             _client_order_comment = state + ' long and short trade stop' + str(event_close_id)
-                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.02)
+                            self.stop_loss(
+                                trade_id=trade_id,
+                                stop_rate=0,
+                                stopLossOrderID=stopLossOrderID,
+                                trailingStopLossOrderID=trailingStopLossOrderID,
+                                client_order_comment=_client_order_comment,
+                                event_close_id=event_close_id,
+                                is_trailing=True,
+                                distance=self.regular_stop_pips
+                            )
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
                     else:
@@ -545,7 +591,16 @@ class Trade():
                     if pips > self.regular_profit_pips:
                         event_close_id = 21
                         _client_order_comment = state + ' profit imidiete ' + str(event_close_id)
-                        self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                        self.stop_loss(
+                            trade_id=trade_id,
+                            stop_rate=0,
+                            stopLossOrderID=stopLossOrderID,
+                            trailingStopLossOrderID=trailingStopLossOrderID,
+                            client_order_comment=_client_order_comment,
+                            event_close_id=event_close_id,
+                            is_trailing=True,
+                            distance=(self.regular_stop_pips/2)
+                        )
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益0.5以上
@@ -561,7 +616,16 @@ class Trade():
                         if self.is_long_and_short_trade:
                             event_close_id = 24
                             _client_order_comment = state + ' long and short trade stop' + str(event_close_id)
-                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.02)
+                            self.stop_loss(
+                                trade_id=trade_id,
+                                stop_rate=0,
+                                stopLossOrderID=stopLossOrderID,
+                                trailingStopLossOrderID=trailingStopLossOrderID,
+                                client_order_comment=_client_order_comment,
+                                event_close_id=event_close_id,
+                                is_trailing=True,
+                                distance=(self.regular_stop_pips/2)
+                            )
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                             continue
                     else:
@@ -614,7 +678,16 @@ class Trade():
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
                             distance = round(stop_rate-self.last_rate, 3)
-                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
+                            self.stop_loss(
+                                trade_id=trade_id,
+                                stop_rate=0,
+                                stopLossOrderID=stopLossOrderID,
+                                trailingStopLossOrderID=trailingStopLossOrderID,
+                                client_order_comment=_client_order_comment,
+                                event_close_id=event_close_id,
+                                is_trailing=True,
+                                distance=distance
+                            )
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
 
                     # sellの場合 現在価格マイナス0.1でcloseする
@@ -636,7 +709,16 @@ class Trade():
 
                         if not stopLossOrderID or not trailingStopLossOrderID:
                             distance = round(self.last_rate - stop_rate, 3)
-                            self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, distance)
+                            self.stop_loss(
+                                trade_id=trade_id,
+                                stop_rate=0,
+                                stopLossOrderID=stopLossOrderID,
+                                trailingStopLossOrderID=trailingStopLossOrderID,
+                                client_order_comment=_client_order_comment,
+                                event_close_id=event_close_id,
+                                is_trailing=True,
+                                distance=distance
+                            )
                             self._history.update(int(trade_id), event_close_id, _client_order_comment)
                 # 負けの場合
                 else:
@@ -701,11 +783,11 @@ class Trade():
                 response = self._cancel.get_response()
                 message = '# {}, now : {}'.format(order_id, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
 
-                if response.status == 201:
+                if response.status == 200:
                     self._line.send('order cancel s', message)
                 else:
                     errors = self._cancel.get_errors()
-                    title = 'new market order failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                    title = 'order cancel failed errorCode : {}, errorMessage : {}, status : {}'.format(
                         str(errors['errorCode']),
                         str(errors['errorMessage']),
                         str(response.status)
