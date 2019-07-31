@@ -264,7 +264,12 @@ class Trade():
             return True
         else:
             errors = self._take_profit.get_errors()
-            self._line.send('fix order profit failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
+            title = 'new take profit failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                str(errors['errorCode']),
+                str(errors['errorMessage']),
+                str(response.status)
+            )
+            self._line.send(title, message)
             return False
 
 
@@ -317,7 +322,12 @@ class Trade():
             return True
         else:
             errors = stop_obj.get_errors()
-            self._line.send('fix order stop failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
+            title = 'new order failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                str(errors['errorCode']),
+                str(errors['errorMessage']),
+                str(response.status)
+            )
+            self._line.send(title, message)
             return False
 
     def order(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
@@ -361,8 +371,12 @@ class Trade():
             self._line.send('new order', message)
         else:
             errors = self._entry.get_errors()
-            self._line.send('new order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
-        
+            title = 'new order failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                str(errors['errorCode']),
+                str(errors['errorMessage']),
+                str(response.status)
+            )
+            self._line.send(title, message)
         return int(transaction_id)
 
     def order_market(self, units, profit_rate, stop_rate, event_open_id, client_order_comment):
@@ -399,8 +413,12 @@ class Trade():
             self._line.send('new market order', message)
         else:
             errors = self._market.get_errors()
-            self._line.send('new market order failed ' + str(errors['errorCode']) + ' ' + errors['errorMessage'], message)
-        
+            title = 'new market order failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                str(errors['errorCode']),
+                str(errors['errorMessage']),
+                str(response.status)
+            )
+            self._line.send(title, message)
         return int(tradeID)
 
     def market_close(self, trade_id, units, event_close_id):
@@ -418,7 +436,13 @@ class Trade():
         if response.status == 201 or response.reason == 'OK':
             self._line.send('expire close', message)
         else:
-            self._line.send('expire close failed ' + response.reason, message)
+            errors = self._close.get_errors()
+            title = 'new market order failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                str(errors['errorCode']),
+                str(errors['errorMessage']),
+                str(response.status)
+            )
+            self._line.send(title, message)
 
     def to_date(self, time_str):
         unix = time_str.split(".")[0]
