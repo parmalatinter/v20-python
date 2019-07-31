@@ -702,8 +702,12 @@ class Trade():
                     self._line.send('order cancel s', message)
                 else:
                     errors = self._cancel.get_errors()
-                    self._line.send('order cancel ' + str(response.status) + ' ' + errors['errorMessage'], message)
-
+                    title = 'new market order failed errorCode : {}, errorMessage : {}, status : {}'.format(
+                        str(errors['errorCode']),
+                        str(errors['errorMessage']),
+                        str(response.status)
+                    )
+                    self._line.send(title, message)
 
     def analyze_trade(self):
 
