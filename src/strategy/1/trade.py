@@ -297,15 +297,18 @@ class Trade():
                     )
                     self._line.send(title, message)
                     return
-            stop_obj.exec({
+            args = {
                 'tradeID': str(trade_id),
-                'replace_order_id': trailingStopLossOrderID,
+                'price': stop_rate,
                 'client_trade_tag' : str(event_close_id),
                 'client_trade_comment' :client_order_comment,
                 'client_order_tag' : str(event_close_id),
                 'client_order_comment' :client_order_comment,
                 'distance' : str(distance)
-            })
+            }
+            if trailingStopLossOrderID:
+                args['replace_order_id'] = trailingStopLossOrderID
+            stop_obj.exec(args)
         else:
             stop_obj = self._stop_loss
             if trailingStopLossOrderID:
@@ -324,16 +327,18 @@ class Trade():
                     )
                     self._line.send(title, message)
                     return
-            stop_obj.exec({
+            args = {
                 'tradeID': str(trade_id),
                 'price': stop_rate,
-                'replace_order_id': stopLossOrderID,
                 'client_trade_tag' : str(event_close_id),
                 'client_trade_comment' :client_order_comment,
                 'client_order_tag' : str(event_close_id),
                 'client_order_comment' :client_order_comment,
                 'distance' : str(distance)
-            })
+            }
+            if stopLossOrderID:
+                args['replace_order_id'] = stopLossOrderID
+            stop_obj.exec(args)
 
         response = stop_obj.get_response()
 
