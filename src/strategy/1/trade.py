@@ -516,7 +516,8 @@ class Trade():
 
             # 3時間経過後 現在値でcloseする
             if delta_total_hours >= self.close_limit_hours:
-                self.market_close(trade_id, 'ALL', 99)
+                event_close_id = 99
+                self.market_close(trade_id, 'ALL', event_close_id)
                 continue
 
             history_df = self._history.get_by_panda(trade_id)
@@ -529,7 +530,8 @@ class Trade():
             # 利益がunitsの0.15倍ある場合は決済
             if row['unrealizedPL'] / self.units  > 0.15:
                 _client_order_comment = 'profit max close'
-                self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, 0.05)
+                event_close_id = 999
+                self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, min_profit_pips)
                 continue
 
             pips = 0
@@ -563,8 +565,8 @@ class Trade():
                         )
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
-                    # 利益0.5以上
-                    elif pips > 0.05:
+                    # 利益min_profit_pips以上
+                    elif pips > min_profit_pips:
                         event_close_id = 12
                         profit_rate = self.last_rate + 0.03
                     # 負け
