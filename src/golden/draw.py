@@ -248,19 +248,17 @@ class Draw(object):
 
     def caculate_candle(self, df):
         ax = plt.subplot(2, 1, 1)
-        candle_temp = df.tail(30)
-        candle_temp = candle_temp.reset_index()
+        candle_temp = df.reset_index()
         candlestick2_ohlc(
             ax, candle_temp["o"], candle_temp["h"], candle_temp["l"],
             candle_temp["c"], width=0.9, colorup="r", colordown="b"
         )
         return candle_temp
 
-    def plot(self, candle_temp, from_index):
+    def plot(self, candle_temp):
 
         _line = line.line.Line()
         format = "png"
-        candle_temp = candle_temp[from_index:].copy()
         # # ローソク足表示
         ax = plt.subplot(2, 1, 1)
         ax.plot(candle_temp['mean'])
@@ -370,7 +368,7 @@ def main():
     draw = Draw()
     df = draw.get_df_by_string(candles_csv_string)
     candle_df = draw.caculate_candle(df)
-    draw.plot(candle_df, 30)
+    draw.plot(candle_df)
     print(candle_df)
 
 if __name__ == "__main__":

@@ -56,6 +56,7 @@ class Trade():
     _candle = None
     _trend = None
     _pricing = None
+    _draw = None
     instrument = "USD_JPY"
     units = 10
     limit_units_count = 2
@@ -120,6 +121,7 @@ class Trade():
         self._close = trade.close.Close()
         self._candle = inst_one.Candle()
         self._pricing = pricing.get.Pricing()
+        self._draw = golden.draw.Draw()
 
         self._trend = trend.get.Trend()
         trace_log = common.trace_log.Trace_log()
@@ -203,11 +205,10 @@ class Trade():
 
     def get_caculate_df(self, df_candles):
         if self.caculate_df.empty:
-            draw = golden.draw.Draw()
-            self.caculate_df_all = draw.caculate(df_candles)
-            self.caculate_df_all = draw.caculate_candle(self.caculate_df_all)
+            self.caculate_df_all = self._draw.caculate(df_candles)
+            self.caculate_df_all = self._draw.caculate_candle(self.caculate_df_all)
             self.caculate_df = self.caculate_df_all.tail(1)
-            self.resistande_info = draw.candle_supres()
+            self.resistande_info = self._draw.candle_supres()
 
         return self.caculate_df
 
@@ -222,8 +223,7 @@ class Trade():
 
     def send_draw(self):
         if self.is_new_trade:
-            draw = golden.draw.Draw()
-            draw.plot(self.caculate_df_all, 30)
+            self._draw.plot(self.caculate_df_all)
 
     def take_profit(self, trade_id, profit_rate, takeProfitOrderID, client_order_comment, event_close_id):
 

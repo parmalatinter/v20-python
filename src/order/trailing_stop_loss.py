@@ -38,10 +38,12 @@ class Trailing_stop_loss():
         if not 'trade_id' in arguments:
             self.errorMessage = 'nothing trade_id'
             self.response = self.create_response(400)
+            return
 
         if not 'distance' in arguments:
             self.errorMessage = 'nothing distance'
             self.response = self.create_response(400)
+            return
 
         kwargs = {}
         if 'client_order_id' in arguments:

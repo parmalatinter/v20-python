@@ -9,6 +9,8 @@ class Close():
 
     args = None
     response = None
+    errorCode = '' 
+    errorMessage = ''
 
     parser = argparse.ArgumentParser()
     res = None
@@ -68,9 +70,8 @@ class Close():
             if orderFillTransaction:
                 self.res = orderFillTransaction.__dict__
         except:
+            self.errorMessage = self.response.get("errorMessage", None)
             print('orderFillTransaction not found trade id ' + str(tradeid))
-
-
 
     def get_response(self): 
         return self.response
@@ -87,6 +88,12 @@ class Close():
         )
 
         print_order_create_response_transactions(self.response)
+
+    def get_errors(self):
+        return {
+            'errorCode' : self.errorCode,
+            'errorMessage' : self.errorMessage
+        }
 
 # def main():
 #     close = Close()
