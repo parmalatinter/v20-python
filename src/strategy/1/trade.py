@@ -531,7 +531,7 @@ class Trade():
             if row['unrealizedPL'] / self.units  > 0.15:
                 _client_order_comment = 'profit max close'
                 event_close_id = 999
-                self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, min_profit_pips)
+                self.stop_loss(trade_id, 0, stopLossOrderID, trailingStopLossOrderID, _client_order_comment, event_close_id, True, self.min_profit_pips)
                 continue
 
             pips = 0
@@ -566,7 +566,7 @@ class Trade():
                         self._history.update(int(trade_id), event_close_id, _client_order_comment)
                         continue
                     # 利益min_profit_pips以上
-                    elif pips > min_profit_pips:
+                    elif pips > self.min_profit_pips:
                         event_close_id = 12
                         profit_rate = self.last_rate + 0.03
                     # 負け
