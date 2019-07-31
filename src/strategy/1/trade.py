@@ -92,7 +92,8 @@ class Trade():
     last_rate = 0
     long_units = 0
     short_units = 0
-    regular_profit_pips = 0.14
+    regular_profit_pips = 0.20
+    regular_stop_pips = 0.14
     entry_pips = 0.04
     min_profit_pips = 0.05
     normal_pips_range = 15
@@ -141,6 +142,7 @@ class Trade():
         self.normal_trend_range = int(_environ.get('normal_trend_range')) if _environ.get(
             'normal_trend_range') else self.normal_trend_range
         self.regular_profit_pips = float(_environ.get('regular_profit_pips')) if _environ.get('regular_profit_pips') else self.regular_profit_pips
+        self.regular_stop_pips = float(_environ.get('regular_stop_pips')) if _environ.get('regular_stop_pips') else self.regular_stop_pips
         self.min_profit_pips =  float(_environ.get('min_profit_pips')) if _environ.get('min_profit_pips') else self.min_profit_pips
         self.entry_pips =  float(_environ.get('entry_pips')) if _environ.get('entry_pips') else self.entry_pips
         self.min_spred =  float(_environ.get('min_spred')) if _environ.get('min_spred') else self.min_spred
@@ -748,7 +750,7 @@ class Trade():
                 _event_open_id = 13
                 _message = 'buy golden order trend other {} # {}'.format(_event_open_id, str(self.last_rate))
                 _target_price = self.last_rate + self.regular_profit_pips
-                _stop_rate = self.last_rate - self.regular_profit_pips
+                _stop_rate = self.last_rate - self.regular_stop_pips
 
                 self.new_trade(
                      message=_message,
@@ -761,7 +763,7 @@ class Trade():
 
                 _units = 0 - _units
                 _target_price = self.last_rate - self.entry_pips
-                _stop_rate = self.last_rate + self.regular_profit_pips
+                _stop_rate = self.last_rate + self.regular_stop_pips
 
         # 新規オーダーする場合
         self.new_trade(
@@ -800,7 +802,7 @@ class Trade():
                 _event_open_id = 23
                 _message = 'sell dead order other 6 {} {}'.format(_event_open_id, str(self.last_rate))
                 _target_price = self.last_rate - self.regular_profit_pips
-                _stop_rate = self.last_rate + self.regular_profit_pips
+                _stop_rate = self.last_rate + self.regular_stop_pips
 
                 self.new_trade(
                      message=_message,
@@ -812,7 +814,7 @@ class Trade():
                  )
 
                 _target_price = self.last_rate + self.entry_pips
-                _stop_rate = self.last_rate - self.regular_profit_pips
+                _stop_rate = self.last_rate - self.regular_stop_pips
 
         # 新規オーダーする場合
         self.new_trade(
@@ -865,7 +867,7 @@ class Trade():
             _event_open_id = 41
             _message = 'sell chance order 10 # {}'.format(_event_open_id, str(self.last_rate))
             _target_price = self.last_rate - self.entry_pips
-            _stop_rate = self.last_rate + self.regular_profit_pips
+            _stop_rate = self.last_rate + self.regular_stop_pips
 
             self.new_trade(
                  message=_message,
@@ -877,7 +879,7 @@ class Trade():
              )
 
             _target_price = self.last_rate + self.entry_pips
-            _stop_rate = self.last_rate - self.regular_profit_pips
+            _stop_rate = self.last_rate - self.regular_stop_pips
 
         # 新規オーダーする場合
         self.new_trade(
@@ -900,7 +902,7 @@ class Trade():
                 _event_open_id = 51
                 _message = 'resistance break chance order {} # {}'.format(_event_open_id, str(self.last_rate))
                 _target_price = self.last_rate - (self.regular_profit_pips*2)
-                _stop_rate = self.last_rate + (self.regular_profit_pips/2)
+                _stop_rate = self.last_rate + (self.regular_stop_pips/2)
 
                 self.new_trade(
                      message=_message,
@@ -919,7 +921,7 @@ class Trade():
                 _event_open_id = 61
                 _message = 'resistance break chance order {} # {}'.format(_event_open_id, str(self.last_rate))
                 _target_price = self.last_rate + (self.regular_profit_pips*2)
-                _stop_rate = self.last_rate - (self.regular_profit_pips/2)
+                _stop_rate = self.last_rate - (self.regular_stop_pips/2)
 
                 self.new_trade(
                      message=_message,
@@ -941,10 +943,10 @@ class Trade():
                 if stop_rate == 0:
                     stop_rate = self.mean - ((self.mean - self.lower) / 2)
                 # stopが浅いので変更
-                if self.last_rate - stop_rate < self.regular_profit_pips:
+                if self.last_rate - stop_rate < self.regular_stop_pips:
                     stop_rate = self.lower
-                if self.last_rate - stop_rate < self.regular_profit_pips:
-                    stop_rate = self.last_rate - self.regular_profit_pips
+                if self.last_rate - stop_rate < self.regular_stop_pips:
+                    stop_rate = self.last_rate - self.regular_stop_pips
                 # targetが浅いので変更
                 if target_price - self.last_rate < self.regular_profit_pips:
                     target_price = self.last_rate + self.regular_profit_pips
@@ -955,10 +957,10 @@ class Trade():
                 if stop_rate == 0:
                     stop_rate = self.mean + ((self.upper - self.mean) / 2)
                     # stopが浅いので変更
-                if stop_rate - self.last_rate < self.regular_profit_pips:
+                if stop_rate - self.last_rate < self.regular_stop_pips:
                     stop_rate = self.upper
-                if stop_rate - self.last_rate  < self.regular_profit_pips:
-                    stop_rate = self.last_rate + self.regular_profit_pips
+                if stop_rate - self.last_rate  < self.regular_stop_pips:
+                    stop_rate = self.last_rate + self.regular_stop_pips
                 # targetが浅いので変更
                 if self.last_rate - target_price < self.regular_profit_pips:
                     target_price = self.last_rate - self.regular_profit_pips
