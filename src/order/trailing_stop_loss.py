@@ -14,6 +14,8 @@ class Trailing_stop_loss():
     errorMessage = ''
 
     def create_response(self, code):
+        if not self.response:
+            self.response = Response()
         self.response.status = code
 
     def exec(self, arguments):
