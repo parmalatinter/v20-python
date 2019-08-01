@@ -36,7 +36,7 @@ class Trailing_stop_loss():
 
         api = args.config.create_context()
 
-        if not 'trade_id' in arguments:
+        if not 'tradeID' in arguments:
             self.errorMessage = 'nothing trade_id'
             self.response = self.create_response(400)
             return
@@ -98,9 +98,9 @@ class Trailing_stop_loss():
 def main():
     trailing_stop_loss = Trailing_stop_loss()
     trailing_stop_loss.exec({
-        'trade_id': '1',
-        'distance': '1',
-        'replace_order_id' : '1',
+        'tradeID': '7388',
+        'distance': '0.05',
+        'client_trade_id' : '1',
         'client_trade_tag' : '999',
         'client_trade_comment' :'test',
         'client_order_tag' : '999',
@@ -108,6 +108,7 @@ def main():
     })
     # Trailing_stop_loss.exec({'tradeID': 1713, 'profit_rate':110, 'client-order-comment' : 'test'})
     response = trailing_stop_loss.get_response()
+    print(response)
     # transaction = trailing_stop_loss.get_tansaction()
     print(trailing_stop_loss.get_errors())
 
