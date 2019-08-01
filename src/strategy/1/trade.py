@@ -354,9 +354,13 @@ class Trade():
             self.now_dt.strftime('%Y-%m-%d %H:%M:%S')
         )
 
+        if not response:
+            self._line.send('not response', message)
+            return
+
         if response.status == 201:
             self._line.send('fix order stop loss', message)
-            return True
+            return
         else:
             errors = stop_obj.get_errors()
             title = 'stop failed errorCode : {}, errorMessage : {}, status : {}'.format(
