@@ -284,7 +284,7 @@ class Trade():
             if stopLossOrderID:
                 self._cancel.exec({'order_id': stopLossOrderID})
                 response = self._cancel.get_response()
-                message = '# {}, now : {}'.format(order_id, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                message = '# {}, now : {}'.format(stopLossOrderID, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
 
                 if response.status == 200:
                     self._line.send('order cancel s', message)
@@ -314,7 +314,7 @@ class Trade():
             if trailingStopLossOrderID:
                 self._cancel.exec({'order_id': trailingStopLossOrderID})
                 response = self._cancel.get_response()
-                message = '# {}, now : {}'.format(order_id, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
+                message = '# {}, now : {}'.format(trailingStopLossOrderID, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
 
                 if response.status == 200:
                     self._line.send('order cancel s', message)
