@@ -90,28 +90,24 @@ class Stop_loss():
             # Submit the request to cancel and replace a Take Profit Order
             #
             
-            response = api.order.stop_loss_replace(
+            self.response = api.order.stop_loss_replace(
                 self.args.config.active_account,
                 arguments['replace_order_id'],
                 **arguments
             )
-            
+
         else:
             #
             # Submit the request to create a Take Profit Order
             #
-            response = api.order.stop_loss(
+            self.response = api.order.stop_loss(
                 self.args.config.active_account,
                 **arguments
             )
 
-
-        
-
-        self.response = response
         #  (contains 'orderCancelRejectTransaction', 'relatedTransactionIDs', 'lastTransactionID', 'errorCode', 'errorMessage')
         if not self.response.status == 201:
-            self.errorMessage = response.get("errorMessage", None)
+            self.errorMessage = self.response.get("errorMessage", None)
         
         # self.transaction = response.get("orderFillTransaction", None)
 
