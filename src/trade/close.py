@@ -70,7 +70,6 @@ class Close():
             if orderFillTransaction:
                 self.res = orderFillTransaction.__dict__
         except:
-            self.errorMessage = self.response.get("errorMessage", None)
             print('orderFillTransaction not found trade id ' + str(tradeid))
 
     def get_response(self): 
