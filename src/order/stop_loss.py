@@ -9,7 +9,8 @@ import v20.transaction
 class Stop_loss():
 
     args = None
-    response = None
+    Response = type('Response', (object,), {'status' : 0})
+    response = Response()
     errorCode = '' 
     errorMessage = ''
     # transaction = None

@@ -8,13 +8,12 @@ import v20.transaction
 
 class Trailing_stop_loss():
 
-    response = None
+    Response = type('Response', (object,), {'status' : 0})
+    response = Response()
     errorCode = '' 
     errorMessage = ''
 
     def create_response(self, code):
-        Response = type('Response', (object,), {})
-        self.response = Response()
         self.response.status = code
 
     def exec(self, arguments):
