@@ -1038,9 +1038,12 @@ class Trade():
                 if stop_rate == 0:
                     stop_rate = self.mean - ((self.mean - self.lower) / 2)
                 # stopが浅いので変更
-                if self.last_rate - stop_rate < self.regular_stop_pips:
+                elif self.last_rate - stop_rate < self.regular_stop_pips:
                     stop_rate = self.lower
-                if self.last_rate - stop_rate < self.regular_stop_pips:
+                elif self.last_rate - stop_rate < self.regular_stop_pips:
+                    stop_rate = self.last_rate - self.regular_stop_pips
+                # stopが深すぎるので変更
+                elif stop_rate < 90:
                     stop_rate = self.last_rate - self.regular_stop_pips
                 # targetが浅いので変更
                 if target_price - self.last_rate < self.regular_profit_pips:
@@ -1049,17 +1052,21 @@ class Trade():
                 if self.short_units < 0:
                     if ((0-self.short_units) / units) >= self.limit_units_count:
                         return
-                if stop_rate == 0:
+                elif stop_rate == 0:
                     stop_rate = self.mean + ((self.upper - self.mean) / 2)
                     # stopが浅いので変更
-                if stop_rate - self.last_rate < self.regular_stop_pips:
+                elif stop_rate - self.last_rate < self.regular_stop_pips:
                     stop_rate = self.upper
-                if stop_rate - self.last_rate  < self.regular_stop_pips:
+                elif stop_rate - self.last_rate  < self.regular_stop_pips:
+                    stop_rate = self.last_rate + self.regular_stop_pips
+                # stopが深すぎるので変更
+                elif stop_rate < 90:
                     stop_rate = self.last_rate + self.regular_stop_pips
                 # targetが浅いので変更
                 if self.last_rate - target_price < self.regular_profit_pips:
                     target_price = self.last_rate - self.regular_profit_pips
 
+            if round(stop_rate, 3)
             trade_id = 0
             transaction_id = 0
             if is_market:
