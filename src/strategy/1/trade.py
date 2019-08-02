@@ -222,7 +222,7 @@ class Trade():
         return self.caculate_df_all
 
     def get_histoy_csv(self):
-        return self._history.()
+        return self._history.get_all_by_csv()
 
     def send_draw(self):
         if self.is_new_trade:
