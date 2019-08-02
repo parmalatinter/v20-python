@@ -7,7 +7,7 @@ from instrument.view import CandlePrinter
 from datetime import datetime, timedelta
 import os 
 from pytz import timezone
-
+import strategy.environ
 
 class Candles():
 
@@ -70,7 +70,9 @@ class Candles():
 
 def main():
     candles = Candles()
-    print(candles.get('USD_JPY', 'M10'))
+    _environ = strategy.environ.Environ()
+    instrument = _environ.get('instrument') if _environ.get('instrument') else 'USD_JPY'
+    print(candles.get(instrument, 'M10'))
 
 if __name__ == "__main__":
     main()

@@ -1150,10 +1150,8 @@ def main():
         exit()
 
     _environ = strategy.environ.Environ()
-    reduce_time = float(_environ.get('reduce_time')
-                        ) if _environ.get('reduce_time') else 5
-    drive_id = _environ.get('drive_id') if _environ.get(
-        'drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
+    reduce_time = float(_environ.get('reduce_time')) if _environ.get('reduce_time') else 5
+    drive_id = _environ.get('drive_id') if _environ.get('drive_id') else '1A3k4a4u4nxskD-hApxQG-kNhlM35clSa'
 
     googleDrive = drive.drive.Drive(drive_id)
     googleDrive.delete_all()
@@ -1165,11 +1163,12 @@ def main():
     positions_infos = transactions.get_positions()
     long_units = transactions.get_long_pos_units()
     short_units = transactions.get_short_pos_units()
+    instrument = _environ.get('instrument') if _environ.get('instrument') else 'USD_JPY'
 
     trade = Trade(_environ)
 
     candles = inst.Candles()
-    candles_csv_string = candles.get('USD_JPY', 'M10')
+    candles_csv_string = candles.get(instrument, 'M10')
     candles_df = trade.get_df_by_string(candles_csv_string)
 
     trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info, new_orders_info=new_orders_info)
@@ -1207,16 +1206,14 @@ def test():
     transactions.get()
     orders_info = transactions.get_trades()
     new_orders_info = transactions.get_new_orders()
-    # positions_infos = transactions.get_positions()
     long_units = transactions.get_long_pos_units()
     short_units = transactions.get_short_pos_units()
-    print('units')
-    print(long_units)
-    print(short_units)
+    instrument = _environ.get('instrument') if _environ.get('instrument') else 'USD_JPY'
+
     trade = Trade(_environ)
 
     candles = inst.Candles()
-    candles_csv_string = candles.get('USD_JPY', 'M10')
+    candles_csv_string = candles.get(instrument, 'M10')
     candles_df = trade.get_df_by_string(candles_csv_string)
 
     trade.set_property(candles_df=candles_df, long_units=long_units, short_units=short_units, orders_info=orders_info, new_orders_info=new_orders_info)

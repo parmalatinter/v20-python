@@ -74,7 +74,7 @@ class Candle():
 
 def main():
     candle = Candle()
-    candle.get('USD_JPY', 'M10')
+    candle.get('GBP_USD', 'M10')
     print(candle.get_last_rate())
     print(candle.get_last_date())
 
