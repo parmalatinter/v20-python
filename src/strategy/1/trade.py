@@ -1071,8 +1071,7 @@ class Trade():
                 # targetが浅いので変更
                 if self.last_rate - target_price < self.regular_profit_pips:
                     target_price = self.last_rate - self.regular_profit_pips
-
-            if round(stop_rate, 3)
+                    
             trade_id = 0
             transaction_id = 0
             if is_market:
