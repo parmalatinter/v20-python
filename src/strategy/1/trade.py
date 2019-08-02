@@ -287,7 +287,9 @@ class Trade():
                 message = '# {}, now : {}'.format(stopLossOrderID, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
 
                 if response.status == 200:
-                    self._line.send('order cancel s', message)
+                    self._line.send('order cancel', message)
+                elif response.status == 404:
+                    self._line.send('order cancel not found', message)
                 else:
                     errors = self._cancel.get_errors()
                     title = 'order cancel failed errorCode : {}, errorMessage : {}, status : {}'.format(
@@ -317,7 +319,9 @@ class Trade():
                 message = '# {}, now : {}'.format(trailingStopLossOrderID, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
 
                 if response.status == 200:
-                    self._line.send('order cancel s', message)
+                    self._line.send('order cancel', message)
+                elif response.status == 404:
+                    self._line.send('order cancel not found', message)
                 else:
                     errors = self._cancel.get_errors()
                     title = 'order cancel failed errorCode : {}, errorMessage : {}, status : {}'.format(
@@ -796,7 +800,9 @@ class Trade():
                 message = '# {}, now : {}'.format(order_id, self.now_dt.strftime('%Y-%m-%d %H:%M:%S'))
 
                 if response.status == 200:
-                    self._line.send('order cancel s', message)
+                    self._line.send('order cancel', message)
+                elif response.status == 404:
+                    self._line.send('order cancel not found', message)
                 else:
                     errors = self._cancel.get_errors()
                     title = 'order cancel failed errorCode : {}, errorMessage : {}, status : {}'.format(
