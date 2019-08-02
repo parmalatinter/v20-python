@@ -58,6 +58,7 @@ class Trade():
     _pricing = None
     _draw = None
     instrument = "USD_JPY"
+    instruments = []
     units = 10
     limit_units_count = 2
 
@@ -129,8 +130,8 @@ class Trade():
         os.environ['TZ'] = 'America/New_York'
         self.instrument = _environ.get('instrument') if _environ.get('instrument') else self.instrument
 
-        instruments = self.instrument.split('_')
-        self._trend = trend.get.Trend(instrument_1=instruments[0], instrument_2=instruments[1])
+        self.instruments = self.instrument.split('_')
+        self._trend = trend.get.Trend(instrument_1=self.instruments[0], instrument_2=self.instruments[1])
         units = int(_environ.get('units')) if _environ.get('units') else self.units
         self.units = math.floor(units * self._system.get_last_pl_percent())
         self.close_limit_hours = int(_environ.get('close_limit_hours')) if _environ.get(
@@ -221,7 +222,7 @@ class Trade():
         return self.caculate_df_all
 
     def get_histoy_csv(self):
-        return self._history.get_all_by_csv()
+        return self._history.()
 
     def send_draw(self):
         if self.is_new_trade:
@@ -1120,10 +1121,10 @@ class Trade():
             'instrument' : self.instrument,
             'unrealized_pl' : 0,
             'event_open_id' : 0,
-            'trend_1' : round(self.trend_usd['v1_usd'], 3),
-            'trend_2' : round(self.trend_usd['v2_usd'], 3),
-            'trend_3' : round(self.trend_usd['v1_jpy'], 3),
-            'trend_4' : round(self.trend_usd['v2_jpy'], 3),
+            'trend_1' : round(self.trend_usd['v1_' + self.instruments[0]], 3),
+            'trend_2' : round(self.trend_usd['v2_' + self.instruments[0]], 3),
+            'trend_3' : round(self.trend_usd['v1_' + self.instruments[1]], 3),
+            'trend_4' : round(self.trend_usd['v2_' + self.instruments[1]], 3),
             'trend_cal' : round(self.trend_usd['res'], 3),
             'judge_1' : self.is_golden,
             'judge_2' : self.is_dead,
