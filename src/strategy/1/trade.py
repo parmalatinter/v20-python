@@ -129,7 +129,7 @@ class Trade():
         os.environ['TZ'] = 'America/New_York'
         self.instrument = _environ.get('instrument') if _environ.get('instrument') else self.instrument
 
-        instruments = self.instrument.split(',')
+        instruments = self.instrument.split('_')
         self._trend = trend.get.Trend(instrument_1=instruments[0], instrument_2=instruments[1])
         units = int(_environ.get('units')) if _environ.get('units') else self.units
         self.units = math.floor(units * self._system.get_last_pl_percent())
