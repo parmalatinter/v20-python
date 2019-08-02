@@ -123,12 +123,14 @@ class Trade():
         self._pricing = pricing.get.Pricing()
         self._draw = golden.draw.Draw()
 
-        self._trend = trend.get.Trend()
         trace_log = common.trace_log.Trace_log()
         self._logger = trace_log.get()
 
         os.environ['TZ'] = 'America/New_York'
         self.instrument = _environ.get('instrument') if _environ.get('instrument') else self.instrument
+
+        instruments = self.instrument.split(',')
+        self._trend = trend.get.Trend(instrument_1=instruments[0], instrument_2=instruments[1])
         units = int(_environ.get('units')) if _environ.get('units') else self.units
         self.units = math.floor(units * self._system.get_last_pl_percent())
         self.close_limit_hours = int(_environ.get('close_limit_hours')) if _environ.get(
@@ -1071,7 +1073,7 @@ class Trade():
                 # targetが浅いので変更
                 if self.last_rate - target_price < self.regular_profit_pips:
                     target_price = self.last_rate - self.regular_profit_pips
-                    
+
             trade_id = 0
             transaction_id = 0
             if is_market:

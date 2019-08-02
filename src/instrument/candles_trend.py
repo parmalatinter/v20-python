@@ -64,7 +64,10 @@ class Candles_trend():
             {'key':'GBP_JPY', 'value' : None},
             {'key':'AUD_JPY', 'value' : None},
             {'key':'CAD_JPY', 'value' : None},
-            {'key':'NZD_JPY', 'value' : None}
+            {'key':'NZD_JPY', 'value' : None},
+            {'key':'GBP_AUD', 'value' : None},
+            {'key':'GBP_CAD', 'value' : None},
+            {'key':'GBP_NZD', 'value' : None}
         ]
 
         printer = CandlePrinter()
