@@ -354,7 +354,8 @@ class Draw(object):
 
     def get_df_by_string(self, csv_string):
         if csv_string:
-            return pd.read_csv(pd.compat.StringIO(csv_string), sep=',', engine='python', skipinitialspace=True)
+            df = pd.read_csv(pd.compat.StringIO(csv_string), sep=',', engine='python', skipinitialspace=True)
+            return df[df['open'] > 90]
         else:
             return pd.DataFrame(columns=[])
 
