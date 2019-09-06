@@ -6,7 +6,7 @@ import common.args
 from datetime import datetime, timedelta
 import os 
 from pytz import timezone
-
+import strategy.environ
 
 class Candle():
 
@@ -74,7 +74,9 @@ class Candle():
 
 def main():
     candle = Candle()
-    candle.get('GBP_USD', 'M10')
+    environ = strategy.environ.Environ()
+    instrument = environ.get('instrument') if environ.get('instrument') else 'USD_JPY'
+    candle.get(instrument, 'M10')
     print(candle.get_last_rate())
     print(candle.get_last_date())
 
