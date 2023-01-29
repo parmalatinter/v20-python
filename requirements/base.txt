@@ -34,7 +34,7 @@ rsa==4.0
 six==1.12.0
 soupsieve==1.9.1
 tabulate==0.8.2
-ujson==1.35
+ujson==5.4.0
 uritemplate==3.0.0
 urllib3==1.24.1
 v20==3.0.25.0
